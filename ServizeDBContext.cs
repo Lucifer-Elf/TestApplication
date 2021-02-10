@@ -8,6 +8,9 @@ namespace Servize
 {
     public class ServizeDBContext:DbContext
     {
+        public ServizeDBContext()
+        {
 
+        }
     }
 }
