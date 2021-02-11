@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using static Servize.Domain.Enums.ServizeEnum;
 
 namespace Servize.Domain.Model
@@ -22,13 +19,11 @@ namespace Servize.Domain.Model
 
         public int                  DaysOFWork      { get; set; }
 
-        public double               AmountCharging  { get; set; }
+        public double               PriceCharge     { get; set; }
 
-        public double               UpToDiscount    { get; set; }
+        public double               Discount        { get; set; }
 
         public Area                 Areas           { get; set; }
-
-        public List<ServizeReview>  Reviews      { get; set; }
-
+            
     }
 }

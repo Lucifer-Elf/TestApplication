@@ -30,14 +30,17 @@ namespace Servize.Domain.Enums
             H_PAINTING          = 1,
             H_MOVERANDPACKER    = 2,
             H_MAIDSERVICE       = 3,
+            H_DISINFECTION      = 4,
+            H_ACSERVICEREPAIRE  = 5,
 
             A_WASHING           = 10,
             A_SERVICING         = 11,
 
-            P_SALON             = 20,
+            P_GROMING           = 20,
             P_SPA               = 21,
             P_MANIANDPEDICURE   = 22,
             P_PHOTOGRAPHER      = 23,
+            P_MAKEUP            = 24,
 
             H_HANYMAN           = 30,
             H_ELECTRICIAN       = 31,
@@ -49,8 +52,8 @@ namespace Servize.Domain.Enums
 
         public enum Area
         {
-            UAE_DUBAI   = 0,
-            UAE_SHARJHA = 1,
+            UAE_DUBAI    = 0,
+            UAE_SHARJHA  = 1,
             UAE_ABUDHABI = 2,
         }
     }
