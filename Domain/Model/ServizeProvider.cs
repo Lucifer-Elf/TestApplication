@@ -29,9 +29,9 @@ namespace Servize.Domain.Model
 
         public string        Postal         { get; set; }
 
-        public Categories   Category        { get; set; }
-
         public PackageType  PackageType     { get; set; }
+
+        public List<ServizeCategory> serviceCategories { get; set; }
 
     }
 }

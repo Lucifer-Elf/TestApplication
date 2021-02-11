@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Servize.Domain.Model
 {
-    public class ServizeAdmin
+    public class ServizeReview
     {
         public int Id { get; set; }
     }

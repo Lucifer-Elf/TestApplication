@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Servize.Domain.Model
+namespace Servize.DTO.PROVIDER
 {
-    public class ServizeAdmin
+    public class ServizeProviderDTO
     {
-        public int Id { get; set; }
     }
 }

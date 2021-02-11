@@ -7,5 +7,6 @@ namespace Servize.Domain.Model
 {
     public class ServizeUser
     {
+        public int Id { get; set; }
     }
 }
