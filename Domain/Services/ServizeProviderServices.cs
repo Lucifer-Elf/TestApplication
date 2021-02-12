@@ -18,6 +18,8 @@ namespace Servize.Domain.Services
         public ServizeProviderServices(ServizeDBContext dbcontext, ServizeProviderRespository repository, IMapper mapper)
         {
             _respository = new ServizeProviderRespository(dbcontext);
+            _mapper = mapper;
+
         }
 
         public async Task<Response<IList<ServizeProviderDTO>>> GetAllServizeProviderList()
