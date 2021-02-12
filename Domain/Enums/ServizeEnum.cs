@@ -24,6 +24,12 @@ namespace Servize.Domain.Enums
             GOLD    = 2,
         }
 
+        public enum ServiceType
+        { 
+           ST_HOMEVISIT,
+           ST_ATSHOP
+        }
+
         public enum SubCategories
         {
 

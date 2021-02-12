@@ -14,7 +14,7 @@ namespace Servize.DTO.PROVIDER
             ServiceCategories = new HashSet<ServizeCategoryDTO>();
             Reviews = new HashSet<ServizeReviewDTO>();
         }
-        
+
         public string CompanyName { get; set; }
 
         public string FirstName { get; set; }
@@ -32,6 +32,12 @@ namespace Servize.DTO.PROVIDER
         public string Address { get; set; }  // Interact with google Api 
 
         public string Postal { get; set; }
+
+        public string CompanyRegistrationNumber { get; set; }
+
+        public string EmiratesIdNumber { get; set; }
+
+        public bool PickAndDrop { get; set; }
 
         public PackageType PackageType { get; set; }
 

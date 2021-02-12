@@ -29,6 +29,12 @@ namespace Servize.Domain.Model
 
         public string Postal { get; set; }
 
+        public string CompanyRegistrationNumber { get; set; }
+
+        public string EmiratesIdNumber { get; set; }
+
+        public bool PickAndDrop { get; set; }
+
         public PackageType PackageType { get; set; }
 
         public ICollection<ServizeCategory> ServiceCategories { get; set; }

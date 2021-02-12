@@ -1,19 +1,17 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Servize.Domain.Repositories;
 using Servize.Domain.Services;
 using Servize.DTO.PROVIDER;
 using Servize.Utility;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
-namespace Servize.Controller
+namespace Servize.Controllers
 {
-    [Route("[controller]")]
     [ApiController]
+    [Route("[controller]")]   
     public class ServizeProviderController : ControllerBase
     {
         private readonly ServizeProviderServices _services;
@@ -26,7 +24,7 @@ namespace Servize.Controller
             _services = new ServizeProviderServices(dbContext, repository, mapper);
 
         }
-
+        [Authorize]
         [HttpGet]
         [Produces("application/json")]
         public async Task<ActionResult<IList<ServizeProviderDTO>>> GetAllServiceProviderList()
@@ -38,11 +36,11 @@ namespace Servize.Controller
             return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
 
-
+        [Authorize]
         [HttpGet("{id}")]
         [Produces("application/json")]
         public async Task<ActionResult<ServizeProviderDTO>> GetServiceProviderById(int id)
-        {
+        {           
             Response<ServizeProviderDTO> response = await _services.GetAllServizeProviderById(id);
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
@@ -51,7 +49,7 @@ namespace Servize.Controller
         }
 
 
-
+        [Authorize]
         [HttpPost]
         [Produces("application/json")]
         [Consumes("application/json")]
