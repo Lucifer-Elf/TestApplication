@@ -13,7 +13,8 @@ namespace Servize.Domain.Enums
             AUTOMOTIVE  = 0,
             HOUSING     = 1,
             PERSONAL    = 2,
-            HANDYMAN    = 3,   
+            HANDYMAN    = 3, 
+            TUTOR       = 4,
         }
 
         public enum PackageType
@@ -42,11 +43,16 @@ namespace Servize.Domain.Enums
             P_PHOTOGRAPHER      = 23,
             P_MAKEUP            = 24,
 
-            H_HANYMAN           = 30,
-            H_ELECTRICIAN       = 31,
-            H_CARPENTER         = 32,
-            H_PLUMBING          = 33,
-            H_ELECTRICALREPAIR  = 34,
+            HM_HANYMAN           = 30,
+            HM_ELECTRICIAN       = 31,
+            HM_CARPENTER         = 32,
+            HM_PLUMBING          = 33,
+            HM_ELECTRICALREPAIR  = 34,
+
+            T_ALLSUBJECT         = 40,
+           
+
+
         }
 
 
