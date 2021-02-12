@@ -1,16 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Servize.Domain.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static Servize.Domain.Enums.ServizeEnum;
 
-namespace Servize.Domain.Model
+namespace Servize.DTO.PROVIDER
 {
-    public class ServizeProvider
+    public class ServizeProviderDTO
     {
-        public int Id { get; set; }
-
+        public ServizeProviderDTO()
+        {
+            ServiceCategories = new HashSet<ServizeCategoryDTO>();
+            Reviews = new HashSet<ServizeReviewDTO>();
+        }
+        
         public string CompanyName { get; set; }
 
         public string FirstName { get; set; }
@@ -31,10 +35,8 @@ namespace Servize.Domain.Model
 
         public PackageType PackageType { get; set; }
 
-        public ICollection<ServizeCategory> ServiceCategories { get; set; }
+        public ICollection<ServizeCategoryDTO> ServiceCategories { get; set; }
 
-        public ICollection<ServizeReview> Reviews { get; set; }
-
-
+        public ICollection<ServizeReviewDTO> Reviews { get; set; }
     }
 }
