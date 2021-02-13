@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+﻿using Servize.Authentication;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 using static Servize.Domain.Enums.ServizeEnum;
 
 namespace Servize.Domain.Model
@@ -16,8 +12,12 @@ namespace Servize.Domain.Model
 
         public ServizeModeType ModeType { get; set; }
 
-        [Required]        
-        public string CompanyName { get; set; } 
+        [ForeignKey("ApplicationUser")]
+        public string UserId { get; set; }
+        public ApplicationUser User { get; set; }
+
+        [Required]
+        public string CompanyName { get; set; }
 
         public string Address { get; set; }  // Interact with google Api 
 

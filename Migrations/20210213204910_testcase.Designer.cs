@@ -10,7 +10,7 @@ using Servize;
 namespace Servize.Migrations
 {
     [DbContext(typeof(ServizeDBContext))]
-    [Migration("20210213112926_testcase")]
+    [Migration("20210213204910_testcase")]
     partial class testcase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -252,7 +252,12 @@ namespace Servize.Migrations
                     b.Property<string>("Postal")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("ServizeProvider");
                 });
@@ -306,6 +311,15 @@ namespace Servize.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Servize.Domain.Model.ServizeProvider", b =>
+                {
+                    b.HasOne("Servize.Authentication.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

@@ -35,7 +35,9 @@ namespace Servize
             //Identity
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ServizeDBContext>()
+                .AddSignInManager()
                 .AddDefaultTokenProviders();
+           
 
             //Add Authentication
             services.AddAuthentication(options =>
@@ -54,6 +56,7 @@ namespace Servize
                {
                    ValidateIssuer = true,
                    ValidateAudience = true,
+                   ValidateIssuerSigningKey= true,
                    ValidAudience = Configuration["JWT:ValidAudience"],
                    ValidIssuer = Configuration["JWT:ValidIssuer"],
                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["JWT:Secret"])),
@@ -62,14 +65,14 @@ namespace Servize
                };
            })
          
-      .AddGoogle(options =>
+      /*.AddGoogle(options =>
         {
                 IConfigurationSection googleAuthNSection =
                 Configuration.GetSection("Authentication:Google");
 
             options.ClientId = googleAuthNSection["767916686704-fql4bubmbka31ftnadb70t656pa5kvab.apps.googleusercontent.com"];
             options.ClientSecret = googleAuthNSection["_IASP8rZypXBJdYi3TMO8xyb"];
-        });
+        })*/;
 
 
 

@@ -28,12 +28,22 @@ namespace Servize.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+
+
         private readonly IConfiguration _configuration;
-        public AuthenticationController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public AuthenticationController(UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            IConfiguration configuration,
+             SignInManager<ApplicationUser> signInManager
+            )
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
+            _signInManager = signInManager;
+
+
         }
         
         [HttpPost]
@@ -104,15 +114,60 @@ namespace Servize.Controllers
                 {
                     await _userManager.AddToRoleAsync(user, UserRoles.Admin);
                 }
-                return Ok(new Response("User Created Sucessfully", StatusCodes.Status201Created));
+                return Ok(new Response("Admin is Created Sucessfully", StatusCodes.Status201Created));
             }
             catch(Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response($"Error : {ex.Message}", StatusCodes.Status500InternalServerError)); 
             }
+        }
+
+        [HttpPost]
+        [Route("RegisterProvider")]
+        public async Task<ActionResult> RegisterServizeProvider([FromBody] ServizeUserModel model)
+        {
+            try
+            {
+                var userExist = await _userManager.FindByNameAsync(model.UserName);
+                if (userExist != null)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Response("User Already exist", StatusCodes.Status500InternalServerError));
+                }
+                ApplicationUser user = new ApplicationUser()
+                {
+                    UserName = model.UserName,
+                    Email = model.Email,
+                    SecurityStamp = Guid.NewGuid().ToString()
+                };
+
+                var result = await _userManager.CreateAsync(user, model.Password);
+
+                if (!result.Succeeded)
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Response(result.ToString(), StatusCodes.Status500InternalServerError)); ;
+
+                // creating Roles In Database.
+                if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
+                    await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+                if (!await _roleManager.RoleExistsAsync(UserRoles.User))
+                    await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+                if (!await _roleManager.RoleExistsAsync(UserRoles.Provider))
+                    await _roleManager.CreateAsync(new IdentityRole(UserRoles.Provider));
+
+                if (await _roleManager.RoleExistsAsync(UserRoles.Provider))
+                {
+                    await _userManager.AddToRoleAsync(user, UserRoles.Provider);
+                }
+                return Ok(new Response("Servize Provider Created Sucessfully", StatusCodes.Status201Created));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response($"Error : {ex.Message}", StatusCodes.Status500InternalServerError));
+            }
 
 
         }
+
+
 
         [HttpPost]
         [Route("Login")]
@@ -149,6 +204,12 @@ namespace Servize.Controllers
                 });
             }
             return Unauthorized();
+        }
+
+        public async Task<IActionResult> LogOut()
+        {
+            await _signInManager.SignOutAsync();
+            return Ok();
         }
 
         

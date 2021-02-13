@@ -47,27 +47,6 @@ namespace Servize.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ServizeProvider",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ModeType = table.Column<int>(type: "int", nullable: false),
-                    CompanyName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Postal = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CompanyRegistrationNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    EmiratesIdNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PickAndDrop = table.Column<bool>(type: "bit", nullable: false),
-                    CovidRating = table.Column<int>(type: "int", nullable: false),
-                    PackageType = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ServizeProvider", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -173,6 +152,34 @@ namespace Servize.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ServizeProvider",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ModeType = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CompanyName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Postal = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CompanyRegistrationNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmiratesIdNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PickAndDrop = table.Column<bool>(type: "bit", nullable: false),
+                    CovidRating = table.Column<int>(type: "int", nullable: false),
+                    PackageType = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ServizeProvider", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ServizeProvider_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -211,6 +218,11 @@ namespace Servize.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ServizeProvider_UserId",
+                table: "ServizeProvider",
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

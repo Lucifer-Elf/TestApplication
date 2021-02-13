@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Servize.Authentication;
 using Servize.Domain.Enums;
 using Servize.Domain.Repositories;
 using Servize.Domain.Services;
@@ -13,18 +16,23 @@ using static Servize.Domain.Enums.ServizeEnum;
 
 namespace Servize.Controllers
 {
-    [Authorize(Roles = UserRoles.Admin)]
+    [Authorize(Roles = UserRoles.Provider +","+ UserRoles.Admin)]
     [ApiController]
     [Route("api/[controller]")]   
     public class ServizeProviderController : ControllerBase
     {
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ServizeProviderServices _services;
         public ServizeProviderController(ServizeDBContext dbContext,
                                          ServizeProviderRespository repository,
-                                         IMapper mapper
+                                         IMapper mapper,
+                                         UserManager<ApplicationUser> userManager,
+                                        SignInManager<ApplicationUser> signInManager
                                          )
         {
-
+            _userManager = userManager;
+            _signInManager = signInManager;
             _services = new ServizeProviderServices(dbContext, repository, mapper);
 
         }
@@ -34,6 +42,7 @@ namespace Servize.Controllers
         [Produces("application/json")]
         public async Task<ActionResult<IList<ServizeProviderDTO>>> GetAllServiceProviderList()
         {
+            
             Response<IList<ServizeProviderDTO>> response = await _services.GetAllServizeProviderList();
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
@@ -57,7 +66,6 @@ namespace Servize.Controllers
         [Produces("application/json")]
         public async Task<ActionResult<IList<ServizeProviderDTO>>> GetAllServiceProviderByModeType(int modeType)
         {
-
             Response<IList<ServizeProviderDTO>> response = await _services.GetAllServizeProviderList();
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
@@ -70,11 +78,17 @@ namespace Servize.Controllers
         [Route("AddProvider")]
         [Produces("application/json")]
         [Consumes("application/json")]
-        public async Task<ActionResult<ServizeProviderDTO>> AddServiceProvider([FromBody] ServizeProviderDTO servizeProviderDTO)
+        public async Task<ActionResult<ServizeProviderDTO>> AddServiceProvider([FromBody] ServizeProviderDTO servizeProviderDTO,[FromHeader] string userId)
         {
-            Response<ServizeProviderDTO> response = await _services.AddServizeProvider(servizeProviderDTO);
-            if (response.IsSuccessStatusCode())
-                return Ok(response.Resource);
+            Response<ServizeProviderDTO> response = new Response<ServizeProviderDTO>("Failed to Add ServizeProvider With Specific Id", StatusCodes.Status500InternalServerError) ;
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                servizeProviderDTO.UserId = userId;
+                response = await _services.AddServizeProvider(servizeProviderDTO);
+                if (response.IsSuccessStatusCode())
+                    return Ok(response.Resource);
+            }
 
             return Problem(statusCode: response.StatusCode, detail: response.Message);
         }

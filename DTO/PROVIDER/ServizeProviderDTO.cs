@@ -11,23 +11,18 @@ namespace Servize.DTO.PROVIDER
     {
         public ServizeProviderDTO()
         {
-            ServiceCategories = new HashSet<ServizeCategoryDTO>();
-            Reviews = new HashSet<ServizeReviewDTO>();
+           // ServiceCategories = new HashSet<ServizeCategoryDTO>();
+            //Reviews = new HashSet<ServizeReviewDTO>();
         }
 
+        public ServizeModeType ModeType { get; set; }
+
+        //[ForeignKey("ApplicationUser")]
+        public string UserId { get; set; }
+       // public ApplicationUser User { get; set; }
+
+        //[Required]
         public string CompanyName { get; set; }
-
-        public string FirstName { get; set; }
-
-        public string LastName { get; set; }
-
-        public string UserName { get; set; }
-
-        public string Email { get; set; }
-
-        public string Password { get; set; }
-
-        public int? PhoneNumber { get; set; }
 
         public string Address { get; set; }  // Interact with google Api 
 
@@ -39,10 +34,12 @@ namespace Servize.DTO.PROVIDER
 
         public bool PickAndDrop { get; set; }
 
+        public int CovidRating { get; set; }
+
         public PackageType PackageType { get; set; }
 
-        public ICollection<ServizeCategoryDTO> ServiceCategories { get; set; }
+        //public ICollection<ServizeCategoryDTO> ServiceCategories { get; set; }
 
-        public ICollection<ServizeReviewDTO> Reviews { get; set; }
+       // public ICollection<ServizeReviewDTO> Reviews { get; set; }
     }
 }
