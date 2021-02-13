@@ -41,6 +41,26 @@ namespace Servize.Domain.Services
                 return new Response<IList<ServizeProviderDTO>>($"Failed to Load ServizeProvider List Error:{e.Message}", StatusCodes.Status500InternalServerError);
             }
         }
+        public async Task<Response<IList<ServizeProviderDTO>>> GetAllServizeProviderByModeType(int modeType)
+        {
+
+            try
+            {
+                Response<IList<ServizeProvider>> response = await _respository.GetAllServizeProviderByModeType(modeType);
+
+                if (response.IsSuccessStatusCode())
+                {
+                    IList<ServizeProviderDTO> serviceDTO = _mapper.Map<IList<ServizeProvider>, IList<ServizeProviderDTO>>(response.Resource);
+                    new Response<IList<ServizeProviderDTO>>(serviceDTO, StatusCodes.Status200OK);
+                }
+
+                return new Response<IList<ServizeProviderDTO>>("Failed to Load ServizeProvider List", response.StatusCode);
+            }
+            catch (Exception e)
+            {
+                return new Response<IList<ServizeProviderDTO>>($"Failed to Load ServizeProvider List Error:{e.Message}", StatusCodes.Status500InternalServerError);
+            }
+        }
 
         public async Task<Response<ServizeProviderDTO>> GetAllServizeProviderById(int Id)
         {
@@ -71,7 +91,7 @@ namespace Servize.Domain.Services
                 if (response.IsSuccessStatusCode())
                 {
                     ServizeProviderDTO serviceDTO = _mapper.Map<ServizeProvider, ServizeProviderDTO>(response.Resource);
-                    new Response<ServizeProviderDTO>(serviceDTO, StatusCodes.Status200OK);
+                    return new Response<ServizeProviderDTO>(serviceDTO, StatusCodes.Status200OK);
                 }
                 return new Response<ServizeProviderDTO>("Failed to Add ServizeProvider With Specific Id", response.StatusCode);
             }

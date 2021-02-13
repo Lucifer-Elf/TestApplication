@@ -31,6 +31,23 @@ namespace Servize.Domain.Repositories
             }
 
         }
+        public async Task<Response<IList<ServizeProvider>>> GetAllServizeProviderByModeType(int modeType)
+        {
+            try
+            {
+                List<ServizeProvider> servizeProviderList = await _context.ServizeProvider.Where(e => Convert.ToInt32(e.ModeType) == modeType).ToListAsync();
+                if(servizeProviderList.Count()<1)
+                    return new Response<IList<ServizeProvider>>("Failed to get ServiceProviderList ", StatusCodes.Status404NotFound);
+
+
+                return new Response<IList<ServizeProvider>>(servizeProviderList, StatusCodes.Status200OK);
+            }
+            catch (Exception e)
+            {
+                return new Response<IList<ServizeProvider>>($"Failed to get ServiceProviderList Error:{e.Message}", StatusCodes.Status500InternalServerError);
+            }
+
+        }
 
         public async Task<Response<ServizeProvider>> GetAllServizeProviderById(int Id)
         {
@@ -60,14 +77,14 @@ namespace Servize.Domain.Repositories
                 servizeProvider.Id = 0;
 
                 _context.ServizeProvider.Add(servizeProvider);
+                await _context.SaveChangesAsync();
 
-                return new Response<ServizeProvider>(servizeProvider, StatusCodes.Status200OK);
-                
+                return new Response<ServizeProvider>(servizeProvider, StatusCodes.Status200OK);               
 
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return new Response<ServizeProvider>($"Failed to Add ServiceProvide Error:{e.Message}", StatusCodes.Status500InternalServerError);
+                return new Response<ServizeProvider>($"Failed to Add ServiceProvide Error:{ex.Message}", StatusCodes.Status500InternalServerError);
             }        
         }
     }

@@ -6,7 +6,7 @@ namespace Servize.Domain.Model
     {
         public int              Id { get; set; }
 
-        public int              Rating { get; set; }
+        public int              HappinessRating { get; set; }
 
         public SubCategories    SubCategory { get; set; }
 

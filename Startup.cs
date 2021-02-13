@@ -9,6 +9,11 @@ using Microsoft.Extensions.Hosting;
 using Servize.Domain.Mapper;
 using Servize.Domain.Repositories;
 using AutoMapper;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Servize.Authentication;
+using Microsoft.AspNetCore.Identity;
+
 namespace Servize
 {
     public class Startup
@@ -22,16 +27,51 @@ namespace Servize
         public IConfiguration Configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
-            
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(opt =>
-                {
-                    opt.Audience = Configuration["AAD:ResourceId"];
-                    opt.Authority = $"{Configuration["ADD:Instance"]}{Configuration["ADD:TenantId"]}";
-                });
-            services.AddDbContext<ServizeDBContext>(options => options.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=TestDatabase;Trusted_Connection=True;"));
+            services.AddControllers(); // controller Registered
             services.AddScoped<ServizeProviderRespository>();
-            services.AddControllers();
+            //EnitiyFrameWork
+            services.AddDbContext<ServizeDBContext>(options => options.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=TestDatabase;Trusted_Connection=True;"));
+
+            //Identity
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<ServizeDBContext>()
+                .AddDefaultTokenProviders();
+
+            //Add Authentication
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+
+           //Adding Jwt Bearer
+           .AddJwtBearer(options =>
+           {
+               options.SaveToken = true;
+               options.RequireHttpsMetadata = false;
+               options.TokenValidationParameters = new TokenValidationParameters()
+               {
+                   ValidateIssuer = true,
+                   ValidateAudience = true,
+                   ValidAudience = Configuration["JWT:ValidAudience"],
+                   ValidIssuer = Configuration["JWT:ValidIssuer"],
+                   IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["JWT:Secret"])),
+
+
+               };
+           })
+         
+      .AddGoogle(options =>
+        {
+                IConfigurationSection googleAuthNSection =
+                Configuration.GetSection("Authentication:Google");
+
+            options.ClientId = googleAuthNSection["767916686704-fql4bubmbka31ftnadb70t656pa5kvab.apps.googleusercontent.com"];
+            options.ClientSecret = googleAuthNSection["_IASP8rZypXBJdYi3TMO8xyb"];
+        });
+
+
 
             var config = new AutoMapper.MapperConfiguration(config =>
             {
@@ -45,23 +85,26 @@ namespace Servize
      
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                scope.ServiceProvider.GetService<ServizeDBContext>().Database.Migrate();
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseHttpsRedirection();
+           
             app.UseRouting();
+           
             app.UseAuthentication();   // add to pipline 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-              //  endpoints.mapServiceBaseEndpoints("", "");
+       
                 endpoints.MapControllers();
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
+             
             });
         }
     }
