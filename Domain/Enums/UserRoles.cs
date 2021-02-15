@@ -12,4 +12,5 @@ namespace Servize.Domain.Enums
         public const string Admin = "Admin";
         public const string Provider = "Provider";
     }
+  
 }

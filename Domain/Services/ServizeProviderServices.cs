@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Servize.Utility;
 using Microsoft.AspNetCore.Http;
 using Servize.Domain.Model;
+using Serilog;
 
 namespace Servize.Domain.Services
 {
@@ -41,6 +42,7 @@ namespace Servize.Domain.Services
                 return new Response<IList<ServizeProviderDTO>>($"Failed to Load ServizeProvider List Error:{e.Message}", StatusCodes.Status500InternalServerError);
             }
         }
+
         public async Task<Response<IList<ServizeProviderDTO>>> GetAllServizeProviderByModeType(int modeType)
         {
 
@@ -100,6 +102,21 @@ namespace Servize.Domain.Services
                 return new Response<ServizeProviderDTO>($"Failed to Add ServizeProvider Error:{e.Message}", StatusCodes.Status500InternalServerError);
             }
 
+        }
+
+        public async Task<Response<IList<string>>> GetAllServizeProviderCategory()
+        {
+            try
+            {
+                return  await _respository.GetAllServizeProviderCategory();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Error while get List of Categories");
+                return new Response<IList<string>>("Failed to load error", StatusCodes.Status500InternalServerError);
+            
+            }
+        
         }
 
     }

@@ -18,7 +18,7 @@ namespace Servize.Controllers
 {
     [Authorize(Roles = UserRoles.Provider +","+ UserRoles.Admin)]
     [ApiController]
-    [Route("api/[controller]")]   
+    [Route("[controller]")]   
     public class ServizeProviderController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -66,7 +66,7 @@ namespace Servize.Controllers
         [Produces("application/json")]
         public async Task<ActionResult<IList<ServizeProviderDTO>>> GetAllServiceProviderByModeType(int modeType)
         {
-            Response<IList<ServizeProviderDTO>> response = await _services.GetAllServizeProviderList();
+            Response<IList<ServizeProviderDTO>> response = await _services.GetAllServizeProviderByModeType(modeType);
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
 
@@ -74,12 +74,14 @@ namespace Servize.Controllers
         }
 
 
+        //ServizeProvider/AddProvider
         [HttpPost]
         [Route("AddProvider")]
         [Produces("application/json")]
         [Consumes("application/json")]
         public async Task<ActionResult<ServizeProviderDTO>> AddServiceProvider([FromBody] ServizeProviderDTO servizeProviderDTO,[FromHeader] string userId)
         {
+           
             Response<ServizeProviderDTO> response = new Response<ServizeProviderDTO>("Failed to Add ServizeProvider With Specific Id", StatusCodes.Status500InternalServerError) ;
             var user = await _userManager.FindByIdAsync(userId);
             if (user != null)
@@ -91,6 +93,19 @@ namespace Servize.Controllers
             }
 
             return Problem(statusCode: response.StatusCode, detail: response.Message);
+        }
+
+
+        public async Task<ActionResult<IList<string>>> GetAllServizeProviderCategory()
+        {
+
+            Response<IList<string>> response = await _services.GetAllServizeProviderCategory();
+            if (response.IsSuccessStatusCode())
+                return Ok(response.Resource);
+
+            return Problem(statusCode: response.StatusCode, detail: response.Message);
+
+
         }
     }
 } 

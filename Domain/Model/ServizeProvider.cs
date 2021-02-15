@@ -1,4 +1,6 @@
 ﻿using Servize.Authentication;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static Servize.Domain.Enums.ServizeEnum;
@@ -31,12 +33,12 @@ namespace Servize.Domain.Model
 
         public int CovidRating { get; set; }
 
+        public DateTime RegistrationDate { get; set; }
+
         public PackageType PackageType { get; set; }
 
-        //public ICollection<ServizeCategory> ServiceCategories { get; set; }
+        public ICollection<ServizeCategory> ServiceCategories { get; set; }
 
-        //public ICollection<ServizeReview> Reviews { get; set; }
-
-
+        public ICollection<ServizeReview> Reviews { get; set; }
     }
 }

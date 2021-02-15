@@ -36,6 +36,8 @@ namespace Servize.DTO.PROVIDER
 
         public int CovidRating { get; set; }
 
+        public DateTime RegistrationDate { get; set; }
+
         public PackageType PackageType { get; set; }
 
         //public ICollection<ServizeCategoryDTO> ServiceCategories { get; set; }
