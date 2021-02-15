@@ -108,7 +108,7 @@ namespace Servize.Domain.Services
         {
             try
             {
-                return await _respository.GetAllServizeProviderCategory();
+                return  await _respository.GetAllServizeProviderCategory();
             }
             catch (Exception e)
             {

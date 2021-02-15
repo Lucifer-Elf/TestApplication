@@ -1,4 +1,5 @@
 ﻿using Servize.Authentication;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -31,6 +32,8 @@ namespace Servize.Domain.Model
         public bool PickAndDrop { get; set; }
 
         public int CovidRating { get; set; }
+
+        public DateTime RegistrationDate { get; set; }
 
         public PackageType PackageType { get; set; }
 

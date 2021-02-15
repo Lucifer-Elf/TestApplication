@@ -66,7 +66,7 @@ namespace Servize.Controllers
         [Produces("application/json")]
         public async Task<ActionResult<IList<ServizeProviderDTO>>> GetAllServiceProviderByModeType(int modeType)
         {
-            Response<IList<ServizeProviderDTO>> response = await _services.GetAllServizeProviderList();
+            Response<IList<ServizeProviderDTO>> response = await _services.GetAllServizeProviderByModeType(modeType);
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
 
@@ -74,6 +74,7 @@ namespace Servize.Controllers
         }
 
 
+        //ServizeProvider/AddProvider
         [HttpPost]
         [Route("AddProvider")]
         [Produces("application/json")]

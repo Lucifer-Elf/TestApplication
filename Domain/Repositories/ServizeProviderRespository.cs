@@ -88,14 +88,14 @@ namespace Servize.Domain.Repositories
             }
         }
 
-        public Response<IList<String>> GetAllServizeProviderCategory()
+        public async Task<Response<IList<string>>> GetAllServizeProviderCategory()
         {
             try
             {
-                var result = _context.ServizeProvider.Include(e => e.ServiceCategories)
+                var result = await _context.ServizeProvider.Include(e => e.ServiceCategories)
                                                        .ThenInclude(e => e.Type)
                                                        .Select(e => e.ServiceCategories)
-                                                       .ToList();
+                                                       .ToListAsync();
                 if (result.Count() < 0)
                 {
                     List<string> categoryList = new List<string>();
@@ -110,9 +110,9 @@ namespace Servize.Domain.Repositories
                 return new Response<IList<string>>("testttt", StatusCodes.Status200OK);
 
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return new Response<IList<string>>("etst", StatusCodes.Status200OK);
+                return new Response<IList<string>>($"EXception :{ex.Message}", StatusCodes.Status200OK);
 
             }
 
