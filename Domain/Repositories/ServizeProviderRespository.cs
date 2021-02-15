@@ -36,7 +36,7 @@ namespace Servize.Domain.Repositories
             try
             {
                 List<ServizeProvider> servizeProviderList = await _context.ServizeProvider.Where(e => Convert.ToInt32(e.ModeType) == modeType).ToListAsync();
-                if(servizeProviderList.Count()<1)
+                if (servizeProviderList.Count() < 1)
                     return new Response<IList<ServizeProvider>>("Failed to get ServiceProviderList ", StatusCodes.Status404NotFound);
 
 
@@ -79,13 +79,44 @@ namespace Servize.Domain.Repositories
                 _context.ServizeProvider.Add(servizeProvider);
                 await _context.SaveChangesAsync();
 
-                return new Response<ServizeProvider>(servizeProvider, StatusCodes.Status200OK);               
+                return new Response<ServizeProvider>(servizeProvider, StatusCodes.Status200OK);
 
             }
             catch (Exception ex)
             {
                 return new Response<ServizeProvider>($"Failed to Add ServiceProvide Error:{ex.Message}", StatusCodes.Status500InternalServerError);
-            }        
+            }
+        }
+
+        public Response<IList<String>> GetAllServizeProviderCategory()
+        {
+            try
+            {
+                var result = _context.ServizeProvider.Include(e => e.ServiceCategories)
+                                                       .ThenInclude(e => e.Type)
+                                                       .Select(e => e.ServiceCategories)
+                                                       .ToList();
+                if (result.Count() < 0)
+                {
+                    List<string> categoryList = new List<string>();
+                    foreach (ServizeCategory category in result)
+                    {
+                        string type = category.Type.ToString();
+                        if (!categoryList.Contains(type))
+                            categoryList.Add(type);
+                    }
+                    return new Response<IList<string>>(categoryList, StatusCodes.Status404NotFound);
+                }
+                return new Response<IList<string>>("testttt", StatusCodes.Status200OK);
+
+            }
+            catch (Exception e)
+            {
+                return new Response<IList<string>>("etst", StatusCodes.Status200OK);
+
+            }
+
+
         }
     }
 }

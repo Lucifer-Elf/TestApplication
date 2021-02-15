@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using Servize.Authentication;
 using Servize.Domain.Enums;
 using Servize.Domain.Model;
@@ -22,7 +23,7 @@ using static Servize.Domain.Enums.ServizeEnum;
 
 namespace Servize.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
@@ -42,46 +43,26 @@ namespace Servize.Controllers
             _roleManager = roleManager;
             _configuration = configuration;
             _signInManager = signInManager;
-
-
         }
-        
+
+
+        //Authentication/RegisterUser
         [HttpPost]
-        [Route("Register")]
-        public async Task<ActionResult> Register([FromBody] ServizeUserModel model)
+        [Route("RegisterUser")]
+        public async Task<ActionResult> RegisterUser([FromBody] ServizeUserModel model)
         {
-            try
-            {
-                var userExist = await _userManager.FindByNameAsync(model.UserName);
-                if (userExist != null)
-                {
-                    return StatusCode(StatusCodes.Status500InternalServerError, new Response("User Already exist", StatusCodes.Status500InternalServerError));
-                }
-                ApplicationUser user = new ApplicationUser()
-                {
-                    UserName = model.UserName,
-                    Email = model.Email,
-                    SecurityStamp = Guid.NewGuid().ToString()
-
-                };
-
-                var result = await _userManager.CreateAsync(user, model.Password);
-
-                if (!result.Succeeded)
-                    return StatusCode(StatusCodes.Status500InternalServerError, new Response(result.ToString(), StatusCodes.Status500InternalServerError)); ;
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response(ex.Message, StatusCodes.Status500InternalServerError));
-
-            }
-
-            return Ok(new Response("User Created Sucessfully", StatusCodes.Status201Created));
+            return await AddUserToIdentityWithSpecificRoles(model, "USER");
         }
 
-        [HttpPost]
-        [Route("RegisterAdmin")]
-        public async Task<ActionResult> RegisterAdmin([FromBody] ServizeUserModel model)
+        private void RedirectToLoginAfterRegister(ServizeUserModel model)
+        {
+            CreatedAtRoute(nameof(Login), new LoginModel
+            {
+                UserName = model.UserName,
+                Password = model.Password
+            });
+        }
+        private async Task<ActionResult> AddUserToIdentityWithSpecificRoles(ServizeUserModel model,string role)
         {
             try
             {
@@ -96,79 +77,94 @@ namespace Servize.Controllers
                     Email = model.Email,
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
-
                 var result = await _userManager.CreateAsync(user, model.Password);
 
                 if (!result.Succeeded)
-                    return StatusCode(StatusCodes.Status500InternalServerError, new Response(result.ToString(), StatusCodes.Status500InternalServerError)); ;
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Response(result.ToString(), StatusCodes.Status500InternalServerError));
 
-                // creating Roles In Database.
-                if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
-                    await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-                if (!await _roleManager.RoleExistsAsync(UserRoles.User))
-                    await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
-                if (!await _roleManager.RoleExistsAsync(UserRoles.Provider))
-                    await _roleManager.CreateAsync(new IdentityRole(UserRoles.Provider));
+                await CreateRoleInDatabase();
 
-                if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
+                if (await _roleManager.RoleExistsAsync(Utility.Utility.GetRoleForstring(role)))
                 {
-                    await _userManager.AddToRoleAsync(user, UserRoles.Admin);
+                    await _userManager.AddToRoleAsync(user, Utility.Utility.GetRoleForstring(role));
                 }
+
+                RedirectToLoginAfterRegister(model);
+
                 return Ok(new Response("Admin is Created Sucessfully", StatusCodes.Status201Created));
-            }
-            catch(Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response($"Error : {ex.Message}", StatusCodes.Status500InternalServerError)); 
-            }
-        }
 
-        [HttpPost]
-        [Route("RegisterProvider")]
-        public async Task<ActionResult> RegisterServizeProvider([FromBody] ServizeUserModel model)
-        {
-            try
-            {
-                var userExist = await _userManager.FindByNameAsync(model.UserName);
-                if (userExist != null)
-                {
-                    return StatusCode(StatusCodes.Status500InternalServerError, new Response("User Already exist", StatusCodes.Status500InternalServerError));
-                }
-                ApplicationUser user = new ApplicationUser()
-                {
-                    UserName = model.UserName,
-                    Email = model.Email,
-                    SecurityStamp = Guid.NewGuid().ToString()
-                };
 
-                var result = await _userManager.CreateAsync(user, model.Password);
-
-                if (!result.Succeeded)
-                    return StatusCode(StatusCodes.Status500InternalServerError, new Response(result.ToString(), StatusCodes.Status500InternalServerError)); ;
-
-                // creating Roles In Database.
-                if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
-                    await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-                if (!await _roleManager.RoleExistsAsync(UserRoles.User))
-                    await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
-                if (!await _roleManager.RoleExistsAsync(UserRoles.Provider))
-                    await _roleManager.CreateAsync(new IdentityRole(UserRoles.Provider));
-
-                if (await _roleManager.RoleExistsAsync(UserRoles.Provider))
-                {
-                    await _userManager.AddToRoleAsync(user, UserRoles.Provider);
-                }
-                return Ok(new Response("Servize Provider Created Sucessfully", StatusCodes.Status201Created));
             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response($"Error : {ex.Message}", StatusCodes.Status500InternalServerError));
             }
+        }
+
+        //Authentication/RegisterAdmin
+        [HttpPost]
+        [Route("RegisterAdmin")]
+        public async Task<ActionResult> RegisterAdmin([FromBody] ServizeUserModel model)
+        {
+            
+          return await AddUserToIdentityWithSpecificRoles(model,"ADMIN");
+           
+        }
+
+        //Authentication/Provider
+        [HttpPost]
+        [Route("RegisterProvider")]
+        public async Task<ActionResult> RegisterServizeProvider([FromBody] ServizeUserModel model)
+        {
+            return await AddUserToIdentityWithSpecificRoles(model, "PROVIDER");
+            /* try
+             {
+                 var userExist = await _userManager.FindByNameAsync(model.UserName);
+                 if (userExist != null)
+                 {
+                     return StatusCode(StatusCodes.Status500InternalServerError, new Response("User Already exist", StatusCodes.Status500InternalServerError));
+                 }
+                 ApplicationUser user = new ApplicationUser()
+                 {
+                     UserName = model.UserName,
+                     Email = model.Email,
+                     SecurityStamp = Guid.NewGuid().ToString()
+                 };
+
+                 var result = await _userManager.CreateAsync(user, model.Password);
+
+                 if (!result.Succeeded)
+                     return StatusCode(StatusCodes.Status500InternalServerError, new Response(result.ToString(), StatusCodes.Status500InternalServerError)); ;
+
+                 await CreateRoleInDatabase();
+
+                 if (await _roleManager.RoleExistsAsync(UserRoles.Provider))
+                 {
+                     await _userManager.AddToRoleAsync(user, UserRoles.Provider);
+                 }
+                 return Ok(new Response("Servize Provider Created Sucessfully", StatusCodes.Status201Created));
+             }
+             catch (Exception ex)
+             {
+                 return StatusCode(StatusCodes.Status500InternalServerError, new Response($"Error : {ex.Message}", StatusCodes.Status500InternalServerError));
+             }*/
 
 
         }
 
+        private async Task CreateRoleInDatabase()
+        {
+            // creating Roles In Database.
+            if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
+                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+            if (!await _roleManager.RoleExistsAsync(UserRoles.User))
+                await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+            if (!await _roleManager.RoleExistsAsync(UserRoles.Provider))
+                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Provider));
+        }
 
 
+        //Authentication/Login
         [HttpPost]
         [Route("Login")]
         public async Task<ActionResult> Login([FromBody] LoginModel model)
@@ -206,13 +202,15 @@ namespace Servize.Controllers
             return Unauthorized();
         }
 
+        [HttpPost]
+        [Route("LogOut")]
         public async Task<IActionResult> LogOut()
         {
             await _signInManager.SignOutAsync();
             return Ok();
         }
 
-        
-        
-}
+
+
+    }
 }

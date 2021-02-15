@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Servize.Authentication;
 using Microsoft.AspNetCore.Identity;
+using Serilog;
 
 namespace Servize
 {
@@ -98,16 +99,16 @@ namespace Servize
                 app.UseDeveloperExceptionPage();
             }
            
+            app.UseSerilogRequestLogging();
+           
             app.UseRouting();
            
             app.UseAuthentication();   // add to pipline 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
-            {
-       
-                endpoints.MapControllers();
-             
+            {       
+                endpoints.MapControllers();             
             });
         }
     }
