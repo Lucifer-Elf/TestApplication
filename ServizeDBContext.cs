@@ -10,8 +10,8 @@ namespace Servize
         //public DbSet<ServizeAdmin>          ServizeAdmin                  { get; set; }
         public DbSet<ServizeCategory>       ServizeCategory               { get; set; }
         public DbSet<ServizeProvider>       ServizeProvider                 { get; set; }
-        //public DbSet<ServizeReview>         ServizeReview                 { get; set; }
-        //public DbSet<ServizeSubCategory>    ServizeSubCategory            { get; set; }
+        public DbSet<ServizeReview>         ServizeReview                 { get; set; }
+        public DbSet<ServizeSubCategory>    ServizeSubCategory            { get; set; }
         //public DbSet<ServizeUser>           ServizeUser                   { get; set; }
 
 

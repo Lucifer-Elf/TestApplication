@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Servize.Migrations
 {
-    public partial class testcase : Migration
+    public partial class testMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -167,6 +167,7 @@ namespace Servize.Migrations
                     EmiratesIdNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PickAndDrop = table.Column<bool>(type: "bit", nullable: false),
                     CovidRating = table.Column<int>(type: "int", nullable: false),
+                    RegistrationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PackageType = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -176,6 +177,77 @@ namespace Servize.Migrations
                         name: "FK_ServizeProvider_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ServizeCategory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    BannerImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ServizeProviderId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ServizeCategory", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ServizeCategory_ServizeProvider_ServizeProviderId",
+                        column: x => x.ServizeProviderId,
+                        principalTable: "ServizeProvider",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ServizeReview",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProviderId = table.Column<int>(type: "int", nullable: false),
+                    HappinessRating = table.Column<int>(type: "int", nullable: false),
+                    SubCategory = table.Column<int>(type: "int", nullable: false),
+                    ReviewComment = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ServizeReview", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ServizeReview_ServizeProvider_ProviderId",
+                        column: x => x.ProviderId,
+                        principalTable: "ServizeProvider",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ServizeSubCategory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ServiceName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Category = table.Column<int>(type: "int", nullable: false),
+                    ImageList = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DaysOFWork = table.Column<int>(type: "int", nullable: false),
+                    PriceCharge = table.Column<double>(type: "float", nullable: false),
+                    Discount = table.Column<double>(type: "float", nullable: false),
+                    Areas = table.Column<int>(type: "int", nullable: false),
+                    ServizeCategoryId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ServizeSubCategory", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ServizeSubCategory_ServizeCategory_ServizeCategoryId",
+                        column: x => x.ServizeCategoryId,
+                        principalTable: "ServizeCategory",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -220,9 +292,24 @@ namespace Servize.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ServizeCategory_ServizeProviderId",
+                table: "ServizeCategory",
+                column: "ServizeProviderId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ServizeProvider_UserId",
                 table: "ServizeProvider",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ServizeReview_ProviderId",
+                table: "ServizeReview",
+                column: "ProviderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ServizeSubCategory_ServizeCategoryId",
+                table: "ServizeSubCategory",
+                column: "ServizeCategoryId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -243,10 +330,19 @@ namespace Servize.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "ServizeProvider");
+                name: "ServizeReview");
+
+            migrationBuilder.DropTable(
+                name: "ServizeSubCategory");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "ServizeCategory");
+
+            migrationBuilder.DropTable(
+                name: "ServizeProvider");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

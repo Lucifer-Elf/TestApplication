@@ -16,7 +16,7 @@ namespace Servize.Domain.Model
 
         [ForeignKey("ApplicationUser")]
         public string UserId { get; set; }
-        public ApplicationUser User { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }
 
         [Required]
         public string CompanyName { get; set; }
@@ -38,7 +38,5 @@ namespace Servize.Domain.Model
         public PackageType PackageType { get; set; }
 
         public ICollection<ServizeCategory> ServiceCategories { get; set; }
-
-        public ICollection<ServizeReview> Reviews { get; set; }
     }
 }

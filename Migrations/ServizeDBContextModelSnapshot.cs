@@ -215,6 +215,29 @@ namespace Servize.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("Servize.Domain.Model.ServizeCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("BannerImage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ServizeProviderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServizeProviderId");
+
+                    b.ToTable("ServizeCategory");
+                });
+
             modelBuilder.Entity("Servize.Domain.Model.ServizeProvider", b =>
                 {
                     b.Property<int>("Id")
@@ -250,6 +273,9 @@ namespace Servize.Migrations
                     b.Property<string>("Postal")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("RegistrationDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
@@ -258,6 +284,76 @@ namespace Servize.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ServizeProvider");
+                });
+
+            modelBuilder.Entity("Servize.Domain.Model.ServizeReview", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("HappinessRating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProviderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReviewComment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SubCategory")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProviderId");
+
+                    b.ToTable("ServizeReview");
+                });
+
+            modelBuilder.Entity("Servize.Domain.Model.ServizeSubCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Areas")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DaysOFWork")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Discount")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageList")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("PriceCharge")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ServiceName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ServizeCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServizeCategoryId");
+
+                    b.ToTable("ServizeSubCategory");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -311,6 +407,13 @@ namespace Servize.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Servize.Domain.Model.ServizeCategory", b =>
+                {
+                    b.HasOne("Servize.Domain.Model.ServizeProvider", null)
+                        .WithMany("ServiceCategories")
+                        .HasForeignKey("ServizeProviderId");
+                });
+
             modelBuilder.Entity("Servize.Domain.Model.ServizeProvider", b =>
                 {
                     b.HasOne("Servize.Authentication.ApplicationUser", "User")
@@ -318,6 +421,34 @@ namespace Servize.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Servize.Domain.Model.ServizeReview", b =>
+                {
+                    b.HasOne("Servize.Domain.Model.ServizeProvider", "ServizeProvider")
+                        .WithMany()
+                        .HasForeignKey("ProviderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ServizeProvider");
+                });
+
+            modelBuilder.Entity("Servize.Domain.Model.ServizeSubCategory", b =>
+                {
+                    b.HasOne("Servize.Domain.Model.ServizeCategory", null)
+                        .WithMany("SubService")
+                        .HasForeignKey("ServizeCategoryId");
+                });
+
+            modelBuilder.Entity("Servize.Domain.Model.ServizeCategory", b =>
+                {
+                    b.Navigation("SubService");
+                });
+
+            modelBuilder.Entity("Servize.Domain.Model.ServizeProvider", b =>
+                {
+                    b.Navigation("ServiceCategories");
                 });
 #pragma warning restore 612, 618
         }
