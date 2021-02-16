@@ -10,8 +10,8 @@ using Servize;
 namespace Servize.Migrations
 {
     [DbContext(typeof(ServizeDBContext))]
-    [Migration("20210215211501_testMigration")]
-    partial class testMigration
+    [Migration("20210216200025_testcase")]
+    partial class testcase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -217,7 +217,42 @@ namespace Servize.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.ServizeCategory", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeBookingSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("AmountMountBasedOnService")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("BookingAssignment")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("BookingProcess")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("MyProperty")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NextAvaliablity")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProviderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SLotsInterval")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProviderId");
+
+                    b.ToTable("ServizeBookingSetting");
+                });
+
+            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -226,6 +261,9 @@ namespace Servize.Migrations
 
                     b.Property<string>("BannerImage")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PickAndDrop")
+                        .HasColumnType("bit");
 
                     b.Property<int?>("ServizeProviderId")
                         .HasColumnType("int");
@@ -240,7 +278,7 @@ namespace Servize.Migrations
                     b.ToTable("ServizeCategory");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.ServizeProvider", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeProvider", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -248,6 +286,9 @@ namespace Servize.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Certificate")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CompanyName")
@@ -261,6 +302,7 @@ namespace Servize.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("EmiratesIdNumber")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ModeType")
@@ -268,9 +310,6 @@ namespace Servize.Migrations
 
                     b.Property<int>("PackageType")
                         .HasColumnType("int");
-
-                    b.Property<bool>("PickAndDrop")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Postal")
                         .HasColumnType("nvarchar(max)");
@@ -288,7 +327,42 @@ namespace Servize.Migrations
                     b.ToTable("ServizeProvider");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.ServizeReview", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeProviderBankDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AccountHolderName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("AccountNumber")
+                        .HasColumnType("float");
+
+                    b.Property<string>("BankName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProviderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SwiftCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProviderId");
+
+                    b.ToTable("ServizeProviderBankDetail");
+                });
+
+            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeReview", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -314,7 +388,7 @@ namespace Servize.Migrations
                     b.ToTable("ServizeReview");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.ServizeSubCategory", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeSubCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -339,7 +413,7 @@ namespace Servize.Migrations
                     b.Property<string>("ImageList")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("PriceCharge")
+                    b.Property<double>("PriceQuote")
                         .HasColumnType("float");
 
                     b.Property<string>("ServiceName")
@@ -350,6 +424,9 @@ namespace Servize.Migrations
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<double>("VariablePrice")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -409,25 +486,9 @@ namespace Servize.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.ServizeCategory", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeBookingSetting", b =>
                 {
-                    b.HasOne("Servize.Domain.Model.ServizeProvider", null)
-                        .WithMany("ServiceCategories")
-                        .HasForeignKey("ServizeProviderId");
-                });
-
-            modelBuilder.Entity("Servize.Domain.Model.ServizeProvider", b =>
-                {
-                    b.HasOne("Servize.Authentication.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Servize.Domain.Model.ServizeReview", b =>
-                {
-                    b.HasOne("Servize.Domain.Model.ServizeProvider", "ServizeProvider")
+                    b.HasOne("Servize.Domain.Model.Provider.ServizeProvider", "ServizeProvider")
                         .WithMany()
                         .HasForeignKey("ProviderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -436,19 +497,57 @@ namespace Servize.Migrations
                     b.Navigation("ServizeProvider");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.ServizeSubCategory", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeCategory", b =>
                 {
-                    b.HasOne("Servize.Domain.Model.ServizeCategory", null)
+                    b.HasOne("Servize.Domain.Model.Provider.ServizeProvider", null)
+                        .WithMany("ServiceCategories")
+                        .HasForeignKey("ServizeProviderId");
+                });
+
+            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeProvider", b =>
+                {
+                    b.HasOne("Servize.Authentication.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeProviderBankDetail", b =>
+                {
+                    b.HasOne("Servize.Domain.Model.Provider.ServizeProvider", "ServizeProvider")
+                        .WithMany()
+                        .HasForeignKey("ProviderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ServizeProvider");
+                });
+
+            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeReview", b =>
+                {
+                    b.HasOne("Servize.Domain.Model.Provider.ServizeProvider", "ServizeProvider")
+                        .WithMany()
+                        .HasForeignKey("ProviderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ServizeProvider");
+                });
+
+            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeSubCategory", b =>
+                {
+                    b.HasOne("Servize.Domain.Model.Provider.ServizeCategory", null)
                         .WithMany("SubService")
                         .HasForeignKey("ServizeCategoryId");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.ServizeCategory", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeCategory", b =>
                 {
                     b.Navigation("SubService");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.ServizeProvider", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeProvider", b =>
                 {
                     b.Navigation("ServiceCategories");
                 });

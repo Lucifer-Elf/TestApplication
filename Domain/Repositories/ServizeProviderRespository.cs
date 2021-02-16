@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Servize.Domain.Model;
+using Servize.Domain.Model.Provider;
+using Servize.Domain.Model.Account;
 using Servize.DTO.PROVIDER;
 using Servize.Utility;
 using System;

@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Servize.Domain.Model
+namespace Servize.Domain.Model.Account
 {
-    public class LoginModel
+    public class ServizeLoginModel
     {
         [Required(ErrorMessage = "Username is required")]
         public string UserName { get; set; }

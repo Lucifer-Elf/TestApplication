@@ -5,14 +5,12 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static Servize.Domain.Enums.ServizeEnum;
 
-namespace Servize.Domain.Model
+namespace Servize.Domain.Model.Provider
 {
     public class ServizeProvider
     {
         [Key]
         public int Id { get; set; }
-
-        public ServizeModeType ModeType { get; set; }
 
         [ForeignKey("ApplicationUser")]
         public string UserId { get; set; }
@@ -21,15 +19,18 @@ namespace Servize.Domain.Model
         [Required]
         public string CompanyName { get; set; }
 
+        [Required]
+        public string EmiratesIdNumber { get; set; }
+
+        public ServizeModeType ModeType { get; set; }
+
         public string Address { get; set; }  // Interact with google Api 
 
         public string Postal { get; set; }
 
         public string CompanyRegistrationNumber { get; set; }
 
-        public string EmiratesIdNumber { get; set; }
-
-        public bool PickAndDrop { get; set; }
+        public string Certificate { get; set; }
 
         public int CovidRating { get; set; }
 

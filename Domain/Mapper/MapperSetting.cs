@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Servize.Domain.Model;
+using Servize.Domain.Model.Provider;
 using Servize.DTO.PROVIDER;
 
 namespace Servize.Domain.Mapper

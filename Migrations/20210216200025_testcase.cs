@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Servize.Migrations
 {
-    public partial class testMigration : Migration
+    public partial class testcase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -158,14 +158,14 @@ namespace Servize.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ModeType = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CompanyName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmiratesIdNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ModeType = table.Column<int>(type: "int", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Postal = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CompanyRegistrationNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    EmiratesIdNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PickAndDrop = table.Column<bool>(type: "bit", nullable: false),
+                    Certificate = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CovidRating = table.Column<int>(type: "int", nullable: false),
                     RegistrationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PackageType = table.Column<int>(type: "int", nullable: false)
@@ -182,6 +182,31 @@ namespace Servize.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ServizeBookingSetting",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProviderId = table.Column<int>(type: "int", nullable: false),
+                    BookingProcess = table.Column<bool>(type: "bit", nullable: false),
+                    SLotsInterval = table.Column<int>(type: "int", nullable: false),
+                    MyProperty = table.Column<bool>(type: "bit", nullable: false),
+                    BookingAssignment = table.Column<int>(type: "int", nullable: false),
+                    AmountMountBasedOnService = table.Column<bool>(type: "bit", nullable: false),
+                    NextAvaliablity = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ServizeBookingSetting", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ServizeBookingSetting_ServizeProvider_ProviderId",
+                        column: x => x.ProviderId,
+                        principalTable: "ServizeProvider",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ServizeCategory",
                 columns: table => new
                 {
@@ -189,6 +214,7 @@ namespace Servize.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Type = table.Column<int>(type: "int", nullable: false),
                     BannerImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PickAndDrop = table.Column<bool>(type: "bit", nullable: false),
                     ServizeProviderId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -200,6 +226,31 @@ namespace Servize.Migrations
                         principalTable: "ServizeProvider",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ServizeProviderBankDetail",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProviderId = table.Column<int>(type: "int", nullable: false),
+                    AccountHolderName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AccountNumber = table.Column<double>(type: "float", nullable: false),
+                    SwiftCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BankName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ServizeProviderBankDetail", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ServizeProviderBankDetail_ServizeProvider_ProviderId",
+                        column: x => x.ProviderId,
+                        principalTable: "ServizeProvider",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -236,7 +287,8 @@ namespace Servize.Migrations
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DaysOFWork = table.Column<int>(type: "int", nullable: false),
-                    PriceCharge = table.Column<double>(type: "float", nullable: false),
+                    PriceQuote = table.Column<double>(type: "float", nullable: false),
+                    VariablePrice = table.Column<double>(type: "float", nullable: false),
                     Discount = table.Column<double>(type: "float", nullable: false),
                     Areas = table.Column<int>(type: "int", nullable: false),
                     ServizeCategoryId = table.Column<int>(type: "int", nullable: true)
@@ -292,6 +344,11 @@ namespace Servize.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ServizeBookingSetting_ProviderId",
+                table: "ServizeBookingSetting",
+                column: "ProviderId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ServizeCategory_ServizeProviderId",
                 table: "ServizeCategory",
                 column: "ServizeProviderId");
@@ -300,6 +357,11 @@ namespace Servize.Migrations
                 name: "IX_ServizeProvider_UserId",
                 table: "ServizeProvider",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ServizeProviderBankDetail_ProviderId",
+                table: "ServizeProviderBankDetail",
+                column: "ProviderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ServizeReview_ProviderId",
@@ -328,6 +390,12 @@ namespace Servize.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "ServizeBookingSetting");
+
+            migrationBuilder.DropTable(
+                name: "ServizeProviderBankDetail");
 
             migrationBuilder.DropTable(
                 name: "ServizeReview");

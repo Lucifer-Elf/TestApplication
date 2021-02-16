@@ -99,7 +99,7 @@ namespace Servize
                 app.UseDeveloperExceptionPage();
             }
            
-            app.UseSerilogRequestLogging();
+           // app.UseSerilogRequestLogging();
            
             app.UseRouting();
            

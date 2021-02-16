@@ -5,7 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Servize.Authentication;
 using Servize.Domain.Enums;
-using Servize.Domain.Model;
+using Servize.Domain.Model.Account;
+using Servize.Domain.Model.Provider;
 using Servize.Utility;
 using System;
 using System.Collections.Generic;
@@ -69,7 +70,7 @@ namespace Servize.Controllers
         //Authentication/Login
         [HttpPost]
         [Route("Login")]
-        public async Task<ActionResult> Login([FromBody] LoginModel model)
+        public async Task<ActionResult> Login([FromBody] ServizeLoginModel model)
         {
             var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
 
@@ -171,15 +172,16 @@ namespace Servize.Controllers
                 {
                     ServizeProvider provider = new ServizeProvider
                     {
-                        UserId = userExist.Id,
+                        UserId = user.Id,
                         RegistrationDate = DateTime.UtcNow,
                         ModeType = ServizeEnum.ServizeModeType.FIXED,
-                        PackageType= ServizeEnum.PackageType.FREE
+                        PackageType = ServizeEnum.PackageType.FREE,
+                        CompanyName = model.CompanyName,
+                        EmiratesIdNumber=model.EmiratesIdNumber
+
                     };
                     _context.ServizeProvider.Add(provider);
-                    await _context.SaveChangesAsync();   /// chck retun with 0 or less and error return to main
-
-
+                    await _context.SaveChangesAsync();   /// check retun with 0 or less and error return to main
                 }
 
                 return Ok(new Response("Admin is Created Sucessfully", StatusCodes.Status201Created));
@@ -202,7 +204,6 @@ namespace Servize.Controllers
                 RememberMe = false
             }, model);
         }
-
 
     }
 }

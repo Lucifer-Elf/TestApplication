@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Servize.Domain.Model
+namespace Servize.Domain.Model.Account
 {
     public class ServizeUserModel
     {
@@ -16,6 +16,9 @@ namespace Servize.Domain.Model
 
         [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; }
+
+        public string CompanyName { get; set; }
+        public string EmiratesIdNumber { get; set; }
 
     }
 }

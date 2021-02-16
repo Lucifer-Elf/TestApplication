@@ -73,7 +73,7 @@ namespace Servize.Controllers
             return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
 
-
+        /*
         //ServizeProvider/AddProvider
         [HttpPost]
         [Route("AddProvider")]
@@ -94,7 +94,7 @@ namespace Servize.Controllers
 
             return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
-
+        */
 
         public async Task<ActionResult<IList<string>>> GetAllServizeProviderCategory()
         {

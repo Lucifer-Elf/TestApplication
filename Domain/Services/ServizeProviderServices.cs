@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Servize.Utility;
 using Microsoft.AspNetCore.Http;
 using Servize.Domain.Model;
+using Servize.Domain.Model.Provider;
 using Serilog;
 
 namespace Servize.Domain.Services
@@ -32,7 +33,7 @@ namespace Servize.Domain.Services
                 if (response.IsSuccessStatusCode())
                 {
                     IList<ServizeProviderDTO> serviceDTO = _mapper.Map<IList<ServizeProvider>, IList<ServizeProviderDTO>>(response.Resource);
-                    new Response<IList<ServizeProviderDTO>>(serviceDTO, StatusCodes.Status200OK);
+                    return new Response<IList<ServizeProviderDTO>>(serviceDTO, StatusCodes.Status200OK);
                 }
 
                 return new Response<IList<ServizeProviderDTO>>("Failed to Load ServizeProvider List", response.StatusCode);
@@ -53,7 +54,7 @@ namespace Servize.Domain.Services
                 if (response.IsSuccessStatusCode())
                 {
                     IList<ServizeProviderDTO> serviceDTO = _mapper.Map<IList<ServizeProvider>, IList<ServizeProviderDTO>>(response.Resource);
-                    new Response<IList<ServizeProviderDTO>>(serviceDTO, StatusCodes.Status200OK);
+                    return new Response<IList<ServizeProviderDTO>>(serviceDTO, StatusCodes.Status200OK);
                 }
 
                 return new Response<IList<ServizeProviderDTO>>("Failed to Load ServizeProvider List", response.StatusCode);
@@ -72,7 +73,7 @@ namespace Servize.Domain.Services
                 if (response.IsSuccessStatusCode())
                 {
                     ServizeProviderDTO serviceDTO = _mapper.Map<ServizeProvider, ServizeProviderDTO>(response.Resource);
-                    new Response<ServizeProviderDTO>(serviceDTO, StatusCodes.Status200OK);
+                    return new Response<ServizeProviderDTO>(serviceDTO, StatusCodes.Status200OK);
                 }
                 return new Response<ServizeProviderDTO>("Failed to Load ServizeProvider With Specific Id", response.StatusCode);
             }

@@ -22,7 +22,7 @@ namespace Servize.Domain.Enums
             FLEXIBLE = 2,
         }
 
-       
+
 
         public enum PackageType
         {
@@ -65,11 +65,7 @@ namespace Servize.Domain.Enums
             HM_ELECTRICALREPAIR = 34,
 
             T_ALLSUBJECT = 40,
-
-
-
         }
-
 
         public enum Area
         {
@@ -77,41 +73,13 @@ namespace Servize.Domain.Enums
             UAE_SHARJHA = 1,
             UAE_ABUDHABI = 2,
         }
+
+        public enum BookingAssignment
+        {
+            BA_AUTOMATIC =0,
+            BA_MANUAL =1
+        }
     }
 }
-
-/*public enum HousingSubCategory
-{
-    H_CLEANING          = 0,
-    H_PAINTING          = 1,
-    H_MOVERANDPACKER    = 2,
-    H_MAIDSERVICE       = 3,
-}
-
-public enum AUTOMOTIVE
-{
-    A_WASHING   = 0,
-    A_SERVICING = 1,
-}
-
-public enum Personal
-{
-    P_SALON             = 0,
-    P_SPA               = 1,
-    P_MANIANDPEDICURE   = 2,
-    P_PHOTOGRAPHER      = 3,
-
-
-}
-public enum HandyMan
-{
-    H_HANYMAN           = 0,
-    H_ELECTRICIAN       = 1,
-    H_CARPENTER         = 2,
-    H_PLUMBING          = 3,
-    H_ELECTRICALREPAIR  = 4,
-}*/
-
-
 
 
