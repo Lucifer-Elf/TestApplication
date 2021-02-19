@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Servize;
 
 namespace Servize.Migrations
 {
     [DbContext(typeof(ServizeDBContext))]
-    partial class ServizeDBContextModelSnapshot : ModelSnapshot
+    [Migration("20210219101718_testCase2")]
+    partial class testCase2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -271,6 +273,9 @@ namespace Servize.Migrations
                     b.Property<DateTime>("OrderDateTimne")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("OrderItemId")
+                        .HasColumnType("int");
+
                     b.Property<int>("OrderNumber")
                         .HasColumnType("int");
 
@@ -281,6 +286,8 @@ namespace Servize.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OrderItemId");
 
                     b.HasIndex("OrderNumber");
 
@@ -603,8 +610,12 @@ namespace Servize.Migrations
 
             modelBuilder.Entity("Servize.Domain.Model.OrderDetail.OrderItem", b =>
                 {
-                    b.HasOne("Servize.Domain.Model.OrderDetail.OrderSummary", "Order")
+                    b.HasOne("Servize.Domain.Model.OrderDetail.OrderItem", null)
                         .WithMany("OrderItems")
+                        .HasForeignKey("OrderItemId");
+
+                    b.HasOne("Servize.Domain.Model.OrderDetail.OrderSummary", "Order")
+                        .WithMany()
                         .HasForeignKey("OrderNumber")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -685,7 +696,7 @@ namespace Servize.Migrations
                         .HasForeignKey("ServizeCategoryId");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.OrderDetail.OrderSummary", b =>
+            modelBuilder.Entity("Servize.Domain.Model.OrderDetail.OrderItem", b =>
                 {
                     b.Navigation("OrderItems");
                 });

@@ -58,12 +58,59 @@ namespace Servize.Controllers
             return await AddUserToIdentityWithSpecificRoles(model, "ADMIN");
         }
 
-        //Authentication/Provider
+        //Authentication/RegisterProvider
         [HttpPost]
         [Route("RegisterProvider")]
         public async Task<ActionResult> RegisterServizeProvider([FromBody] ServizeUserModel model)
         {
             return await AddUserToIdentityWithSpecificRoles(model, "PROVIDER");
+        }
+
+        //Authentication/UserToken
+        [HttpGet]
+        [Route("UserToken")]
+        public async Task<ActionResult> GetUserToken([FromBody] ServizeLoginModel model)
+        {
+            var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
+            if (result.Succeeded)
+            {
+                var user = await _userManager.FindByNameAsync(model.UserName);
+                if (user != null)
+                {
+                    var refreshToken = await _userManager.GetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken");
+
+                    //var isValid = await _userManager.VerifyUserTokenAsync(user, "ServizeApp", "RefreshToken", refreshToken);
+                    if (refreshToken != null)
+                    {
+                        return Ok(refreshToken);
+                    }
+                }
+            }
+            return Unauthorized();
+        }
+
+        //Authentication/UserTokenExpire
+        [HttpGet]
+        [Route("UserTokenExpire")]
+        public async Task<ActionResult> GetUserTokenValidity([FromBody] ServizeLoginModel model)
+        {
+            var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
+            if (result.Succeeded)
+            {
+                var user = await _userManager.FindByNameAsync(model.UserName);
+                if (user != null)
+                {
+                    var refreshToken = await _userManager.GetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken");
+
+                   
+                    if (refreshToken!=null)
+                    {
+                        var token = new JwtSecurityTokenHandler().ReadJwtToken(refreshToken);
+                        return Ok(token.ValidTo.ToString("yyyy-MM-ddThh:mm:ss"));
+                    }
+                }
+            }
+            return Unauthorized();
         }
 
 
@@ -79,8 +126,14 @@ namespace Servize.Controllers
                 var user = await _userManager.FindByNameAsync(model.UserName);
                 if (user != null)
                 {
-                    var userRoles = await _userManager.GetRolesAsync(user);
+                    var refreshToken = await _userManager.GetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken");
 
+                    //var isValid = await _userManager.VerifyUserTokenAsync(user, "ServizeApp", "RefreshToken", refreshToken);
+                    if (refreshToken!=null)
+                    {
+                        return Ok(new { msg="AlfredyLogin", refreshToken });
+                    }
+                    var userRoles = await _userManager.GetRolesAsync(user);
                     var authClaims = new List<Claim>
                     {
                     new Claim(ClaimTypes.Name,user.UserName),
@@ -99,32 +152,55 @@ namespace Servize.Controllers
                         signingCredentials: new SigningCredentials(authSignInKey, SecurityAlgorithms.HmacSha256)
 
                         );
-                    return Ok(new
+                   var tokenHolder = new
                     {
+
                         token = new JwtSecurityTokenHandler().WriteToken(token),
                         ValidTo = token.ValidTo.ToString("yyyy-MM-ddThh:mm:ss")
 
-                    });
+                    };
+                    await _userManager.SetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken", tokenHolder.token);
+
+                    return Ok(tokenHolder);
                 }
             }
 
-            return Unauthorized();          
+            return Unauthorized();
         }
 
         //Authentication/Logout
         [HttpPost]
         [Route("LogOut")]
-        public async Task<IActionResult> LogOut()
+        public async Task<IActionResult> LogOut([FromBody] ServizeLoginModel model)
         {
             try
             {
-                await _signInManager.SignOutAsync();
+                var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
+
+                if (result.Succeeded)
+                {
+                    var user = await _userManager.FindByNameAsync(model.UserName);
+                    if (user != null )
+                    {
+
+                          await _userManager.UpdateSecurityStampAsync(user);
+                        var resultValue = await _userManager.RemoveAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken");
+                        if (resultValue.Succeeded)
+                        {
+                            return Ok(resultValue);
+                        }
+                        return StatusCode(StatusCodes.Status500InternalServerError, new Response("Error On LogOut ", StatusCodes.Status500InternalServerError));
+                    }
+                    return StatusCode(StatusCodes.Status500InternalServerError, new Response("Error On LogOut ", StatusCodes.Status500InternalServerError));
+                }
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response("Error On LogOut ", StatusCodes.Status500InternalServerError));
             }
+            
             catch
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response("Error On LogOut ", StatusCodes.Status500InternalServerError));
             }
-            return Ok();
+        
         }
 
 
@@ -143,7 +219,7 @@ namespace Servize.Controllers
         {
             try
             {
-                
+
                 var userExist = await _userManager.FindByNameAsync(model.UserName);
                 if (userExist != null)
                 {
@@ -162,13 +238,13 @@ namespace Servize.Controllers
 
                 await CreateRoleInDatabase();
 
-                if (await _roleManager.RoleExistsAsync(Utility.Utility.GetRoleForstring(role)))
+                if (await _roleManager.RoleExistsAsync(Utility.Utilities.GetRoleForstring(role)))
                 {
-                    await _userManager.AddToRoleAsync(user, Utility.Utility.GetRoleForstring(role));
+                    await _userManager.AddToRoleAsync(user, Utility.Utilities.GetRoleForstring(role));
                 }
 
                 //RedirectToLoginAfterRegister(model);
-                if (Utility.Utility.GetRoleForstring(role) == "Provider")
+                if (Utility.Utilities.GetRoleForstring(role) == "Provider")
                 {
                     ServizeProvider provider = new ServizeProvider
                     {
@@ -177,13 +253,13 @@ namespace Servize.Controllers
                         ModeType = ServizeEnum.ServizeModeType.FIXED,
                         PackageType = ServizeEnum.PackageType.FREE,
                         CompanyName = model.CompanyName,
-                        EmiratesIdNumber=model.EmiratesIdNumber
+                        EmiratesIdNumber = model.EmiratesIdNumber
 
                     };
                     _context.ServizeProvider.Add(provider);
                     await _context.SaveChangesAsync();   /// check retun with 0 or less and error return to main
                 }
-
+              
                 return Ok(new Response("Admin is Created Sucessfully", StatusCodes.Status201Created));
 
 

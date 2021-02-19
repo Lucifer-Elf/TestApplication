@@ -17,10 +17,14 @@ namespace Servize.Domain.Services
     {
         private readonly ServizeProviderRespository _respository;
         private readonly IMapper _mapper;
-        public ServizeProviderServices(ServizeDBContext dbcontext, ServizeProviderRespository repository, IMapper mapper)
+        private readonly Utilities _utility;
+
+        public ServizeProviderServices(ServizeDBContext dbcontext,
+            IMapper mapper, Utilities utility)
         {
             _respository = new ServizeProviderRespository(dbcontext);
             _mapper = mapper;
+            _utility = utility;
 
         }
 
@@ -83,7 +87,7 @@ namespace Servize.Domain.Services
             }
         }
 
-
+        /*
         public async Task<Response<ServizeProviderDTO>> AddServizeProvider(ServizeProviderDTO servizeProviderDTO)
         {
             try
@@ -103,21 +107,43 @@ namespace Servize.Domain.Services
                 return new Response<ServizeProviderDTO>($"Failed to Add ServizeProvider Error:{e.Message}", StatusCodes.Status500InternalServerError);
             }
 
+        }*/
+        public async Task<Response<ServizeProviderDTO>> UpdateServizeProvider(ServizeProviderDTO servizeProviderDTO)
+        {
+
+            try
+            {
+                ServizeProvider serviceProvider = _mapper.Map<ServizeProviderDTO, ServizeProvider>(servizeProviderDTO);
+
+                Response<ServizeProvider> response = await _respository.UpdateServizeProvider(serviceProvider);
+                if (response.IsSuccessStatusCode())
+                {
+                    ServizeProviderDTO serviceDTO = _mapper.Map<ServizeProvider, ServizeProviderDTO>(response.Resource);
+                    await _utility.CompleteTransactionAsync();
+                    return new Response<ServizeProviderDTO>(serviceDTO, StatusCodes.Status200OK);
+                }
+
+                return new Response<ServizeProviderDTO>("Error while adding data in provider ", StatusCodes.Status500InternalServerError);
+            }
+            catch (Exception e)
+            {
+                return new Response<ServizeProviderDTO>($"Failed to Add ServizeProvider Error:{e.Message}", StatusCodes.Status500InternalServerError);
+            }
         }
 
         public async Task<Response<IList<string>>> GetAllServizeProviderCategory()
         {
             try
             {
-                return  await _respository.GetAllServizeProviderCategory();
+                return await _respository.GetAllServizeProviderCategory();
             }
             catch (Exception e)
             {
                 Log.Error(e, "Error while get List of Categories");
                 return new Response<IList<string>>("Failed to load error", StatusCodes.Status500InternalServerError);
-            
+
             }
-        
+
         }
 
     }

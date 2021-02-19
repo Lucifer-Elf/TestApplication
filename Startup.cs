@@ -30,6 +30,8 @@ namespace Servize
         {
             services.AddControllers(); // controller Registered
             services.AddScoped<ServizeProviderRespository>();
+            services.AddScoped<Utility.Utilities>();
+
             //EnitiyFrameWork
             services.AddDbContext<ServizeDBContext>(options => options.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=TestDatabase;Trusted_Connection=True;"));
 
@@ -37,7 +39,8 @@ namespace Servize
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ServizeDBContext>()
                 .AddSignInManager()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddTokenProvider("ServizeApp",typeof(DataProtectorTokenProvider<ApplicationUser>));
            
 
             //Add Authentication

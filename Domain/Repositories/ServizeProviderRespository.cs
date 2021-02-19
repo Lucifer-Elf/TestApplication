@@ -64,7 +64,7 @@ namespace Servize.Domain.Repositories
                 return new Response<ServizeProvider>($"Failed to get ServiceProvide Error:{e.Message}", StatusCodes.Status500InternalServerError);
             }
         }
-
+        /*
         public async Task<Response<ServizeProvider>> AddServizeProvider(ServizeProvider servizeProvider)
         {
             try
@@ -80,6 +80,30 @@ namespace Servize.Domain.Repositories
                 _context.ServizeProvider.Add(servizeProvider);
                 await _context.SaveChangesAsync();
 
+                return new Response<ServizeProvider>(servizeProvider, StatusCodes.Status200OK);
+
+            }
+            catch (Exception ex)
+            {
+                return new Response<ServizeProvider>($"Failed to Add ServiceProvide Error:{ex.Message}", StatusCodes.Status500InternalServerError);
+            }
+        }*/
+
+        public async Task<Response<ServizeProvider>> UpdateServizeProvider(ServizeProvider servizeProvider)
+        {
+            try
+            {
+                if (servizeProvider == null)
+                    return new Response<ServizeProvider>("Request Not Parsable", StatusCodes.Status400BadRequest);
+                ServizeProvider serviceProviderEntity = await _context.ServizeProvider.Include(i=>i.ServiceCategories)
+                                                                                         .ThenInclude(i=>i.SubService)          
+                                                                                         .AsNoTracking()
+                                                                                        .SingleOrDefaultAsync(c => c.Id == servizeProvider.Id);
+                if (serviceProviderEntity == null)
+                {
+                    return new Response<ServizeProvider>("Provider not found", StatusCodes.Status404NotFound);
+                }
+                _context.Update(servizeProvider);               
                 return new Response<ServizeProvider>(servizeProvider, StatusCodes.Status200OK);
 
             }
