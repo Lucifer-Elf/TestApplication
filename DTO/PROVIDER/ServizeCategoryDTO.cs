@@ -12,7 +12,7 @@ namespace Servize.DTO.PROVIDER
         {
                 
         }
-
+        public int Id { get; set; }
         public string ServiceName { get; set; }
 
         public SubCategories Category { get; set; }

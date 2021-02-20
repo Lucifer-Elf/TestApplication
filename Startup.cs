@@ -30,6 +30,7 @@ namespace Servize
         {
             services.AddControllers(); // controller Registered
             services.AddScoped<ServizeProviderRespository>();
+            services.AddScoped<ServizeCategoryRepository>();
             services.AddScoped<Utility.Utilities>();
 
             //EnitiyFrameWork

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace Servize.Domain.Repositories
 {
@@ -23,7 +24,11 @@ namespace Servize.Domain.Repositories
         {
             try
             {
-                List<ServizeProvider> servizeProviderList = await _context.ServizeProvider.ToListAsync();
+                List<ServizeProvider> servizeProviderList = await _context.ServizeProvider
+                                                                                        .Include(i=>i.ServiceCategories)
+                                                                                          .ThenInclude(i=>i.SubServices)
+                                                                                          .AsNoTracking()
+                                                                                        .ToListAsync();
                 return new Response<IList<ServizeProvider>>(servizeProviderList, StatusCodes.Status200OK);
             }
             catch (Exception e)
@@ -36,7 +41,11 @@ namespace Servize.Domain.Repositories
         {
             try
             {
-                List<ServizeProvider> servizeProviderList = await _context.ServizeProvider.Where(e => Convert.ToInt32(e.ModeType) == modeType).ToListAsync();
+                List<ServizeProvider> servizeProviderList = await _context.ServizeProvider.Where(e => Convert.ToInt32(e.ModeType) == modeType)
+                                                                                          //  .Include(i => i.ServiceCategories)
+                                                                                        //  .ThenInclude(i => i.SubServices)
+                                                                                          .AsNoTracking()
+                                                                                        .ToListAsync();
                 if (servizeProviderList.Count() < 1)
                     return new Response<IList<ServizeProvider>>("Failed to get ServiceProviderList ", StatusCodes.Status404NotFound);
 
@@ -54,8 +63,9 @@ namespace Servize.Domain.Repositories
         {
             try
             {
-                ServizeProvider servizeProvider = await _context.ServizeProvider.Include(i=>i.ServiceCategories)
-                                                                                    .ThenInclude(i=>i.SubServices)
+                ServizeProvider servizeProvider = await _context.ServizeProvider
+                    //.Include(i=>i.ServiceCategories)
+                                                                                   // .ThenInclude(i=>i.SubServices)
                                                                                  .AsNoTracking()
                                                                                 .SingleOrDefaultAsync(c => c.Id == Id);
                 if (servizeProvider == null)
@@ -67,31 +77,7 @@ namespace Servize.Domain.Repositories
                 return new Response<ServizeProvider>($"Failed to get ServiceProvide Error:{e.Message}", StatusCodes.Status500InternalServerError);
             }
         }
-        /*
-        public async Task<Response<ServizeProvider>> AddServizeProvider(ServizeProvider servizeProvider)
-        {
-            try
-            {
-                if (servizeProvider == null)
-                    return new Response<ServizeProvider>("Request Not Parsable", StatusCodes.Status400BadRequest);
-
-                ServizeProvider serviceProviderEntity = await _context.ServizeProvider.SingleOrDefaultAsync(c => c.Id == servizeProvider.Id);
-                if (serviceProviderEntity != null)
-                    return new Response<ServizeProvider>("ServiceProvider with given Id Already exist", StatusCodes.Status409Conflict);
-                servizeProvider.Id = 0;
-
-                _context.ServizeProvider.Add(servizeProvider);
-                await _context.SaveChangesAsync();
-
-                return new Response<ServizeProvider>(servizeProvider, StatusCodes.Status200OK);
-
-            }
-            catch (Exception ex)
-            {
-                return new Response<ServizeProvider>($"Failed to Add ServiceProvide Error:{ex.Message}", StatusCodes.Status500InternalServerError);
-            }
-        }*/
-
+     
         public async Task<Response<ServizeProvider>> UpdateServizeProvider(ServizeProvider servizeProvider)
         {
             try
@@ -106,12 +92,14 @@ namespace Servize.Domain.Repositories
                 {
                     return new Response<ServizeProvider>("Provider not found", StatusCodes.Status404NotFound);
                 }
-                _context.Update(servizeProvider);               
+                _context.Update(servizeProvider);
+                await _context.SaveChangesAsync();
                 return new Response<ServizeProvider>(servizeProvider, StatusCodes.Status200OK);
 
             }
             catch (Exception ex)
             {
+                Log.Logger.Information(ex.Message);
                 return new Response<ServizeProvider>($"Failed to Add ServiceProvide Error:{ex.Message}", StatusCodes.Status500InternalServerError);
             }
         }

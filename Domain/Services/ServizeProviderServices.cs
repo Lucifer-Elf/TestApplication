@@ -119,7 +119,7 @@ namespace Servize.Domain.Services
                 if (response.IsSuccessStatusCode())
                 {
                     ServizeProviderDTO serviceDTO = _mapper.Map<ServizeProvider, ServizeProviderDTO>(response.Resource);
-                    await _utility.CompleteTransactionAsync();
+                  
                     return new Response<ServizeProviderDTO>(serviceDTO, StatusCodes.Status200OK);
                 }
 

@@ -14,6 +14,7 @@ namespace Servize.DTO.PROVIDER
            ServiceCategories = new HashSet<ServizeCategoryDTO>();     
         }
 
+        public int Id { get; set; }
         public string CompanyName { get; set; }
        
         public string EmiratesIdNumber { get; set; }

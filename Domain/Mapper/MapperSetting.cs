@@ -9,6 +9,7 @@ namespace Servize.Domain.Mapper
         public MapperSetting()
         {
             CreateMap<ServizeProvider, ServizeProviderDTO>().ReverseMap();
+            CreateMap<ServizeCategory, ServizeCategoryDTO>().ReverseMap();
         }
     }
 }
