@@ -1,17 +1,13 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using static Servize.Domain.Enums.ServizeEnum;
 
-namespace Servize.Domain.Model.Provider
+namespace Servize.DTO.PROVIDER
 {
-    public class ServizeSubCategory
+    public class ServizeSubCategoryDTO
     {
-        public int Id { get; set; }
-
-        [ForeignKey("ServizeCategory")]
-        public int ServizeCategoryId { get; set; }
-        public ServizeCategory ServizeCategory { get; set; }
-
         public string ServiceName { get; set; }
 
         public SubCategories Category { get; set; }
@@ -31,6 +27,5 @@ namespace Servize.Domain.Model.Provider
         public double Discount { get; set; }
 
         public Area Areas { get; set; }
-
     }
 }

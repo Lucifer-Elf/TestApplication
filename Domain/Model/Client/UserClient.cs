@@ -27,6 +27,8 @@ namespace Servize.Domain.Model.Client
 
         public string Country { get; set; }
 
+        public string ProfilePicture { get; set; }
+
         [ForeignKey("OrderSummary")]
         public int OrderId { get; set; }
         public OrderSummary OrderSummary { get; set; }

@@ -11,12 +11,10 @@ namespace Servize.DTO.PROVIDER
     {
         public ServizeProviderDTO()
         {
-           ServiceCategories = new HashSet<ServizeCategoryDTO>();
-            //Reviews = new HashSet<ServizeReviewDTO>();
+           ServiceCategories = new HashSet<ServizeCategoryDTO>();     
         }
 
         public string CompanyName { get; set; }
-
        
         public string EmiratesIdNumber { get; set; }
 

@@ -54,7 +54,10 @@ namespace Servize.Domain.Repositories
         {
             try
             {
-                ServizeProvider servizeProvider = await _context.ServizeProvider.SingleOrDefaultAsync(c => c.Id == Id);
+                ServizeProvider servizeProvider = await _context.ServizeProvider.Include(i=>i.ServiceCategories)
+                                                                                    .ThenInclude(i=>i.SubServices)
+                                                                                 .AsNoTracking()
+                                                                                .SingleOrDefaultAsync(c => c.Id == Id);
                 if (servizeProvider == null)
                     return new Response<ServizeProvider>("Failed to find Id", StatusCodes.Status404NotFound);
                 return new Response<ServizeProvider>(servizeProvider, StatusCodes.Status200OK);
@@ -96,7 +99,7 @@ namespace Servize.Domain.Repositories
                 if (servizeProvider == null)
                     return new Response<ServizeProvider>("Request Not Parsable", StatusCodes.Status400BadRequest);
                 ServizeProvider serviceProviderEntity = await _context.ServizeProvider.Include(i=>i.ServiceCategories)
-                                                                                         .ThenInclude(i=>i.SubService)          
+                                                                                         .ThenInclude(i=>i.SubServices)          
                                                                                          .AsNoTracking()
                                                                                         .SingleOrDefaultAsync(c => c.Id == servizeProvider.Id);
                 if (serviceProviderEntity == null)

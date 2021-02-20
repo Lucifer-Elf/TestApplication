@@ -34,6 +34,12 @@ namespace Servize.Domain.Model.Provider
 
         public int CovidRating { get; set; }
 
+
+        public double Latitude { get; set; }
+
+        public double Longitude { get; set; }
+
+
         public DateTime RegistrationDate { get; set; }
 
         public PackageType PackageType { get; set; }
