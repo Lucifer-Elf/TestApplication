@@ -26,7 +26,7 @@ namespace Servize
             Configuration = configuration;
         }
 
-       
+
         public IConfiguration Configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
@@ -49,8 +49,8 @@ namespace Servize
                 .AddEntityFrameworkStores<ServizeDBContext>()
                 .AddSignInManager()
                 .AddDefaultTokenProviders()
-                .AddTokenProvider("ServizeApp",typeof(DataProtectorTokenProvider<ApplicationUser>));
-           
+                .AddTokenProvider("ServizeApp", typeof(DataProtectorTokenProvider<ApplicationUser>));
+
 
             //Add Authentication
             services.AddAuthentication(options =>
@@ -69,23 +69,23 @@ namespace Servize
                {
                    ValidateIssuer = true,
                    ValidateAudience = true,
-                   ValidateIssuerSigningKey= true,
+                   ValidateIssuerSigningKey = true,
                    ValidAudience = Configuration["JWT:ValidAudience"],
                    ValidIssuer = Configuration["JWT:ValidIssuer"],
                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["JWT:Secret"])),
 
 
                };
-           })
-         
-      /*.AddGoogle(options =>
-        {
-                IConfigurationSection googleAuthNSection =
-                Configuration.GetSection("Authentication:Google");
+           })         
 
-            options.ClientId = googleAuthNSection["767916686704-fql4bubmbka31ftnadb70t656pa5kvab.apps.googleusercontent.com"];
-            options.ClientSecret = googleAuthNSection["_IASP8rZypXBJdYi3TMO8xyb"];
-        })*/;
+     .AddGoogle(options =>
+        {
+            options.ClientId = Utility.Configurations.Configuration.GetParameterValue("GoogleClientId");
+            options.ClientSecret = Utility.Configurations.Configuration.GetParameterValue("GoogleSecret");
+
+            // to change call back Url
+            //options.CallbackPath
+        });
 
 
 
@@ -107,7 +107,7 @@ namespace Servize
 
         }
 
-     
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             using (var scope = app.ApplicationServices.CreateScope())
@@ -121,16 +121,16 @@ namespace Servize
             }
 
             // app.UseSerilogRequestLogging();
-         
+
             app.UseRouting();
-           
+
             app.UseAuthentication();   // add to pipline 
             app.UseAuthorization();
 
             app.UseSession();
             app.UseEndpoints(endpoints =>
-            {       
-                endpoints.MapControllers();             
+            {
+                endpoints.MapControllers();
             });
         }
     }

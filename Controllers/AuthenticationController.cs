@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,7 @@ using Servize.Utility;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -102,8 +104,8 @@ namespace Servize.Controllers
                 {
                     var refreshToken = await _userManager.GetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken");
 
-                   
-                    if (refreshToken!=null)
+
+                    if (refreshToken != null)
                     {
                         var token = new JwtSecurityTokenHandler().ReadJwtToken(refreshToken);
                         return Ok(token.ValidTo.ToString("yyyy-MM-ddThh:mm:ss"));
@@ -129,9 +131,9 @@ namespace Servize.Controllers
                     var refreshToken = await _userManager.GetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken");
 
                     //var isValid = await _userManager.VerifyUserTokenAsync(user, "ServizeApp", "RefreshToken", refreshToken);
-                    if (refreshToken!=null)
+                    if (refreshToken != null)
                     {
-                        return Ok(new { msg="AlfredyLogin", refreshToken });
+                        return Ok(new { msg = "AlfredyLogin", refreshToken });
                     }
                     var userRoles = await _userManager.GetRolesAsync(user);
                     var authClaims = new List<Claim>
@@ -152,7 +154,7 @@ namespace Servize.Controllers
                         signingCredentials: new SigningCredentials(authSignInKey, SecurityAlgorithms.HmacSha256)
 
                         );
-                   var tokenHolder = new
+                    var tokenHolder = new
                     {
 
                         token = new JwtSecurityTokenHandler().WriteToken(token),
@@ -180,10 +182,10 @@ namespace Servize.Controllers
                 if (result.Succeeded)
                 {
                     var user = await _userManager.FindByNameAsync(model.UserName);
-                    if (user != null )
+                    if (user != null)
                     {
 
-                          await _userManager.UpdateSecurityStampAsync(user);
+                        await _userManager.UpdateSecurityStampAsync(user);
                         var resultValue = await _userManager.RemoveAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken");
                         if (resultValue.Succeeded)
                         {
@@ -195,12 +197,12 @@ namespace Servize.Controllers
                 }
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response("Error On LogOut ", StatusCodes.Status500InternalServerError));
             }
-            
+
             catch
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response("Error On LogOut ", StatusCodes.Status500InternalServerError));
             }
-        
+
         }
 
 
@@ -259,7 +261,7 @@ namespace Servize.Controllers
                     _context.ServizeProvider.Add(provider);
                     await _context.SaveChangesAsync();   /// check retun with 0 or less and error return to main
                 }
-              
+
                 return Ok(new Response("Admin is Created Sucessfully", StatusCodes.Status201Created));
 
 
@@ -281,5 +283,97 @@ namespace Servize.Controllers
             }, model);
         }
 
+        [HttpGet]
+        [Route("google-login")]
+        [AllowAnonymous]
+        public async Task<ActionResult> Login(string returnUrl)
+        {
+
+            ServizeLoginModel model = new ServizeLoginModel
+            {
+                ReturnUrl = returnUrl,
+                ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList()
+
+            };
+            return Ok(model);
+
+        }
+
+
+
+        // input will be google, 
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult ExternalLogin(string provider, string returnUrl)
+        {
+
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl });
+            var properties =  _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return new ChallengeResult(provider, properties);
+
+        }
+
+        [AllowAnonymous]
+        public async Task<ActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+        {
+            returnUrl = returnUrl ?? Url.Content("~/");
+            ServizeLoginModel loginViewModel = new ServizeLoginModel
+            {
+                ReturnUrl = returnUrl,
+                ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList()
+
+            };
+
+            if (remoteError != null)
+            {
+
+                ModelState.AddModelError(string.Empty, $"Error for external provider:{remoteError}");
+                return Problem();
+            }
+
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                ModelState.AddModelError(string.Empty, "Error loding external information}");
+                return Problem();
+            }
+
+
+            // must to have row in aspnetuserslogin 
+            var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+
+            if (signInResult.Succeeded)
+            {
+                return Ok(returnUrl);
+            }
+            else
+            {
+                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                if (email != null)
+                {
+                    var user = await _userManager.FindByEmailAsync(email);
+
+                    if (user == null)
+                    {
+
+                        user = new ApplicationUser
+                        {
+                            UserName = info.Principal.FindFirstValue(ClaimTypes.Email),
+                            Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+
+                        };
+                        await _userManager.CreateAsync(user);
+                    }
+
+                    await _userManager.AddLoginAsync(user, info);
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+
+                    return Ok(returnUrl);
+                }
+                return Problem("Error with Login");
+
+            }
+
+        }
     }
 }
