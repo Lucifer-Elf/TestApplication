@@ -21,7 +21,8 @@ namespace Servize
         public DbSet<OrderItem> OrderItem { get; set; }
         public DbSet<OrderSummary> OrderSummary { get; set; }
         public DbSet<UserClient> UserClient { get; set; }
-    
+        public DbSet<CartItem> CartItem { get; set; }
+
 
 
 

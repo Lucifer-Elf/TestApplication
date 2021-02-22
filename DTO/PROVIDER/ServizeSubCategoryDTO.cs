@@ -8,6 +8,10 @@ namespace Servize.DTO.PROVIDER
 {
     public class ServizeSubCategoryDTO
     {
+        public int Id { get; set; }
+        
+        public int ServizeCategoryId { get; set; }      
+
         public string ServiceName { get; set; }
 
         public SubCategories Category { get; set; }

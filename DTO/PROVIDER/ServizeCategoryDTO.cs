@@ -10,25 +10,17 @@ namespace Servize.DTO.PROVIDER
     {
         public ServizeCategoryDTO()
         {
-                
+            SubServices = new HashSet<ServizeSubCategoryDTO>();
         }
         public int Id { get; set; }
-        public string ServiceName { get; set; }
+      
+        public int ProviderId { get; set; }
+       
 
-        public SubCategories Category { get; set; }
+        public Categories Type { get; set; }
 
-        public string ImageList { get; set; }
+        public string BannerImage { get; set; }
 
-        public DateTime StartTime { get; set; }
-
-        public DateTime EndTime { get; set; }
-
-        public int DaysOFWork { get; set; }
-
-        public double PriceCharge { get; set; }
-
-        public double Discount { get; set; }
-
-        public Area Areas { get; set; }
+        public ICollection<ServizeSubCategoryDTO> SubServices { get; set; }
     }
 }

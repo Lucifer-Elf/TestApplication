@@ -63,6 +63,7 @@ namespace Servize.Domain.Services
                 return new Response<ServizeCategoryDTO>($"Failed to Load ServizeCategory Error:{e.Message}", StatusCodes.Status500InternalServerError);
             }
         }
+
         public async Task<Response<ServizeCategoryDTO>> AddServiceCategory(ServizeCategoryDTO servizeCategoryDTO )
         {
             try
@@ -70,6 +71,27 @@ namespace Servize.Domain.Services
                 ServizeCategory serviceCategory = _mapper.Map<ServizeCategoryDTO, ServizeCategory>(servizeCategoryDTO);
 
                 Response<ServizeCategory> response = await _respository.AddServiceCategory(serviceCategory);
+                if (response.IsSuccessStatusCode())
+                {
+                    await _utility.CompleteTransactionAsync();
+                    ServizeCategoryDTO serviceDTO = _mapper.Map<ServizeCategory, ServizeCategoryDTO>(response.Resource);
+                    return new Response<ServizeCategoryDTO>(serviceDTO, StatusCodes.Status200OK);
+                }
+                return new Response<ServizeCategoryDTO>("Failed to Add ServizeCategory With Specific Id", response.StatusCode);
+            }
+            catch (Exception e)
+            {
+                return new Response<ServizeCategoryDTO>($"Failed to Add ServizeCategory Error:{e.Message}", StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        public async Task<Response<ServizeCategoryDTO>> UpdateServiceCategory(ServizeCategoryDTO servizeCategoryDTO)
+        {
+            try
+            {
+                ServizeCategory serviceCategory = _mapper.Map<ServizeCategoryDTO, ServizeCategory>(servizeCategoryDTO);
+
+                Response<ServizeCategory> response = await _respository.UpdateServiceCategory(serviceCategory);
                 if (response.IsSuccessStatusCode())
                 {
                     await _utility.CompleteTransactionAsync();

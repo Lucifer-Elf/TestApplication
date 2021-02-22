@@ -57,6 +57,18 @@ namespace Servize.Domain.Repositories
             if (!isProviderAvaliable)
                 return new Response<ServizeCategory>("Category couldnot be created due to provider is not exist", StatusCodes.Status424FailedDependency);
 
+            if (category.SubServices.Count > 0)
+            {
+                foreach (ServizeSubCategory subservice in category.SubServices)
+                {
+                    ServizeSubCategory servizeSubCategory = await _context.ServizeSubCategory.FindAsync(subservice.Id);
+                    if (servizeSubCategory == null)
+                    {
+                        _context.ServizeSubCategory.Add(subservice);
+                    }
+                }
+            }
+
             if (category.Id > 0)
             {
                 ServizeCategory servizeCategory = await _context.ServizeCategory.FindAsync(category.Id);
@@ -67,6 +79,40 @@ namespace Servize.Domain.Repositories
 
             }
             _context.ServizeCategory.Add(category);
+            return new Response<ServizeCategory>(category, StatusCodes.Status200OK);
+        }
+
+        public async Task<Response<ServizeCategory>> UpdateServiceCategory(ServizeCategory category)
+        {
+            if (category == null)
+                return new Response<ServizeCategory>("Request not parsable", StatusCodes.Status400BadRequest);
+
+            bool isProviderAvaliable = await ProviderIsValid(category.ProviderId);
+            if (!isProviderAvaliable)
+                return new Response<ServizeCategory>("Category couldnot be created due to provider is not exist", StatusCodes.Status424FailedDependency);
+
+            if (category.SubServices.Count > 0)
+            {
+                foreach (ServizeSubCategory subservice in category.SubServices)
+                {
+                    ServizeSubCategory servizeSubCategory = await _context.ServizeSubCategory.FindAsync(subservice.Id);
+                    if (servizeSubCategory != null)
+                    {
+                        _context.ServizeSubCategory.Update(subservice);
+                    }
+                }
+            }
+
+            if (category.Id > 0)
+            {
+                ServizeCategory servizeCategory = await _context.ServizeCategory.FindAsync(category.Id);
+                if (servizeCategory != null)
+                    return new Response<ServizeCategory>("Given SerrvizeCategory Already Exist", StatusCodes.Status409Conflict);
+
+                return new Response<ServizeCategory>("failed Dependecy ", StatusCodes.Status424FailedDependency);
+
+            }
+            _context.ServizeCategory.Update(category);
             return new Response<ServizeCategory>(category, StatusCodes.Status200OK);
         }
 

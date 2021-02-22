@@ -2,18 +2,20 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Servize.Domain.Mapper;
-using Servize.Domain.Repositories;
-using AutoMapper;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using Microsoft.AspNetCore.Session;
 using Servize.Authentication;
-using Microsoft.AspNetCore.Identity;
-using Serilog;
+using Servize.Controllers;
+using Servize.Domain.Mapper;
+using Servize.Domain.Model.OrderDetail;
+using Servize.Domain.Repositories;
+using System;
+using System.Text;
 
 namespace Servize
 {
@@ -31,10 +33,16 @@ namespace Servize
             services.AddControllers(); // controller Registered
             services.AddScoped<ServizeProviderRespository>();
             services.AddScoped<ServizeCategoryRepository>();
+            services.AddScoped<ServizeCartController>();
             services.AddScoped<Utility.Utilities>();
+            services.AddScoped<Cart>();
 
             //EnitiyFrameWork
             services.AddDbContext<ServizeDBContext>(options => options.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=TestDatabase;Trusted_Connection=True;"));
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); // instance of http 
+            services.AddScoped(sp => Cart.GetCart(sp));  // diffenrt instance to differnt user
+
 
             //Identity
             services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -87,7 +95,16 @@ namespace Servize
             });
             var mapper = config.CreateMapper();
             services.AddSingleton(mapper);
-        
+
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(/*options =>
+            {
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            }*/);
+
         }
 
      
@@ -102,14 +119,15 @@ namespace Servize
             {
                 app.UseDeveloperExceptionPage();
             }
-           
-           // app.UseSerilogRequestLogging();
-           
+
+            // app.UseSerilogRequestLogging();
+         
             app.UseRouting();
            
             app.UseAuthentication();   // add to pipline 
             app.UseAuthorization();
 
+            app.UseSession();
             app.UseEndpoints(endpoints =>
             {       
                 endpoints.MapControllers();             

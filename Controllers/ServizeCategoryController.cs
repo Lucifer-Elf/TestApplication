@@ -58,13 +58,25 @@ namespace Servize.Controllers
             return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
 
-
+        [HttpPost]
+        [Route("AddCategory")]
         public async Task<ActionResult<ServizeCategoryDTO>> AddServiceCategory([FromBody] ServizeCategoryDTO servizeCategoryDTO)
         {
-
-            Response<ServizeCategoryDTO> response    = await _services.AddServiceCategory(servizeCategoryDTO);
-                if (response.IsSuccessStatusCode())
+            Response<ServizeCategoryDTO> response    = await _services.AddServiceCategory(servizeCategoryDTO);                
+            if (response.IsSuccessStatusCode())
                     return Ok(response.Resource);
+            return Problem(statusCode: response.StatusCode, detail: response.Message);
+        }
+
+        [HttpPut]
+        [Route("UpdateCategory")]
+        public async Task<ActionResult<ServizeCategoryDTO>> UpdateServiceCategory([FromBody] ServizeCategoryDTO servizeCategoryDTO)
+        {
+
+            Response<ServizeCategoryDTO> response = await _services.UpdateServiceCategory(servizeCategoryDTO);
+
+            if (response.IsSuccessStatusCode())
+                return Ok(response.Resource);
             return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
     }
