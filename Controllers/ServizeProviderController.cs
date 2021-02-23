@@ -34,7 +34,7 @@ namespace Servize.Controllers
             _services = new ServizeProviderServices(dbContext, mapper, utitlity);
         }
 
-        [Authorize(Roles =  UserRoles.Admin)]
+       // [Authorize(Roles =  UserRoles.Admin)]
         [HttpGet]
         [Route("Get")]
         [Produces("application/json")]

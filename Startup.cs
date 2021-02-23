@@ -16,11 +16,13 @@ using Servize.Domain.Model.OrderDetail;
 using Servize.Domain.Repositories;
 using System;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.Google;
 
 namespace Servize
 {
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -31,6 +33,17 @@ namespace Servize
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers(); // controller Registered
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  builder =>{
+                                      builder.WithOrigins("http://localhost:8080")
+                                      .AllowAnyHeader()
+                                      .AllowAnyMethod();
+                                  });
+            });
+    
+
             services.AddScoped<ServizeProviderRespository>();
             services.AddScoped<ServizeCategoryRepository>();
             services.AddScoped<ServizeCartController>();
@@ -58,8 +71,10 @@ namespace Servize
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
             })
-
+                .AddCookie()
+              
            //Adding Jwt Bearer
            .AddJwtBearer(options =>
            {
@@ -82,7 +97,6 @@ namespace Servize
         {
             options.ClientId = Utility.Configurations.Configuration.GetParameterValue("GoogleClientId");
             options.ClientSecret = Utility.Configurations.Configuration.GetParameterValue("GoogleSecret");
-
             // to change call back Url
             //options.CallbackPath
         });
@@ -123,7 +137,7 @@ namespace Servize
             // app.UseSerilogRequestLogging();
 
             app.UseRouting();
-
+            app.UseCors(MyAllowSpecificOrigins);
             app.UseAuthentication();   // add to pipline 
             app.UseAuthorization();
 

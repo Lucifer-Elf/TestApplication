@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ using Servize.Authentication;
 using Servize.Domain.Enums;
 using Servize.Domain.Model.Account;
 using Servize.Domain.Model.Provider;
+using Servize.DTO.PROVIDER;
 using Servize.Utility;
 using System;
 using System.Collections.Generic;
@@ -19,6 +21,7 @@ using System.Threading.Tasks;
 
 namespace Servize.Controllers
 {
+
     [Route("[controller]")]
     [ApiController]
     public class AuthenticationController : ControllerBase
@@ -119,6 +122,8 @@ namespace Servize.Controllers
         //Authentication/Login
         [HttpPost]
         [Route("Login")]
+        [Produces("application/json")]
+        [Consumes("application/json")]
         public async Task<ActionResult> Login([FromBody] ServizeLoginModel model)
         {
             var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
@@ -133,7 +138,7 @@ namespace Servize.Controllers
                     //var isValid = await _userManager.VerifyUserTokenAsync(user, "ServizeApp", "RefreshToken", refreshToken);
                     if (refreshToken != null)
                     {
-                        return Ok(new { msg = "AlfredyLogin", refreshToken });
+                        return Ok(new { msg = "AlreadyLogin", refreshToken });
                     }
                     var userRoles = await _userManager.GetRolesAsync(user);
                     var authClaims = new List<Claim>
@@ -284,11 +289,9 @@ namespace Servize.Controllers
         }
 
         [HttpGet]
-        [Route("google-login")]
         [AllowAnonymous]
         public async Task<ActionResult> Login(string returnUrl)
         {
-
             ServizeLoginModel model = new ServizeLoginModel
             {
                 ReturnUrl = returnUrl,
@@ -299,23 +302,13 @@ namespace Servize.Controllers
 
         }
 
-
-
-        // input will be google, 
         [HttpPost]
-        [AllowAnonymous]
-        public ActionResult ExternalLogin(string provider, string returnUrl)
+        [Route("LoginExternalLoginCallback")]
+        [Produces("application/json")]
+        [Consumes("application/json")]
+        public async Task<ActionResult> LoginExternalLoginCallback(string returnUrl)
         {
-
-            var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl });
-            var properties =  _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-            return new ChallengeResult(provider, properties);
-
-        }
-
-        [AllowAnonymous]
-        public async Task<ActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
-        {
+            string remoteError = null;
             returnUrl = returnUrl ?? Url.Content("~/");
             ServizeLoginModel loginViewModel = new ServizeLoginModel
             {
@@ -324,12 +317,12 @@ namespace Servize.Controllers
 
             };
 
-            if (remoteError != null)
+           /* if (remoteError != null)
             {
 
                 ModelState.AddModelError(string.Empty, $"Error for external provider:{remoteError}");
                 return Problem();
-            }
+            }*/
 
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
@@ -375,5 +368,20 @@ namespace Servize.Controllers
             }
 
         }
+
+
+        // input will be google, 
+        [HttpPost]
+        [Route("google-login")]
+        [AllowAnonymous]
+        public ActionResult ExternalLogin(string returnUrl = null)
+        {
+            var redirectUrl = Url.Action("LoginExternalLoginCallback", "Authentication", new { returnUrl });
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
+            return new ChallengeResult("Google", properties);
+
+        }
+
+        
     }
 }
