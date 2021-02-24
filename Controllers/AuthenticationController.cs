@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Servize.Authentication;
 using Servize.Domain.Enums;
 using Servize.Domain.Model.Account;
+using Servize.Domain.Model.Client;
 using Servize.Domain.Model.Provider;
 using Servize.DTO.PROVIDER;
 using Servize.Utility;
@@ -21,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace Servize.Controllers
 {
-
+    [EnableCors("_myWebOrigion")]
     [Route("[controller]")]
     [ApiController]
     public class AuthenticationController : ControllerBase
@@ -266,6 +267,19 @@ namespace Servize.Controllers
                     _context.ServizeProvider.Add(provider);
                     await _context.SaveChangesAsync();   /// check retun with 0 or less and error return to main
                 }
+               /* else if (Utility.Utilities.GetRoleForstring(role) == "Admin")
+                {
+                    
+                }*/
+                else
+                {
+                    UserClient client = new UserClient
+                    {
+                        UserId = user.Id,
+                    };
+                    _context.UserClient.Add(client);
+                    await _context.SaveChangesAsync();
+                }
 
                 return Ok(new Response("Admin is Created Sucessfully", StatusCodes.Status201Created));
 
@@ -303,12 +317,12 @@ namespace Servize.Controllers
         }
 
         [HttpPost]
-        [Route("LoginExternalLoginCallback")]
+        [Route("ExternalLoginCallback")]
         [Produces("application/json")]
         [Consumes("application/json")]
-        public async Task<ActionResult> LoginExternalLoginCallback(string returnUrl)
+        public async Task<ActionResult> ExternalLoginCallback(string returnUrl, string remoteError = null)
         {
-            string remoteError = null;
+         
             returnUrl = returnUrl ?? Url.Content("~/");
             ServizeLoginModel loginViewModel = new ServizeLoginModel
             {
@@ -317,12 +331,12 @@ namespace Servize.Controllers
 
             };
 
-           /* if (remoteError != null)
+         if (remoteError != null)
             {
 
                 ModelState.AddModelError(string.Empty, $"Error for external provider:{remoteError}");
                 return Problem();
-            }*/
+            }
 
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
@@ -376,8 +390,9 @@ namespace Servize.Controllers
         [AllowAnonymous]
         public ActionResult ExternalLogin(string returnUrl = null)
         {
-            var redirectUrl = Url.Action("LoginExternalLoginCallback", "Authentication", new { returnUrl });
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Authentication", new { returnUrl });
             var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
+            Console.WriteLine(properties);
             return new ChallengeResult("Google", properties);
 
         }

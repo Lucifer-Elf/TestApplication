@@ -17,12 +17,13 @@ using Servize.Domain.Repositories;
 using System;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Servize
 {
     public class Startup
     {
-        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+        readonly string MyAllowSpecificOrigins = "_myWebOrigion";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -37,12 +38,15 @@ namespace Servize
             {
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                                   builder =>{
-                                      builder.WithOrigins("http://localhost:8080")
+                                      builder.WithOrigins("http://localhost:8080",
+                                                          "https://localhost:8080","https://accounts.google.com")
                                       .AllowAnyHeader()
-                                      .AllowAnyMethod();
+                                      .AllowAnyMethod()
+                                      .AllowCredentials();
+                                      
                                   });
             });
-    
+
 
             services.AddScoped<ServizeProviderRespository>();
             services.AddScoped<ServizeCategoryRepository>();
@@ -68,12 +72,13 @@ namespace Servize
             //Add Authentication
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme   = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme      = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme               = JwtBearerDefaults.AuthenticationScheme;
+              
             })
-                .AddCookie()
+             
+    
               
            //Adding Jwt Bearer
            .AddJwtBearer(options =>
@@ -91,7 +96,7 @@ namespace Servize
 
 
                };
-           })         
+           })     
 
      .AddGoogle(options =>
         {
@@ -138,6 +143,7 @@ namespace Servize
 
             app.UseRouting();
             app.UseCors(MyAllowSpecificOrigins);
+            app.UseCookiePolicy();
             app.UseAuthentication();   // add to pipline 
             app.UseAuthorization();
 
