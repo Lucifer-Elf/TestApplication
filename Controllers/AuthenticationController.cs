@@ -78,10 +78,10 @@ namespace Servize.Controllers
         [Route("UserToken")]
         public async Task<ActionResult> GetUserToken([FromBody] ServizeLoginModel model)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
             if (result.Succeeded)
             {
-                var user = await _userManager.FindByNameAsync(model.UserName);
+                var user = await _userManager.FindByEmailAsync(model.Email);
                 if (user != null)
                 {
                     var refreshToken = await _userManager.GetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken");
@@ -101,10 +101,10 @@ namespace Servize.Controllers
         [Route("UserTokenValidty")]
         public async Task<ActionResult> GetUserTokenValidity([FromBody] ServizeLoginModel model)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
             if (result.Succeeded)
             {
-                var user = await _userManager.FindByNameAsync(model.UserName);
+                var user = await _userManager.FindByEmailAsync(model.Email);
                 if (user != null)
                 {
                     var refreshToken = await _userManager.GetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken");
@@ -128,11 +128,11 @@ namespace Servize.Controllers
         [Consumes("application/json")]
         public async Task<ActionResult> Login([FromBody] ServizeLoginModel model)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
 
             if (result.Succeeded)
             {
-                var user = await _userManager.FindByNameAsync(model.UserName);
+                var user = await _userManager.FindByEmailAsync(model.Email);
                 if (user != null)
                 {
                     var refreshToken = await _userManager.GetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken");
@@ -186,11 +186,11 @@ namespace Servize.Controllers
         {
             try
             {
-                var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
 
                 if (result.Succeeded)
                 {
-                    var user = await _userManager.FindByNameAsync(model.UserName);
+                    var user = await _userManager.FindByEmailAsync(model.Email);
                     if (user != null)
                     {
 
@@ -230,16 +230,14 @@ namespace Servize.Controllers
         {
             try
             {
-
-                var userExist = await _userManager.FindByNameAsync(model.UserName);
+                var userExist = await _userManager.FindByEmailAsync(model.Email);
                 if (userExist != null)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new Response("User Already exist", StatusCodes.Status500InternalServerError));
                 }
                 ApplicationUser user = new ApplicationUser()
                 {
-                    UserName = model.UserName,
-                    Email = model.Email,
+                    Email = model.Email,                   
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
                 var result = await _userManager.CreateAsync(user, model.Password);
@@ -298,7 +296,7 @@ namespace Servize.Controllers
         {
             CreatedAtRoute(nameof(Login), new
             {
-                UserName = model.UserName,
+                Email = model.Email,
                 Password = model.Password,
                 RememberMe = false
             }, model);
@@ -421,7 +419,7 @@ namespace Servize.Controllers
 
                 ServizeLoginModel model = new ServizeLoginModel
                 {
-                    UserName = userExist.UserName,
+                    Email = userExist.UserName,
 
                 };
                 return Ok(model);

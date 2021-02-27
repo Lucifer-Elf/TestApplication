@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Servize.Migrations
 {
-    public partial class testCase1 : Migration
+    public partial class NewtestMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -365,7 +365,7 @@ namespace Servize.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProviderId = table.Column<int>(type: "int", nullable: false),
                     HappinessRating = table.Column<int>(type: "int", nullable: false),
-                    SubCategory = table.Column<int>(type: "int", nullable: false),
+                    Product = table.Column<int>(type: "int", nullable: false),
                     ReviewComment = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -380,7 +380,7 @@ namespace Servize.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ServizeSubCategory",
+                name: "ServizeProduct",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -399,9 +399,9 @@ namespace Servize.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ServizeSubCategory", x => x.Id);
+                    table.PrimaryKey("PK_ServizeProduct", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ServizeSubCategory_ServizeCategory_ServizeCategoryId",
+                        name: "FK_ServizeProduct_ServizeCategory_ServizeCategoryId",
                         column: x => x.ServizeCategoryId,
                         principalTable: "ServizeCategory",
                         principalColumn: "Id",
@@ -416,7 +416,7 @@ namespace Servize.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProviderId = table.Column<int>(type: "int", nullable: false),
                     ServizeCategoryId = table.Column<int>(type: "int", nullable: false),
-                    ServizeSubCategoryId = table.Column<int>(type: "int", nullable: true),
+                    ServizeProductId = table.Column<int>(type: "int", nullable: true),
                     Amount = table.Column<int>(type: "int", nullable: false),
                     CartId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
@@ -430,9 +430,9 @@ namespace Servize.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_CartItem_ServizeSubCategory_ServizeSubCategoryId",
-                        column: x => x.ServizeSubCategoryId,
-                        principalTable: "ServizeSubCategory",
+                        name: "FK_CartItem_ServizeProduct_ServizeProductId",
+                        column: x => x.ServizeProductId,
+                        principalTable: "ServizeProduct",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -487,9 +487,9 @@ namespace Servize.Migrations
                 column: "CartId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CartItem_ServizeSubCategoryId",
+                name: "IX_CartItem_ServizeProductId",
                 table: "CartItem",
-                column: "ServizeSubCategoryId");
+                column: "ServizeProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderItem_OrderNumber",
@@ -517,6 +517,11 @@ namespace Servize.Migrations
                 column: "ProviderId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ServizeProduct_ServizeCategoryId",
+                table: "ServizeProduct",
+                column: "ServizeCategoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ServizeProvider_UserId",
                 table: "ServizeProvider",
                 column: "UserId");
@@ -530,11 +535,6 @@ namespace Servize.Migrations
                 name: "IX_ServizeReview_ProviderId",
                 table: "ServizeReview",
                 column: "ProviderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ServizeSubCategory_ServizeCategoryId",
-                table: "ServizeSubCategory",
-                column: "ServizeCategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserClient_OrderId",
@@ -589,7 +589,7 @@ namespace Servize.Migrations
                 name: "Cart");
 
             migrationBuilder.DropTable(
-                name: "ServizeSubCategory");
+                name: "ServizeProduct");
 
             migrationBuilder.DropTable(
                 name: "OrderSummary");

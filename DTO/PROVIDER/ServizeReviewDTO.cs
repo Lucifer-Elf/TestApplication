@@ -11,7 +11,7 @@ namespace Servize.DTO.PROVIDER
 
         public int Rating { get; set; }
 
-        public SubCategories SubCategory { get; set; }
+        public Product Product { get; set; }
 
         public string ReviewComment { get; set; }
     }

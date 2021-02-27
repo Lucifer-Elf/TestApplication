@@ -292,14 +292,14 @@ namespace Servize.Migrations
                     b.Property<int>("ServizeCategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ServizeSubCategoryId")
+                    b.Property<int?>("ServizeProductId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
 
-                    b.HasIndex("ServizeSubCategoryId");
+                    b.HasIndex("ServizeProductId");
 
                     b.ToTable("CartItem");
                 });
@@ -422,6 +422,53 @@ namespace Servize.Migrations
                     b.ToTable("ServizeCategory");
                 });
 
+            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeProduct", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Areas")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DaysOFWork")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Discount")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageList")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("PriceQuote")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ServiceName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ServizeCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("VariablePrice")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServizeCategoryId");
+
+                    b.ToTable("ServizeProduct");
+                });
+
             modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeProvider", b =>
                 {
                     b.Property<int>("Id")
@@ -522,67 +569,20 @@ namespace Servize.Migrations
                     b.Property<int>("HappinessRating")
                         .HasColumnType("int");
 
+                    b.Property<int>("Product")
+                        .HasColumnType("int");
+
                     b.Property<int>("ProviderId")
                         .HasColumnType("int");
 
                     b.Property<string>("ReviewComment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SubCategory")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ProviderId");
 
                     b.ToTable("ServizeReview");
-                });
-
-            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeSubCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("Areas")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Category")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DaysOFWork")
-                        .HasColumnType("int");
-
-                    b.Property<double>("Discount")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ImageList")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("PriceQuote")
-                        .HasColumnType("float");
-
-                    b.Property<string>("ServiceName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ServizeCategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("VariablePrice")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ServizeCategoryId");
-
-                    b.ToTable("ServizeSubCategory");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -668,13 +668,13 @@ namespace Servize.Migrations
                         .WithMany("CartItems")
                         .HasForeignKey("CartId");
 
-                    b.HasOne("Servize.Domain.Model.Provider.ServizeSubCategory", "ServizeSubCategory")
+                    b.HasOne("Servize.Domain.Model.Provider.ServizeProduct", "ServizeProduct")
                         .WithMany()
-                        .HasForeignKey("ServizeSubCategoryId");
+                        .HasForeignKey("ServizeProductId");
 
                     b.Navigation("Cart");
 
-                    b.Navigation("ServizeSubCategory");
+                    b.Navigation("ServizeProduct");
                 });
 
             modelBuilder.Entity("Servize.Domain.Model.OrderDetail.OrderItem", b =>
@@ -727,6 +727,17 @@ namespace Servize.Migrations
                     b.Navigation("ServizeProvider");
                 });
 
+            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeProduct", b =>
+                {
+                    b.HasOne("Servize.Domain.Model.Provider.ServizeCategory", "ServizeCategory")
+                        .WithMany("SubServices")
+                        .HasForeignKey("ServizeCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ServizeCategory");
+                });
+
             modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeProvider", b =>
                 {
                     b.HasOne("Servize.Authentication.ApplicationUser", "ApplicationUser")
@@ -756,17 +767,6 @@ namespace Servize.Migrations
                         .IsRequired();
 
                     b.Navigation("ServizeProvider");
-                });
-
-            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeSubCategory", b =>
-                {
-                    b.HasOne("Servize.Domain.Model.Provider.ServizeCategory", "ServizeCategory")
-                        .WithMany("SubServices")
-                        .HasForeignKey("ServizeCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ServizeCategory");
                 });
 
             modelBuilder.Entity("Servize.Domain.Model.OrderDetail.Cart", b =>

@@ -61,10 +61,10 @@ namespace Servize.Domain.Repositories
             {
                 foreach (ServizeProduct subservice in category.SubServices)
                 {
-                    ServizeProduct servizeSubCategory = await _context.ServizeSubCategory.FindAsync(subservice.Id);
-                    if (servizeSubCategory == null)
+                    ServizeProduct servizeProduct = await _context.ServizeProduct.FindAsync(subservice.Id);
+                    if (servizeProduct == null)
                     {
-                        _context.ServizeSubCategory.Add(subservice);
+                        _context.ServizeProduct.Add(subservice);
                     }
                 }
             }
@@ -95,10 +95,10 @@ namespace Servize.Domain.Repositories
             {
                 foreach (ServizeProduct subservice in category.SubServices)
                 {
-                    ServizeProduct servizeSubCategory = await _context.ServizeSubCategory.FindAsync(subservice.Id);
-                    if (servizeSubCategory != null)
+                    ServizeProduct servizeProduct = await _context.ServizeProduct.FindAsync(subservice.Id);
+                    if (servizeProduct != null)
                     {
-                        _context.ServizeSubCategory.Update(subservice);
+                        _context.ServizeProduct.Update(subservice);
                     }
                 }
             }

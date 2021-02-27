@@ -14,7 +14,7 @@ namespace Servize.Domain.Model.Provider
 
         public int              HappinessRating { get; set; }
 
-        public SubCategories    SubCategory { get; set; }
+        public Product    Product { get; set; }
 
         public string           ReviewComment { get; set; }
 

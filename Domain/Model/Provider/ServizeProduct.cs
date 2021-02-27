@@ -14,7 +14,7 @@ namespace Servize.Domain.Model.Provider
 
         public string ServiceName { get; set; }
 
-        public SubCategories Category { get; set; }
+        public Product Category { get; set; }
 
         public string ImageList { get; set; }
 

@@ -40,7 +40,7 @@ namespace Servize.Controllers
         [Route("AddToCart")]
         public ActionResult<Response<CartItem>> AddtoCart([FromBody] CartDTO cartDTO)
         {
-            var category = _context.ServizeSubCategory.FirstOrDefault(p => p.Id == cartDTO.ServizeCategoryNumber);
+            var category = _context.ServizeProduct.FirstOrDefault(p => p.Id == cartDTO.ServizeCategoryNumber);
             if (category != null)
             {
                 var item = _cart.AddToCart(category, cartDTO.Amount);
@@ -55,9 +55,9 @@ namespace Servize.Controllers
 
         [HttpDelete]
         [Route("RemoveFromCart")]
-        public ActionResult<Response<ServizeProduct>> RemoveFromCart(int subCategoryId, int amount)
+        public ActionResult<Response<ServizeProduct>> RemoveFromCart(int productId, int amount)
         {
-            var category = _context.ServizeSubCategory.FirstOrDefault(p => p.Id == subCategoryId);
+            var category = _context.ServizeProduct.FirstOrDefault(p => p.Id == productId);
             if (category != null)
             {
                 _cart.RemoveFromCart(category, amount);

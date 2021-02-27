@@ -37,7 +37,7 @@ namespace Servize.Domain.Enums
             ST_ATSHOP
         }
 
-        public enum SubCategories
+        public enum Product
         {
 
             H_CLEANING = 0,

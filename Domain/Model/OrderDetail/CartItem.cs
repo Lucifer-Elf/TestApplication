@@ -15,7 +15,7 @@ namespace Servize.Domain.Model.OrderDetail
 
         public int ServizeCategoryId { get; set; }
 
-        public ServizeProduct ServizeSubCategory { get; set; }
+        public ServizeProduct ServizeProduct { get; set; }
 
         public int Amount { get; set; }
 

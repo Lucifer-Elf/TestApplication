@@ -14,7 +14,7 @@ namespace Servize.DTO.PROVIDER
 
         public string ServiceName { get; set; }
 
-        public SubCategories Category { get; set; }
+        public Product Category { get; set; }
 
         public string ImageList { get; set; }
 

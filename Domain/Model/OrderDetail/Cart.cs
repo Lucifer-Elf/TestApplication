@@ -46,7 +46,7 @@ namespace Servize.Domain.Model.OrderDetail
         {
             try
             {
-                var cartItem = _context.CartItem.SingleOrDefault(s => s.ServizeSubCategory.Id == category.Id && s.CartId == Id);
+                var cartItem = _context.CartItem.SingleOrDefault(s => s.ServizeProduct.Id == category.Id && s.CartId == Id);
 
                 if (cartItem == null)
                 {
@@ -55,7 +55,7 @@ namespace Servize.Domain.Model.OrderDetail
                     {
                         ProviderId = 1,
                         CartId = Id,
-                        ServizeSubCategory = category,
+                        ServizeProduct = category,
                         Amount = amount
                     };
 
@@ -83,7 +83,7 @@ namespace Servize.Domain.Model.OrderDetail
         public int  RemoveFromCart(ServizeProduct category, int amount)
         {
            
-                var cartItem = _context.CartItem.SingleOrDefault(s => s.ServizeSubCategory.Id == category.Id && s.CartId == Id);
+                var cartItem = _context.CartItem.SingleOrDefault(s => s.ServizeProduct.Id == category.Id && s.CartId == Id);
 
                 var localAmount = 0;
                 if (cartItem == null)
@@ -106,7 +106,7 @@ namespace Servize.Domain.Model.OrderDetail
 
         public List<CartItem> GetCartItem()
         {
-            return CartItems ?? (CartItems = _context.CartItem.Where(c => c.CartId == Id).Include(i => i.ServizeSubCategory).ToList());
+            return CartItems ?? (CartItems = _context.CartItem.Where(c => c.CartId == Id).Include(i => i.ServizeProduct).ToList());
         }
 
 
@@ -121,7 +121,7 @@ namespace Servize.Domain.Model.OrderDetail
 
         public double GetCartTotal()
         {
-            var total = _context.CartItem.Where(c => c.CartId == Id).Select(C => C.ServizeSubCategory.PriceQuote * C.Amount).Sum();
+            var total = _context.CartItem.Where(c => c.CartId == Id).Select(C => C.ServizeProduct.PriceQuote * C.Amount).Sum();
             return total;
         
         }
