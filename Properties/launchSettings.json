@@ -23,7 +23,9 @@
         "GoogleClientId": "767916686704-fql4bubmbka31ftnadb70t656pa5kvab.apps.googleusercontent.com",
         "GoogleSecret": "_IASP8rZypXBJdYi3TMO8xyb",
         "AppId": "527735858190215",
-        "AppSecret": "35c7e9fbe416b54c5ce9f45ada3d725b"
+        "AppSecret": "35c7e9fbe416b54c5ce9f45ada3d725b",
+        "Server": "localhost",
+        "DatabaseName": "TestDatabase"
       },
       "applicationUrl": "https://localhost:5001;https://localhost:5000;http://10.122.1.117:5002"
     },

@@ -18,12 +18,14 @@ using System;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Servize.Utility.Cors;
+using Servize.Utility;
 
 namespace Servize
 {
     public class Startup
     {
-        readonly string MyAllowSpecificOrigins = "_myWebOrigion";
+        readonly string MyAllowSpecificOrigins = "_myWebOrigin";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -34,13 +36,14 @@ namespace Servize
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers(); // controller Registered
-            services.AddCors(options =>
+           services.AddCors(options =>
             {
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                                   builder =>
                                   {
                                       builder.WithOrigins("https://localhost:8080",
-                                                          "http://localhost:8080", "https://accounts.google.com")
+                                                          "http://localhost:8080", 
+                                                          "https://accounts.google.com")
                                       .AllowAnyHeader()
                                       .AllowAnyMethod()
                                       .AllowCredentials();
@@ -56,8 +59,10 @@ namespace Servize
             services.AddScoped<Utility.Utilities>();
             services.AddScoped<Cart>();
 
+            string connectionString = @$"Server={Configuration.GetValue<string>("Server")}\SQLEXPRESS;Database={Configuration.GetValue<string>("DatabaseName")};Trusted_Connection=True;";
+
             //EnitiyFrameWork
-            services.AddDbContext<ServizeDBContext>(options => options.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=TestDatabase;Trusted_Connection=True;"));
+            services.AddDbContext<ServizeDBContext>(options => options.UseSqlServer(connectionString/*@"Server=localhost\SQLEXPRESS;Database=TestDatabase;Trusted_Connection=True;"*/));
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); // instance of http 
             services.AddScoped(sp => Cart.GetCart(sp));  // diffenrt instance to differnt user

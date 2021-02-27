@@ -1,4 +1,6 @@
-﻿using Servize.Domain.Enums;
+﻿using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Http;
+using Servize.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,4 +31,21 @@ namespace Servize.Utility
             return UserRoles.User;
         }
     }
+
+    /*public class AuthenticationCrosPolicy : ICorsPolicyProvider
+    {
+        public async Task<CorsPolicy> GetPolicyAsync(HttpContext context, string policy)
+        {
+            if (policy != "_myWebOrigin") return null;
+            string origin = context.Request.Headers["Origin"].FirstOrDefault();
+
+            return new CorsPolicyBuilder()
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+                .WithOrigins(origin)
+                .Build();
+        
+        }
+    }*/
 }

@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace Servize.Controllers
 {
-    [EnableCors("_myWebOrigion")]
+    [EnableCors("_myWebOrigin")]
     [Route("[controller]")]
     [ApiController]
     public class AuthenticationController : ControllerBase
