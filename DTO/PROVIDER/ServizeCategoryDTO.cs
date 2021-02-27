@@ -10,7 +10,7 @@ namespace Servize.DTO.PROVIDER
     {
         public ServizeCategoryDTO()
         {
-            SubServices = new HashSet<ServizeSubCategoryDTO>();
+            SubServices = new HashSet<ServizeProductDTO>();
         }
         public int Id { get; set; }
       
@@ -21,6 +21,6 @@ namespace Servize.DTO.PROVIDER
 
         public string BannerImage { get; set; }
 
-        public ICollection<ServizeSubCategoryDTO> SubServices { get; set; }
+        public ICollection<ServizeProductDTO> SubServices { get; set; }
     }
 }

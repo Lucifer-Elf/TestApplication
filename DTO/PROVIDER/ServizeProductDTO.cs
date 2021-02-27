@@ -6,7 +6,7 @@ using static Servize.Domain.Enums.ServizeEnum;
 
 namespace Servize.DTO.PROVIDER
 {
-    public class ServizeSubCategoryDTO
+    public class ServizeProductDTO
     {
         public int Id { get; set; }
         
