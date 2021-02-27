@@ -12,7 +12,7 @@ namespace Servize.Domain.Mapper
         {
             CreateMap<ServizeProvider, ServizeProviderDTO>().ReverseMap();
             CreateMap<ServizeCategory, ServizeCategoryDTO>().ReverseMap();
-            CreateMap<ServizeSubCategory, ServizeSubCategoryDTO>().ReverseMap();
+            CreateMap<ServizeProduct, ServizeSubCategoryDTO>().ReverseMap();
             CreateMap<UserClient, UserClientDTO>().ReverseMap();
         }
     }

@@ -59,9 +59,9 @@ namespace Servize.Domain.Repositories
 
             if (category.SubServices.Count > 0)
             {
-                foreach (ServizeSubCategory subservice in category.SubServices)
+                foreach (ServizeProduct subservice in category.SubServices)
                 {
-                    ServizeSubCategory servizeSubCategory = await _context.ServizeSubCategory.FindAsync(subservice.Id);
+                    ServizeProduct servizeSubCategory = await _context.ServizeSubCategory.FindAsync(subservice.Id);
                     if (servizeSubCategory == null)
                     {
                         _context.ServizeSubCategory.Add(subservice);
@@ -93,9 +93,9 @@ namespace Servize.Domain.Repositories
 
             if (category.SubServices.Count > 0)
             {
-                foreach (ServizeSubCategory subservice in category.SubServices)
+                foreach (ServizeProduct subservice in category.SubServices)
                 {
-                    ServizeSubCategory servizeSubCategory = await _context.ServizeSubCategory.FindAsync(subservice.Id);
+                    ServizeProduct servizeSubCategory = await _context.ServizeSubCategory.FindAsync(subservice.Id);
                     if (servizeSubCategory != null)
                     {
                         _context.ServizeSubCategory.Update(subservice);

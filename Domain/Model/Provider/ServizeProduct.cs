@@ -4,7 +4,7 @@ using static Servize.Domain.Enums.ServizeEnum;
 
 namespace Servize.Domain.Model.Provider
 {
-    public class ServizeSubCategory
+    public class ServizeProduct
     {
         public int Id { get; set; }
 

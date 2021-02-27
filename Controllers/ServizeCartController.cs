@@ -55,15 +55,15 @@ namespace Servize.Controllers
 
         [HttpDelete]
         [Route("RemoveFromCart")]
-        public ActionResult<Response<ServizeSubCategory>> RemoveFromCart(int subCategoryId, int amount)
+        public ActionResult<Response<ServizeProduct>> RemoveFromCart(int subCategoryId, int amount)
         {
             var category = _context.ServizeSubCategory.FirstOrDefault(p => p.Id == subCategoryId);
             if (category != null)
             {
                 _cart.RemoveFromCart(category, amount);
-                return new Response<ServizeSubCategory>(category, StatusCodes.Status200OK);
+                return new Response<ServizeProduct>(category, StatusCodes.Status200OK);
             }
-            return new Response<ServizeSubCategory>("Category Id is not avaliable", StatusCodes.Status404NotFound);
+            return new Response<ServizeProduct>("Category Id is not avaliable", StatusCodes.Status404NotFound);
 
         }
     }

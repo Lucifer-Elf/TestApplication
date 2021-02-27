@@ -18,7 +18,7 @@ namespace Servize.Domain.Model.Provider
 
         public string BannerImage { get; set; }
 
-        public ICollection<ServizeSubCategory> SubServices { get; set; }
+        public ICollection<ServizeProduct> SubServices { get; set; }
 
     }
 }

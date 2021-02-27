@@ -39,7 +39,7 @@ namespace Servize.Controllers
         [HttpGet]
         [Route("GetALL")]
         [Produces("application/json")]
-        public async Task<ActionResult<IList<UserClientDTO>>> GetAllServizeProviderList()
+        public async Task<ActionResult<IList<UserClientDTO>>> GetAllServizeUserList()
         {
 
             Response<IList<UserClientDTO>> response = await _services.GetAllServizeUserList();
@@ -52,7 +52,7 @@ namespace Servize.Controllers
 
         [HttpGet("{id}")]
         [Produces("application/json")]
-        public async Task<ActionResult<UserClientDTO>> GetServizeProviderById(string id)
+        public async Task<ActionResult<UserClientDTO>> GetServizeUserById(string id)
         {
             Response<UserClientDTO> response = await _services.GetAllServizeUserById(id);
             if (response.IsSuccessStatusCode())
