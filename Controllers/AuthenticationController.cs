@@ -10,6 +10,7 @@ using Servize.Domain.Enums;
 using Servize.Domain.Model.Account;
 using Servize.Domain.Model.Client;
 using Servize.Domain.Model.Provider;
+using Servize.DTO.ADMIN;
 using Servize.DTO.PROVIDER;
 using Servize.Utility;
 using System;
@@ -97,7 +98,7 @@ namespace Servize.Controllers
 
         //Authentication/UserTokenExpire
         [HttpGet]
-        [Route("UserTokenExpire")]
+        [Route("UserTokenValidty")]
         public async Task<ActionResult> GetUserTokenValidity([FromBody] ServizeLoginModel model)
         {
             var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
@@ -323,7 +324,7 @@ namespace Servize.Controllers
         [Consumes("application/json")]
         public async Task<ActionResult> ExternalLoginCallback(string returnUrl, string remoteError = null)
         {
-         
+
             returnUrl = returnUrl ?? Url.Content("~/");
             ServizeLoginModel loginViewModel = new ServizeLoginModel
             {
@@ -332,7 +333,7 @@ namespace Servize.Controllers
 
             };
 
-         if (remoteError != null)
+            if (remoteError != null)
             {
 
                 ModelState.AddModelError(string.Empty, $"Error for external provider:{remoteError}");
@@ -392,12 +393,71 @@ namespace Servize.Controllers
         public ActionResult ExternalLogin(string returnUrl = null)
         {
             var redirectUrl = Url.Action("ExternalLoginCallback", "Authentication", new { returnUrl });
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
-            Console.WriteLine(properties);
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);       
             return new ChallengeResult("Google", properties);
 
         }
 
-        
+        [HttpPost]
+        [Route("facebook-login")]
+        [AllowAnonymous]
+        public ActionResult ExternalLoginFaceBook(string returnUrl = null)
+        {
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Authentication", new { returnUrl });
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties("Facebook", redirectUrl);          
+            return new ChallengeResult("Facebook", properties);
+
+        }
+
+        [HttpGet]
+        [Route("LoginData/{id}")]
+        public async Task<ActionResult<ServizeLoginModel>> GetUserDataById(string Id)
+        {
+            try
+            {
+                var userExist = await _userManager.FindByIdAsync(Id);
+                if (userExist == null)
+                    return Problem(detail: "No able to find User of specific Id", statusCode: StatusCodes.Status404NotFound);
+
+                ServizeLoginModel model = new ServizeLoginModel
+                {
+                    UserName = userExist.UserName,
+
+                };
+                return Ok(model);
+            }
+            catch
+            {
+                return Problem(detail: "Error while getting UserDetaild From Identity", statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpGet]
+        [Route("ChangePassword")]
+        public async Task<ActionResult<ServizeLoginModel>> ChangePassword(UserChangePassWordDTO changepassword)
+        {
+            try
+            {
+                var userExist = await _userManager.FindByIdAsync(changepassword.UserId);
+                if (userExist == null)
+                    return Problem(detail: "No able to find User of specific Id", statusCode: StatusCodes.Status404NotFound);
+
+                var passWordMatch = await _userManager.CheckPasswordAsync(userExist, changepassword.OldPasword);
+
+                if(!passWordMatch)
+                    return Problem(detail: "Old Pass is Word", statusCode: StatusCodes.Status406NotAcceptable);
+
+                var isNewPassWord = await _userManager.ChangePasswordAsync(userExist, changepassword.OldPasword, changepassword.NewPassword);
+
+                if (isNewPassWord.Succeeded)
+                    return Ok("Password Changed Successfully");
+
+                return Problem(detail: isNewPassWord.Errors.ToString(), statusCode: StatusCodes.Status406NotAcceptable);
+            }
+            catch
+            {
+                return Problem(detail: "Error while Changing Password", statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
     }
 }

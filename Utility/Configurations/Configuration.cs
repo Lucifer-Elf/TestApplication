@@ -28,21 +28,21 @@ namespace Servize.Utility.Configurations
 
             if (value != null)
             {
-                return checkValue<T>(value, defaultValue);
+                return CheckValue<T>(value, defaultValue);
             }
             return defaultValue;
         }
 
-        private static T checkValue<T>(string input, T defaultValue)
+        private static T CheckValue<T>(string input, T defaultValue)
         {
-            if (isType<T>(input))
+            if (IsType<T>(input))
             {
-                return (T)Convert.ChangeType(input, typeof(Task));
+                return (T)Convert.ChangeType(input, typeof(T));
             }
 
             return defaultValue;
         }
-        private static bool isType<T>(string input)
+        private static bool IsType<T>(string input)
         {         
             try
             {

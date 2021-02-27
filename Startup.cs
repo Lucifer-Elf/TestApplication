@@ -37,13 +37,14 @@ namespace Servize
             services.AddCors(options =>
             {
                 options.AddPolicy(name: MyAllowSpecificOrigins,
-                                  builder =>{
+                                  builder =>
+                                  {
                                       builder.WithOrigins("https://localhost:8080",
-                                                          "http://localhost:8080","https://accounts.google.com")
+                                                          "http://localhost:8080", "https://accounts.google.com")
                                       .AllowAnyHeader()
                                       .AllowAnyMethod()
                                       .AllowCredentials();
-                                      
+
                                   });
             });
 
@@ -73,14 +74,14 @@ namespace Servize
             //Add Authentication
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme   = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme      = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme               = JwtBearerDefaults.AuthenticationScheme;
-              
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+
             })
-             
-    
-              
+
+
+
            //Adding Jwt Bearer
            .AddJwtBearer(options =>
            {
@@ -97,7 +98,7 @@ namespace Servize
 
 
                };
-           })     
+           })
 
      .AddGoogle(options =>
         {
@@ -105,7 +106,16 @@ namespace Servize
             options.ClientSecret = Utility.Configurations.Configuration.GetValue<string>("GoogleSecret");
             // to change call back Url
             //options.CallbackPath
-        });
+        })
+     .AddFacebook(options =>
+     {
+         options.AppId = Utility.Configurations.Configuration.GetValue<string>("AppId");
+         options.AppSecret = Utility.Configurations.Configuration.GetValue<string>("AppSecret");
+         // to change call back Url
+         //options.CallbackPath
+     })
+     ;
+
 
 
 
