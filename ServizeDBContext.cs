@@ -23,6 +23,8 @@ namespace Servize
         public DbSet<UserClient> UserClient { get; set; }
         public DbSet<CartItem> CartItem { get; set; }
 
+        public DbSet<Cart> Cart { get; set; }
+
 
 
 

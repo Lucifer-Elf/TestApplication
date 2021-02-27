@@ -14,7 +14,7 @@ namespace Servize.Domain.Model.OrderDetail
 {
     public class Cart
     {
-        public string CartId { get; set; }
+        public string Id { get; set; }
 
         [ForeignKey("ApplicationUser")]
         public string UserId { get; set; }
@@ -38,7 +38,7 @@ namespace Servize.Domain.Model.OrderDetail
             string cartId = session.GetString("CardId") ?? Guid.NewGuid().ToString();
             session.SetString("CartId", cartId);
 
-            return new Cart(context) { CartId = cartId };
+            return new Cart(context) { Id = cartId };
           
         }
 
@@ -46,7 +46,7 @@ namespace Servize.Domain.Model.OrderDetail
         {
             try
             {
-                var cartItem = _context.CartItem.SingleOrDefault(s => s.ServizeSubCategory.Id == category.Id && s.CartId == CartId);
+                var cartItem = _context.CartItem.SingleOrDefault(s => s.ServizeSubCategory.Id == category.Id && s.CartId == Id);
 
                 if (cartItem == null)
                 {
@@ -54,7 +54,7 @@ namespace Servize.Domain.Model.OrderDetail
                     cartItem = new CartItem
                     {
                         ProviderId = 1,
-                        CartId = CartId,
+                        CartId = Id,
                         ServizeSubCategory = category,
                         Amount = amount
                     };
@@ -83,7 +83,7 @@ namespace Servize.Domain.Model.OrderDetail
         public int  RemoveFromCart(ServizeSubCategory category, int amount)
         {
            
-                var cartItem = _context.CartItem.SingleOrDefault(s => s.ServizeSubCategory.Id == category.Id && s.CartId == CartId);
+                var cartItem = _context.CartItem.SingleOrDefault(s => s.ServizeSubCategory.Id == category.Id && s.CartId == Id);
 
                 var localAmount = 0;
                 if (cartItem == null)
@@ -106,14 +106,14 @@ namespace Servize.Domain.Model.OrderDetail
 
         public List<CartItem> GetCartItem()
         {
-            return CartItems ?? (CartItems = _context.CartItem.Where(c => c.CartId == CartId).Include(i => i.ServizeSubCategory).ToList());
+            return CartItems ?? (CartItems = _context.CartItem.Where(c => c.CartId == Id).Include(i => i.ServizeSubCategory).ToList());
         }
 
 
         public void ClearCart()
         {
 
-            var cartItem = _context.CartItem.Where(c => c.CartId == CartId);
+            var cartItem = _context.CartItem.Where(c => c.CartId == Id);
             _context.CartItem.RemoveRange(cartItem);
             _context.SaveChanges();
         }
@@ -121,7 +121,7 @@ namespace Servize.Domain.Model.OrderDetail
 
         public double GetCartTotal()
         {
-            var total = _context.CartItem.Where(c => c.CartId == CartId).Select(C => C.ServizeSubCategory.PriceQuote * C.Amount).Sum();
+            var total = _context.CartItem.Where(c => c.CartId == Id).Select(C => C.ServizeSubCategory.PriceQuote * C.Amount).Sum();
             return total;
         
         }

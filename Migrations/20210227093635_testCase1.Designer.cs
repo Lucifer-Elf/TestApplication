@@ -10,8 +10,8 @@ using Servize;
 namespace Servize.Migrations
 {
     [DbContext(typeof(ServizeDBContext))]
-    [Migration("20210219102427_testCase3")]
-    partial class testCase3
+    [Migration("20210227093635_testCase1")]
+    partial class testCase1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -245,6 +245,9 @@ namespace Servize.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
@@ -255,6 +258,52 @@ namespace Servize.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserClient");
+                });
+
+            modelBuilder.Entity("Servize.Domain.Model.OrderDetail.Cart", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Cart");
+                });
+
+            modelBuilder.Entity("Servize.Domain.Model.OrderDetail.CartItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CartId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ProviderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ServizeCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ServizeSubCategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("ServizeSubCategoryId");
+
+                    b.ToTable("CartItem");
                 });
 
             modelBuilder.Entity("Servize.Domain.Model.OrderDetail.OrderItem", b =>
@@ -362,10 +411,7 @@ namespace Servize.Migrations
                     b.Property<string>("BannerImage")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("PickAndDrop")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("ServizeProviderId")
+                    b.Property<int>("ProviderId")
                         .HasColumnType("int");
 
                     b.Property<int>("Type")
@@ -373,7 +419,7 @@ namespace Servize.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ServizeProviderId");
+                    b.HasIndex("ProviderId");
 
                     b.ToTable("ServizeCategory");
                 });
@@ -404,6 +450,12 @@ namespace Servize.Migrations
                     b.Property<string>("EmiratesIdNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("float");
 
                     b.Property<int>("ModeType")
                         .HasColumnType("int");
@@ -519,7 +571,7 @@ namespace Servize.Migrations
                     b.Property<string>("ServiceName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ServizeCategoryId")
+                    b.Property<int>("ServizeCategoryId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartTime")
@@ -603,6 +655,30 @@ namespace Servize.Migrations
                     b.Navigation("OrderSummary");
                 });
 
+            modelBuilder.Entity("Servize.Domain.Model.OrderDetail.Cart", b =>
+                {
+                    b.HasOne("Servize.Authentication.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("Servize.Domain.Model.OrderDetail.CartItem", b =>
+                {
+                    b.HasOne("Servize.Domain.Model.OrderDetail.Cart", "Cart")
+                        .WithMany("CartItems")
+                        .HasForeignKey("CartId");
+
+                    b.HasOne("Servize.Domain.Model.Provider.ServizeSubCategory", "ServizeSubCategory")
+                        .WithMany()
+                        .HasForeignKey("ServizeSubCategoryId");
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("ServizeSubCategory");
+                });
+
             modelBuilder.Entity("Servize.Domain.Model.OrderDetail.OrderItem", b =>
                 {
                     b.HasOne("Servize.Domain.Model.OrderDetail.OrderSummary", "Order")
@@ -644,9 +720,13 @@ namespace Servize.Migrations
 
             modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeCategory", b =>
                 {
-                    b.HasOne("Servize.Domain.Model.Provider.ServizeProvider", null)
+                    b.HasOne("Servize.Domain.Model.Provider.ServizeProvider", "ServizeProvider")
                         .WithMany("ServiceCategories")
-                        .HasForeignKey("ServizeProviderId");
+                        .HasForeignKey("ProviderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ServizeProvider");
                 });
 
             modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeProvider", b =>
@@ -682,9 +762,18 @@ namespace Servize.Migrations
 
             modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeSubCategory", b =>
                 {
-                    b.HasOne("Servize.Domain.Model.Provider.ServizeCategory", null)
-                        .WithMany("SubService")
-                        .HasForeignKey("ServizeCategoryId");
+                    b.HasOne("Servize.Domain.Model.Provider.ServizeCategory", "ServizeCategory")
+                        .WithMany("SubServices")
+                        .HasForeignKey("ServizeCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ServizeCategory");
+                });
+
+            modelBuilder.Entity("Servize.Domain.Model.OrderDetail.Cart", b =>
+                {
+                    b.Navigation("CartItems");
                 });
 
             modelBuilder.Entity("Servize.Domain.Model.OrderDetail.OrderSummary", b =>
@@ -694,7 +783,7 @@ namespace Servize.Migrations
 
             modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeCategory", b =>
                 {
-                    b.Navigation("SubService");
+                    b.Navigation("SubServices");
                 });
 
             modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeProvider", b =>

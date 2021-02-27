@@ -258,6 +258,21 @@ namespace Servize.Migrations
                     b.ToTable("UserClient");
                 });
 
+            modelBuilder.Entity("Servize.Domain.Model.OrderDetail.Cart", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Cart");
+                });
+
             modelBuilder.Entity("Servize.Domain.Model.OrderDetail.CartItem", b =>
                 {
                     b.Property<int>("Id")
@@ -268,6 +283,9 @@ namespace Servize.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("int");
 
+                    b.Property<string>("CartId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("ProviderId")
                         .HasColumnType("int");
 
@@ -277,10 +295,9 @@ namespace Servize.Migrations
                     b.Property<int?>("ServizeSubCategoryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("cartId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("CartId");
 
                     b.HasIndex("ServizeSubCategoryId");
 
@@ -636,11 +653,26 @@ namespace Servize.Migrations
                     b.Navigation("OrderSummary");
                 });
 
+            modelBuilder.Entity("Servize.Domain.Model.OrderDetail.Cart", b =>
+                {
+                    b.HasOne("Servize.Authentication.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("ApplicationUser");
+                });
+
             modelBuilder.Entity("Servize.Domain.Model.OrderDetail.CartItem", b =>
                 {
+                    b.HasOne("Servize.Domain.Model.OrderDetail.Cart", "Cart")
+                        .WithMany("CartItems")
+                        .HasForeignKey("CartId");
+
                     b.HasOne("Servize.Domain.Model.Provider.ServizeSubCategory", "ServizeSubCategory")
                         .WithMany()
                         .HasForeignKey("ServizeSubCategoryId");
+
+                    b.Navigation("Cart");
 
                     b.Navigation("ServizeSubCategory");
                 });
@@ -735,6 +767,11 @@ namespace Servize.Migrations
                         .IsRequired();
 
                     b.Navigation("ServizeCategory");
+                });
+
+            modelBuilder.Entity("Servize.Domain.Model.OrderDetail.Cart", b =>
+                {
+                    b.Navigation("CartItems");
                 });
 
             modelBuilder.Entity("Servize.Domain.Model.OrderDetail.OrderSummary", b =>
