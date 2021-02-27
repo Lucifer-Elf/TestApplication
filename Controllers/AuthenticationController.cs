@@ -122,7 +122,7 @@ namespace Servize.Controllers
 
         //Authentication/Login
         [HttpPost]
-        [Route("Login")]
+        [Route("login")]
         [Produces("application/json")]
         [Consumes("application/json")]
         public async Task<ActionResult> Login([FromBody] ServizeLoginModel model)
@@ -164,7 +164,9 @@ namespace Servize.Controllers
                     {
 
                         token = new JwtSecurityTokenHandler().WriteToken(token),
-                        ValidTo = token.ValidTo.ToString("yyyy-MM-ddThh:mm:ss")
+                        validTo = token.ValidTo.ToString("yyyy-MM-ddThh:mm:ss"),
+                        userId = user.Id,
+                        userName = user.UserName
 
                     };
                     await _userManager.SetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken", tokenHolder.token);
@@ -266,11 +268,12 @@ namespace Servize.Controllers
                     };
                     _context.ServizeProvider.Add(provider);
                     await _context.SaveChangesAsync();   /// check retun with 0 or less and error return to main
+                    return Ok(new Response("Provider Added is Created Sucessfully", StatusCodes.Status201Created));
                 }
-               /* else if (Utility.Utilities.GetRoleForstring(role) == "Admin")
-                {
-                    
-                }*/
+                /* else if (Utility.Utilities.GetRoleForstring(role) == "Admin")
+                 {
+                      // return Ok(new Response("Admin is Created Sucessfully", StatusCodes.Status201Created));
+                 }*/
                 else
                 {
                     UserClient client = new UserClient
@@ -279,10 +282,8 @@ namespace Servize.Controllers
                     };
                     _context.UserClient.Add(client);
                     await _context.SaveChangesAsync();
+                    return Ok(new Response("User Added is Created Sucessfully", StatusCodes.Status201Created));
                 }
-
-                return Ok(new Response("Admin is Created Sucessfully", StatusCodes.Status201Created));
-
 
             }
             catch (Exception ex)

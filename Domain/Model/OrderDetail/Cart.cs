@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using Servize.Authentication;
 using Servize.Domain.Model.Provider;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,6 +15,11 @@ namespace Servize.Domain.Model.OrderDetail
     public class Cart
     {
         public string CartId { get; set; }
+
+        [ForeignKey("ApplicationUser")]
+        public string UserId { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }
+
         public List<CartItem> CartItems { get; set; }
 
         private readonly ServizeDBContext _context;

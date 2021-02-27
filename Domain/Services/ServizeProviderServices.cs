@@ -69,7 +69,7 @@ namespace Servize.Domain.Services
             }
         }
 
-        public async Task<Response<ServizeProviderDTO>> GetAllServizeProviderById(int Id)
+        public async Task<Response<ServizeProviderDTO>> GetAllServizeProviderById(string Id)
         {
             try
             {

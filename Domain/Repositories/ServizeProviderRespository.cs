@@ -59,7 +59,7 @@ namespace Servize.Domain.Repositories
 
         }
 
-        public async Task<Response<ServizeProvider>> GetAllServizeProviderById(int Id)
+        public async Task<Response<ServizeProvider>> GetAllServizeProviderById(string Id)
         {
             try
             {
@@ -67,7 +67,7 @@ namespace Servize.Domain.Repositories
                     //.Include(i=>i.ServiceCategories)
                                                                                    // .ThenInclude(i=>i.SubServices)
                                                                                  .AsNoTracking()
-                                                                                .SingleOrDefaultAsync(c => c.Id == Id);
+                                                                                .SingleOrDefaultAsync(c => c.UserId == Id);
                 if (servizeProvider == null)
                     return new Response<ServizeProvider>("Failed to find Id", StatusCodes.Status404NotFound);
                 return new Response<ServizeProvider>(servizeProvider, StatusCodes.Status200OK);

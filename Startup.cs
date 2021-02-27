@@ -38,8 +38,8 @@ namespace Servize
             {
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                                   builder =>{
-                                      builder.WithOrigins("http://localhost:8080",
-                                                          "https://localhost:8080","https://accounts.google.com")
+                                      builder.WithOrigins("https://localhost:8080",
+                                                          "http://localhost:8080","https://accounts.google.com")
                                       .AllowAnyHeader()
                                       .AllowAnyMethod()
                                       .AllowCredentials();

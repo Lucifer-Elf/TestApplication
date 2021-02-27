@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Servize.Authentication;
 using Servize.Domain.Enums;
-using Servize.Domain.Repositories;
 using Servize.Domain.Services;
 using Servize.DTO.PROVIDER;
 using Servize.Utility;
@@ -34,9 +33,9 @@ namespace Servize.Controllers
             _services = new ServizeProviderServices(dbContext, mapper, utitlity);
         }
 
-       // [Authorize(Roles =  UserRoles.Admin)]
+        [Authorize(Roles =  UserRoles.Admin)]
         [HttpGet]
-        [Route("Get")]
+        [Route("GetALL")]
         [Produces("application/json")]
         public async Task<ActionResult<IList<ServizeProviderDTO>>> GetAllServizeProviderList()
         {
@@ -51,7 +50,7 @@ namespace Servize.Controllers
 
         [HttpGet("{id}")]
         [Produces("application/json")]
-        public async Task<ActionResult<ServizeProviderDTO>> GetServizeProviderById(int id)
+        public async Task<ActionResult<ServizeProviderDTO>> GetServizeProviderById(string id)
         {
             Response<ServizeProviderDTO> response = await _services.GetAllServizeProviderById(id);
             if (response.IsSuccessStatusCode())

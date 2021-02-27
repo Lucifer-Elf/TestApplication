@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="Domain\Model\Admin\" />
     <Folder Include="DTO\ADMIN\" />
-    <Folder Include="DTO\USER\" />
   </ItemGroup>
 
   <ItemGroup>
