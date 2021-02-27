@@ -19,17 +19,13 @@ namespace Servize.Utility.Email
             FILE = 1
         }
 
+        private string HostName = Configuration.GetValue<string>("base.smtp.hostname");       
 
+        private int PortNumber = Configuration.GetValue<int>("base.smtp.portnumber");
 
-        private string HostName = Configuration.GetParameterValue("base.smtp.hostname");
+        private string UserName = Configuration.GetValue<string>("base.smtp.username");
 
-        //private int PortNumber = Configuration.GetParameterValue("base.smtp.portnumber").;
-
-        private int PortNumber = 20;
-
-        private string UserName = Configuration.GetParameterValue("base.smtp.username");
-
-        private string Password = Configuration.GetParameterValue("base.smtp.password");
+        private string Password = Configuration.GetValue<string>("base.smtp.password");
 
 
         bool IsEmailSent = false;
@@ -39,8 +35,6 @@ namespace Servize.Utility.Email
         {
 
         }
-
-
        
         public void ConfigureSmtpClient(string hostName, int portNumber, string user = null, string password = null)
         {

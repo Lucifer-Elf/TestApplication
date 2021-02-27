@@ -23,10 +23,10 @@ namespace Servize.Utility.Configurations
             {
                 try
                 {
-                    var kvUri             = Configuration.GetParameterValue("azure.vault.url").TrimEnd('/');
-                    string tenantId       = Configuration.GetParameterValue("azure.vault.tenantid");
-                    string clientId       = Configuration.GetParameterValue("azure.vault.clientid");
-                    string clientSecret   = Configuration.GetParameterValue("azure.vault.clientsecret");
+                    var kvUri             = Configuration.GetValue<string>("azure.vault.url").TrimEnd('/');
+                    string tenantId       = Configuration.GetValue<string>("azure.vault.tenantid");
+                    string clientId       = Configuration.GetValue<string>("azure.vault.clientid");
+                    string clientSecret   = Configuration.GetValue<string>("azure.vault.clientsecret");
 
 
                     ClientSecretCredential credential = new ClientSecretCredential(tenantId, clientId, clientSecret);

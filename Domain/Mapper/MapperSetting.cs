@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Servize.Domain.Model.Client;
 using Servize.Domain.Model.Provider;
 using Servize.DTO.PROVIDER;
+using Servize.DTO.USER;
 
 namespace Servize.Domain.Mapper
 {
@@ -11,6 +13,7 @@ namespace Servize.Domain.Mapper
             CreateMap<ServizeProvider, ServizeProviderDTO>().ReverseMap();
             CreateMap<ServizeCategory, ServizeCategoryDTO>().ReverseMap();
             CreateMap<ServizeSubCategory, ServizeSubCategoryDTO>().ReverseMap();
+            CreateMap<UserClient, UserClientDTO>().ReverseMap();
         }
     }
 }

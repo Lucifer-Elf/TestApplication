@@ -1,24 +1,24 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Servize.Domain.Enums;
 using Servize.Domain.Model.OrderDetail;
 using Servize.Domain.Model.Provider;
 using Servize.DTO.PROVIDER;
 using Servize.Utility;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Servize.Controllers
 {
+    [Authorize(Roles = UserRoles.User )]
     [ApiController]
     [Route("[controller]")]
     public class ServizeCartController : ControllerBase
     {
         private readonly ServizeDBContext _context;
         private readonly Cart _cart;
-        public ServizeCartController(ServizeDBContext dBContext,Cart cart)
+        public ServizeCartController(ServizeDBContext dBContext, Cart cart)
         {
             _context = dBContext;
             _cart = cart;
@@ -36,19 +36,19 @@ namespace Servize.Controllers
         }
 
 
-            [HttpPost]
+        [HttpPost]
         [Route("AddToCart")]
-       public ActionResult<Response<CartItem>> AddtoCart([FromBody]CartDTO cartDTO)
+        public ActionResult<Response<CartItem>> AddtoCart([FromBody] CartDTO cartDTO)
         {
             var category = _context.ServizeSubCategory.FirstOrDefault(p => p.Id == cartDTO.ServizeCategoryNumber);
             if (category != null)
             {
                 var item = _cart.AddToCart(category, cartDTO.Amount);
-                if(item==null)
+                if (item == null)
                     return new Response<CartItem>("No data to add in Cart", StatusCodes.Status500InternalServerError);
 
                 return new Response<CartItem>(item, StatusCodes.Status200OK);
-                     
+
             }
             return new Response<CartItem>("Category Id is not avaliable", StatusCodes.Status404NotFound);
         }
@@ -62,9 +62,7 @@ namespace Servize.Controllers
             {
                 _cart.RemoveFromCart(category, amount);
                 return new Response<ServizeSubCategory>(category, StatusCodes.Status200OK);
-
             }
-
             return new Response<ServizeSubCategory>("Category Id is not avaliable", StatusCodes.Status404NotFound);
 
         }

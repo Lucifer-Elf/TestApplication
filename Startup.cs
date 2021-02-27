@@ -50,6 +50,7 @@ namespace Servize
 
             services.AddScoped<ServizeProviderRespository>();
             services.AddScoped<ServizeCategoryRepository>();
+            services.AddScoped<ServizeUserRepository>();
             services.AddScoped<ServizeCartController>();
             services.AddScoped<Utility.Utilities>();
             services.AddScoped<Cart>();
@@ -100,8 +101,8 @@ namespace Servize
 
      .AddGoogle(options =>
         {
-            options.ClientId = Utility.Configurations.Configuration.GetParameterValue("GoogleClientId");
-            options.ClientSecret = Utility.Configurations.Configuration.GetParameterValue("GoogleSecret");
+            options.ClientId = Utility.Configurations.Configuration.GetValue<string>("GoogleClientId");
+            options.ClientSecret = Utility.Configurations.Configuration.GetValue<string>("GoogleSecret");
             // to change call back Url
             //options.CallbackPath
         });
