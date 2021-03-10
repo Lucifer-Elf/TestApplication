@@ -41,9 +41,7 @@ namespace Servize
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                                   builder =>
                                   {
-                                      builder.WithOrigins("https://localhost:8080",
-                                                          "http://localhost:8080", 
-                                                          "https://accounts.google.com")
+                                      builder.AllowAnyOrigin()
                                       .AllowAnyHeader()
                                       .AllowAnyMethod()
                                       .AllowCredentials();
@@ -82,7 +80,7 @@ namespace Servize
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-
+            
             })
 
 
@@ -139,6 +137,7 @@ namespace Servize
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             }*/);
+            services.AddScoped<IAuthService, AuthService>();
 
         }
 
