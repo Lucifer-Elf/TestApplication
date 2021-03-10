@@ -56,7 +56,11 @@ namespace Servize
             services.AddScoped<Utility.Utilities>();
             services.AddScoped<Cart>();
 
-            string connectionString = @$"Server={Configuration.GetValue<string>("Server")};Database={Configuration.GetValue<string>("DatabaseName")};User Id ={Configuration.GetValue<string>("User Id")};Password={Configuration.GetValue<string>("Password")};;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+            string connectionString = @$"Server={Configuration.GetValue<string>("Server")};
+                                        Database={Configuration.GetValue<string>("DatabaseName")};
+                                        User Id ={Configuration.GetValue<string>("User Id")};
+                                        Password={Configuration.GetValue<string>("Password")};
+                                        MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
           
             //EnitiyFrameWork
             services.AddDbContext<ServizeDBContext>(options => options.UseSqlServer(connectionString));
