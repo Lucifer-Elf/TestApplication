@@ -243,6 +243,7 @@ namespace Servize.Controllers
                 }
                 ApplicationUser user = new ApplicationUser()
                 {
+                    UserName= model.Email,
                     Email = model.Email,
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
@@ -286,21 +287,17 @@ namespace Servize.Controllers
                     EmiratesIdNumber = EmiratesId
 
                 };
-                _context.ServizeProvider.Add(provider);
+                _context.Add(provider);
                 await _context.SaveChangesAsync();   /// check retun with 0 or less and error return to main
                 return Ok(new Response("Provider Added is Created Sucessfully", StatusCodes.Status201Created));
             }
-            /* else if (Utility.Utilities.GetRoleForstring(role) == "Admin")
-             {
-                  // return Ok(new Response("Admin is Created Sucessfully", StatusCodes.Status201Created));
-             }*/
             else
             {
                 UserClient client = new UserClient
                 {
                     UserId = user.Id,
                 };
-                _context.UserClient.Add(client);
+                _context.Add(client);
                 await _context.SaveChangesAsync();
                 return Ok(new Response("User Added is Created Sucessfully", StatusCodes.Status201Created));
             }

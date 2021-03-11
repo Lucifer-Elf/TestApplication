@@ -10,8 +10,8 @@ using Servize;
 namespace Servize.Migrations
 {
     [DbContext(typeof(ServizeDBContext))]
-    [Migration("20210227193144_NewtestMigration")]
-    partial class NewtestMigration
+    [Migration("20210311020502_Test")]
+    partial class Test
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

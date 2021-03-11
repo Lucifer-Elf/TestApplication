@@ -21,8 +21,7 @@ namespace Servize.Domain.Repositories
         {
             try
             {
-                List<UserClient> servizeProviderList = await _context.UserClient .Include(i => i.OrderSummary)
-                                                                                          .AsNoTracking()
+                List<UserClient> servizeProviderList = await _context.UserClient .AsNoTracking()
                                                                                         .ToListAsync();
                 return new Response<IList<UserClient>>(servizeProviderList, StatusCodes.Status200OK);
             }
