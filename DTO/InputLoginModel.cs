@@ -1,12 +1,10 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authentication;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Servize.Domain.Model.Account
+namespace Servize.DTO
 {
-    public class ServizeUserModel
+    public class InputLoginModel
     {
         [Required(ErrorMessage = "Email is required")]
         public string Email { get; set; }
@@ -14,8 +12,6 @@ namespace Servize.Domain.Model.Account
         [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; }
 
-        public string CompanyName { get; set; }
-        public string EmiratesIdNumber { get; set; }
-
+        public bool RememberMe { get; set; }   
     }
 }

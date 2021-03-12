@@ -30,8 +30,8 @@ namespace Servize.Authentication
                 u = new ApplicationUser()
                 {
                     Id = Guid.NewGuid().ToString(),
-                    UserName = payload.Name,
-                    Email = payload.Email,
+                    UserName = payload.Email,
+                    Email = payload.Email,                    
                   
                 };
                 _users.Add(u);

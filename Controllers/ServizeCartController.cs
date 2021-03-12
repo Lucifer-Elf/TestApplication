@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace Servize.Controllers
 {
-    [Authorize(Roles = UserRoles.User )]
+    [Authorize(Roles = UserRoles.Client )]
     [ApiController]
     [Route("[controller]")]
     public class ServizeCartController : ControllerBase

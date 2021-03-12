@@ -8,7 +8,7 @@ namespace Servize.Domain.Enums
 {
     public static class UserRoles
     {
-        public const string User =  "User";
+        public const string Client = "Client";
         public const string Admin = "Admin";
         public const string Provider = "Provider";
     }

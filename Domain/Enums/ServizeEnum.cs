@@ -19,7 +19,7 @@ namespace Servize.Domain.Enums
         public enum ServizeModeType
         {
             FIXED = 0,
-            FLEXIBLE = 2,
+            FLEXIBLE = 1,
         }
 
 

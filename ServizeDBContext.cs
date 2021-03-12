@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Servize.Authentication;
-using Servize.Domain.Model.Provider;
-using Servize.Domain.Model.Account;
-using Servize.Domain.Model.OrderDetail;
 using Servize.Domain.Model.Client;
+using Servize.Domain.Model.OrderDetail;
+using Servize.Domain.Model.Provider;
 
 namespace Servize
 {

@@ -28,7 +28,7 @@ namespace Servize.Utility
 
             if (role.ToUpper() == "PROVIDER")
                 return UserRoles.Provider;
-            return UserRoles.User;
+            return UserRoles.Client;
         }
     }
 
