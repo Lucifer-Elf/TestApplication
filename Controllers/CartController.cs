@@ -14,11 +14,11 @@ namespace Servize.Controllers
     [Authorize(Roles = UserRoles.Client )]
     [ApiController]
     [Route("[controller]")]
-    public class ServizeCartController : ControllerBase
+    public class CartController : ControllerBase
     {
         private readonly ServizeDBContext _context;
         private readonly Cart _cart;
-        public ServizeCartController(ServizeDBContext dBContext, Cart cart)
+        public CartController(ServizeDBContext dBContext, Cart cart)
         {
             _context = dBContext;
             _cart = cart;
@@ -40,7 +40,7 @@ namespace Servize.Controllers
         [Route("AddToCart")]
         public ActionResult<Response<CartItem>> AddtoCart([FromBody] CartDTO cartDTO)
         {
-            var category = _context.ServizeProduct.FirstOrDefault(p => p.Id == cartDTO.ServizeCategoryNumber);
+            var category = _context.Product.FirstOrDefault(p => p.Id == cartDTO.ServizeCategoryNumber);
             if (category != null)
             {
                 var item = _cart.AddToCart(category, cartDTO.Amount);
@@ -55,15 +55,15 @@ namespace Servize.Controllers
 
         [HttpDelete]
         [Route("RemoveFromCart")]
-        public ActionResult<Response<ServizeProduct>> RemoveFromCart(int productId, int amount)
+        public ActionResult<Response<Product>> RemoveFromCart(int productId, int amount)
         {
-            var category = _context.ServizeProduct.FirstOrDefault(p => p.Id == productId);
+            var category = _context.Product.FirstOrDefault(p => p.Id == productId);
             if (category != null)
             {
                 _cart.RemoveFromCart(category, amount);
-                return new Response<ServizeProduct>(category, StatusCodes.Status200OK);
+                return new Response<Product>(category, StatusCodes.Status200OK);
             }
-            return new Response<ServizeProduct>("Category Id is not avaliable", StatusCodes.Status404NotFound);
+            return new Response<Product>("Category Id is not avaliable", StatusCodes.Status404NotFound);
 
         }
     }

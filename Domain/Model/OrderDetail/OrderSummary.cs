@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Servize.Domain.Model.OrderDetail
 {
-    public class OrderSummary
+    public class OrderSummary : BaseEntity
     {
         public int Id { get; set; }
 

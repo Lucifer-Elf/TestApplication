@@ -19,28 +19,28 @@ namespace Servize.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ServizeProviderServices _services;
+        private readonly ProviderServices _services;
 
         public ServizeProviderController(ServizeDBContext dbContext,
                                          IMapper mapper,
                                          UserManager<ApplicationUser> userManager,
-                                        SignInManager<ApplicationUser> signInManager,
+                                        SignInManager<ApplicationUser> signInManager, ContextTransaction transaction,
                                         Utilities utitlity
                                          )
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _services = new ServizeProviderServices(dbContext, mapper, utitlity);
+            _services = new ProviderServices(dbContext, mapper, transaction, utitlity);
         }
 
-        [Authorize(Roles =  UserRoles.Admin)]
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpGet]
         [Route("GetALL")]
         [Produces("application/json")]
-        public async Task<ActionResult<IList<ServizeProviderDTO>>> GetAllServizeProviderList()
+        public async Task<ActionResult<IList<ProviderDTO>>> GetAllServizeProviderList()
         {
 
-            Response<IList<ServizeProviderDTO>> response = await _services.GetAllServizeProviderList();
+            Response<IList<ProviderDTO>> response = await _services.GetAllServizeProviderList();
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
 
@@ -50,20 +50,21 @@ namespace Servize.Controllers
 
         [HttpGet("{id}")]
         [Produces("application/json")]
-        public async Task<ActionResult<ServizeProviderDTO>> GetServizeProviderById(string id)
+        public async Task<ActionResult<ProviderDTO>> GetServizeProviderById(string id)
         {
-            Response<ServizeProviderDTO> response = await _services.GetAllServizeProviderById(id);
+            Response<ProviderDTO> response = await _services.GetAllServizeProviderById(id);
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
 
             return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
 
+        [Authorize(Roles = UserRoles.Admin)]
         [HttpGet("modetype/{id}")]
         [Produces("application/json")]
-        public async Task<ActionResult<IList<ServizeProviderDTO>>> GetAllServizeProviderByModeType(int modeType)
+        public async Task<ActionResult<IList<ProviderDTO>>> GetAllServizeProviderByModeType(int modeType)
         {
-            Response<IList<ServizeProviderDTO>> response = await _services.GetAllServizeProviderByModeType(modeType);
+            Response<IList<ProviderDTO>> response = await _services.GetAllServizeProviderByModeType(modeType);
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
 
@@ -74,10 +75,10 @@ namespace Servize.Controllers
         [Route("UpdateProvider")]
         [Produces("application/json")]
         [Consumes("application/json")]
-        public async Task<ActionResult<ServizeProviderDTO>> UpdateServizeProvider(ServizeProviderDTO servizeProviderDTO)
+        public async Task<ActionResult<ProviderDTO>> UpdateServizeProvider(ProviderDTO servizeProviderDTO)
         {
 
-            Response<ServizeProviderDTO> response = await _services.UpdateServizeProvider(servizeProviderDTO);
+            Response<ProviderDTO> response = await _services.UpdateServizeProvider(servizeProviderDTO);
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
 
@@ -85,38 +86,13 @@ namespace Servize.Controllers
 
         }
 
-        /*
-        //ServizeProvider/AddProvider
-        [HttpPost]
-        [Route("AddProvider")]
-        [Produces("application/json")]
-        [Consumes("application/json")]
-        public async Task<ActionResult<ServizeProviderDTO>> AddServiceProvider([FromBody] ServizeProviderDTO servizeProviderDTO,[FromHeader] string userId)
+        public async Task<ActionResult<ProviderDTO>> PatchServizeProvider(ProviderDTO providerDTO)
         {
-           
-            Response<ServizeProviderDTO> response = new Response<ServizeProviderDTO>("Failed to Add ServizeProvider With Specific Id", StatusCodes.Status500InternalServerError) ;
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user != null)
-            {
-                servizeProviderDTO.UserId = userId;
-                response = await _services.AddServizeProvider(servizeProviderDTO);
-                if (response.IsSuccessStatusCode())
-                    return Ok(response.Resource);
-            }
-
-            return Problem(statusCode: response.StatusCode, detail: response.Message);
-        }
-        */
-
-        public async Task<ActionResult<IList<string>>> GetAllServizeProviderCategory()
-        {
-
-            Response<IList<string>> response = await _services.GetAllServizeProviderCategory();
+            Response<ProviderDTO> response = await _services.PatchServizeProvider(providerDTO);
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
 
             return Problem(statusCode: response.StatusCode, detail: response.Message);
-
         }
     }
 }

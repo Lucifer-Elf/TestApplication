@@ -8,7 +8,7 @@ using static Servize.Domain.Enums.ServizeEnum;
 
 namespace Servize.Domain.Model.Provider
 {
-    public class ServizeProvider
+    public class Provider : BaseEntity
     {
         [Key]
         public int Id { get; set; }
@@ -41,6 +41,6 @@ namespace Servize.Domain.Model.Provider
 
         public PackageType PackageType { get; set; }
 
-        public ICollection<ServizeCategory> ServiceCategories { get; set; }
+        public ICollection<Category> ServiceCategories { get; set; }
     }
 }

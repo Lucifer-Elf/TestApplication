@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Servize.Domain.Model.Provider
 {
-    public class ServizeProviderBankDetail
+    public class ProviderBankDetail : BaseEntity
     {
         public int Id { get; set; }
 
         [ForeignKey("ServizeProvider")]
         public int ProviderId { get; set; }
-        public ServizeProvider ServizeProvider { get; set; }
+        public Provider ServizeProvider { get; set; }
 
         public string AccountHolderName { get; set; }
         public Double AccountNumber { get; set; }

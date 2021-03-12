@@ -1,5 +1,4 @@
 ﻿using Google.Apis.Auth;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -9,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Servize.Authentication;
 using Servize.Domain.Enums;
-using Servize.Domain.Model.Client;
+using Servize.Domain.Model;
 using Servize.Domain.Model.Provider;
 using Servize.DTO;
 using Servize.DTO.ADMIN;
@@ -17,7 +16,6 @@ using Servize.Utility;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,12 +33,14 @@ namespace Servize.Controllers
         private readonly ServizeDBContext _context;
         private readonly IConfiguration _configuration;
         private IAuthService _authService;
+        private readonly ContextTransaction _transaction;
+
         public AuthenticationController(UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
             IConfiguration configuration,
              SignInManager<ApplicationUser> signInManager,
              ServizeDBContext context,
-             IAuthService service
+             IAuthService service,ContextTransaction transaction
             )
         {
             _userManager = userManager;
@@ -49,6 +49,7 @@ namespace Servize.Controllers
             _signInManager = signInManager;
             _context = context;
             _authService = service;
+            _transaction = transaction;
         }
 
 
@@ -263,28 +264,26 @@ namespace Servize.Controllers
           
             if (Utility.Utilities.GetRoleForstring(role) == "Provider")
             {
-                ServizeProvider provider = new ServizeProvider
+                Provider provider = new Provider
                 {
                     UserId = user.Id,                  
                     CompanyName = model.CompanyName,
                     CompanyRegistrationNumber = model.CompanyRegistrationNumber
                 };
                 _context.Add(provider);
-                await _context.SaveChangesAsync();   /// check retun with 0 or less and error return to main
-                return Ok(new Response("Provider Added is Created Sucessfully", StatusCodes.Status201Created));
             }
             else
             {
-                UserClient client = new UserClient
+               Client client = new Client
                 {
                     UserId = user.Id,
                     FirstName =  model.FirstName,
                     LastName = model.LastName
                 };
                 _context.Add(client);
-                await _context.SaveChangesAsync();
-                return Ok(new Response("User Added is Created Sucessfully", StatusCodes.Status201Created));
             }
+            await _transaction.CompleteAsync();
+            return Ok(new Response("Profile Created Sucessfully", StatusCodes.Status201Created));
         }
 
         private void RedirectToLoginAfterRegister(RegistrationInputModel model)
@@ -384,14 +383,14 @@ namespace Servize.Controllers
 
                     if (Utility.Utilities.GetRoleForstring(userView.Role) == "Provider")
                     {
-                        ServizeProvider provider = new ServizeProvider
+                        Provider provider = new Provider
                         {
                             UserId = user.Id,                           
                             CompanyName = payload.Name,
                             CompanyRegistrationNumber = "XXXXXXXX"
 
                         };
-                        _context.ServizeProvider.Add(provider);
+                        _context.Provider.Add(provider);
            
                     }
                     else if (Utility.Utilities.GetRoleForstring(userView.Role) == "Admin")
@@ -400,13 +399,13 @@ namespace Servize.Controllers
                      }
                     else
                     {
-                        UserClient client = new UserClient
+                        Client client = new Client
                         {
                             UserId = user.Id,
                             FirstName= payload.GivenName,
                             LastName = payload.FamilyName
                         };
-                        _context.UserClient.Add(client);                  
+                        _context.Client.Add(client);                  
                     }
                 }
                 var info = new UserLoginInfo(userView.Provider, payload.Subject, userView.Provider.ToUpperInvariant());
@@ -442,7 +441,7 @@ namespace Servize.Controllers
 
                      };
                      await _userManager.SetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken", tokenHolder.token);
-                     await _context.SaveChangesAsync();
+                    await _transaction.CompleteAsync();
                      return Ok(tokenHolder);
                 }
             }

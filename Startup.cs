@@ -49,12 +49,13 @@ namespace Servize
             });
 
 
-            services.AddScoped<ServizeProviderRespository>();
-            services.AddScoped<ServizeCategoryRepository>();
-            services.AddScoped<ServizeUserRepository>();
-            services.AddScoped<ServizeCartController>();
+            services.AddScoped<ProviderRespository>();
+            services.AddScoped<CategoryRepository>();
+            services.AddScoped<ClientRepository>();
+            services.AddScoped<CartController>();
             services.AddScoped<Utility.Utilities>();
             services.AddScoped<Cart>();
+            services.AddScoped<ContextTransaction>();
 
             /*string connectionString = @$"Server={Configuration.GetValue<string>("Server")};
                                         Database={Configuration.GetValue<string>("DatabaseName")};

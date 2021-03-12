@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Servize.Domain.Model.Client;
+using Servize.Domain.Model;
 using Servize.Domain.Model.Provider;
 using Servize.DTO.PROVIDER;
 using Servize.DTO.USER;
@@ -10,10 +10,10 @@ namespace Servize.Domain.Mapper
     {
         public MapperSetting()
         {
-            CreateMap<ServizeProvider, ServizeProviderDTO>().ReverseMap();
-            CreateMap<ServizeCategory, ServizeCategoryDTO>().ReverseMap();
-            CreateMap<ServizeProduct, ServizeProductDTO>().ReverseMap();
-            CreateMap<UserClient, UserClientDTO>().ReverseMap();
+            CreateMap<Provider, ProviderDTO>().ReverseMap();
+            CreateMap<Category, CategoryDTO>().ReverseMap();
+            CreateMap<Product, ProductDTO>().ReverseMap();
+            CreateMap<Client, ClientDTO>().ReverseMap();
         }
     }
 }

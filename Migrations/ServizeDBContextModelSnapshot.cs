@@ -215,7 +215,7 @@ namespace Servize.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.Client.UserClient", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Client", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -234,6 +234,12 @@ namespace Servize.Migrations
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<double>("Latitude")
                         .HasColumnType("float");
 
@@ -250,7 +256,7 @@ namespace Servize.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserClient");
+                    b.ToTable("Client");
                 });
 
             modelBuilder.Entity("Servize.Domain.Model.OrderDetail.Cart", b =>
@@ -280,6 +286,10 @@ namespace Servize.Migrations
 
                     b.Property<string>("CartId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("Modified")
+                        .IsConcurrencyToken()
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("ProviderId")
                         .HasColumnType("int");
@@ -312,6 +322,10 @@ namespace Servize.Migrations
                     b.Property<double>("ItemDiscount")
                         .HasColumnType("float");
 
+                    b.Property<DateTime?>("Modified")
+                        .IsConcurrencyToken()
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("OrderDateTimne")
                         .HasColumnType("datetime2");
 
@@ -340,6 +354,10 @@ namespace Servize.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<DateTime?>("Modified")
+                        .IsConcurrencyToken()
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("PromoCode")
                         .HasColumnType("nvarchar(max)");
 
@@ -359,7 +377,7 @@ namespace Servize.Migrations
                     b.ToTable("OrderSummary");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeBookingSetting", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.BookingSetting", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -374,6 +392,10 @@ namespace Servize.Migrations
 
                     b.Property<bool>("BookingProcess")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime?>("Modified")
+                        .IsConcurrencyToken()
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("MyProperty")
                         .HasColumnType("bit");
@@ -391,10 +413,10 @@ namespace Servize.Migrations
 
                     b.HasIndex("ProviderId");
 
-                    b.ToTable("ServizeBookingSetting");
+                    b.ToTable("BookingSetting");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeCategory", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -403,6 +425,10 @@ namespace Servize.Migrations
 
                     b.Property<string>("BannerImage")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Modified")
+                        .IsConcurrencyToken()
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("ProviderId")
                         .HasColumnType("int");
@@ -414,10 +440,10 @@ namespace Servize.Migrations
 
                     b.HasIndex("ProviderId");
 
-                    b.ToTable("ServizeCategory");
+                    b.ToTable("Category");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeProduct", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -427,7 +453,7 @@ namespace Servize.Migrations
                     b.Property<int>("Areas")
                         .HasColumnType("int");
 
-                    b.Property<int>("Category")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<int>("DaysOFWork")
@@ -442,14 +468,18 @@ namespace Servize.Migrations
                     b.Property<string>("ImageList")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("Modified")
+                        .IsConcurrencyToken()
+                        .HasColumnType("datetime2");
+
                     b.Property<double>("PriceQuote")
                         .HasColumnType("float");
 
-                    b.Property<string>("ServiceName")
+                    b.Property<string>("ProductName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ServizeCategoryId")
-                        .HasColumnType("int");
+                    b.Property<string>("ServiceName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
@@ -459,12 +489,12 @@ namespace Servize.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ServizeCategoryId");
+                    b.HasIndex("CategoryId");
 
-                    b.ToTable("ServizeProduct");
+                    b.ToTable("Product");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeProvider", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.Provider", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -482,14 +512,11 @@ namespace Servize.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CompanyRegistrationNumber")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CovidRating")
                         .HasColumnType("int");
-
-                    b.Property<string>("EmiratesIdNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Latitude")
                         .HasColumnType("float");
@@ -499,6 +526,10 @@ namespace Servize.Migrations
 
                     b.Property<int>("ModeType")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("Modified")
+                        .IsConcurrencyToken()
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("PackageType")
                         .HasColumnType("int");
@@ -516,10 +547,10 @@ namespace Servize.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ServizeProvider");
+                    b.ToTable("Provider");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeProviderBankDetail", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.ProviderBankDetail", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -541,6 +572,10 @@ namespace Servize.Migrations
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("Modified")
+                        .IsConcurrencyToken()
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("ProviderId")
                         .HasColumnType("int");
 
@@ -551,10 +586,10 @@ namespace Servize.Migrations
 
                     b.HasIndex("ProviderId");
 
-                    b.ToTable("ServizeProviderBankDetail");
+                    b.ToTable("ProviderBankDetail");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeReview", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.Review", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -564,8 +599,12 @@ namespace Servize.Migrations
                     b.Property<int>("HappinessRating")
                         .HasColumnType("int");
 
-                    b.Property<int>("Product")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("Modified")
+                        .IsConcurrencyToken()
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Product")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ProviderId")
                         .HasColumnType("int");
@@ -577,7 +616,7 @@ namespace Servize.Migrations
 
                     b.HasIndex("ProviderId");
 
-                    b.ToTable("ServizeReview");
+                    b.ToTable("Review");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -631,7 +670,7 @@ namespace Servize.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.Client.UserClient", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Client", b =>
                 {
                     b.HasOne("Servize.Authentication.ApplicationUser", "ApplicationUser")
                         .WithMany()
@@ -655,7 +694,7 @@ namespace Servize.Migrations
                         .WithMany("CartItems")
                         .HasForeignKey("CartId");
 
-                    b.HasOne("Servize.Domain.Model.Provider.ServizeProduct", "ServizeProduct")
+                    b.HasOne("Servize.Domain.Model.Provider.Product", "ServizeProduct")
                         .WithMany()
                         .HasForeignKey("ServizeProductId");
 
@@ -672,7 +711,7 @@ namespace Servize.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Servize.Domain.Model.Provider.ServizeProvider", "ServizeProvider")
+                    b.HasOne("Servize.Domain.Model.Provider.Provider", "ServizeProvider")
                         .WithMany()
                         .HasForeignKey("ProviderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -692,9 +731,9 @@ namespace Servize.Migrations
                     b.Navigation("ApplicationUser");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeBookingSetting", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.BookingSetting", b =>
                 {
-                    b.HasOne("Servize.Domain.Model.Provider.ServizeProvider", "ServizeProvider")
+                    b.HasOne("Servize.Domain.Model.Provider.Provider", "ServizeProvider")
                         .WithMany()
                         .HasForeignKey("ProviderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -703,29 +742,29 @@ namespace Servize.Migrations
                     b.Navigation("ServizeProvider");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeCategory", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.Category", b =>
                 {
-                    b.HasOne("Servize.Domain.Model.Provider.ServizeProvider", "ServizeProvider")
+                    b.HasOne("Servize.Domain.Model.Provider.Provider", "Provider")
                         .WithMany("ServiceCategories")
                         .HasForeignKey("ProviderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ServizeProvider");
+                    b.Navigation("Provider");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeProduct", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.Product", b =>
                 {
-                    b.HasOne("Servize.Domain.Model.Provider.ServizeCategory", "ServizeCategory")
+                    b.HasOne("Servize.Domain.Model.Provider.Category", "Category")
                         .WithMany("SubServices")
-                        .HasForeignKey("ServizeCategoryId")
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ServizeCategory");
+                    b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeProvider", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.Provider", b =>
                 {
                     b.HasOne("Servize.Authentication.ApplicationUser", "ApplicationUser")
                         .WithMany()
@@ -734,9 +773,9 @@ namespace Servize.Migrations
                     b.Navigation("ApplicationUser");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeProviderBankDetail", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.ProviderBankDetail", b =>
                 {
-                    b.HasOne("Servize.Domain.Model.Provider.ServizeProvider", "ServizeProvider")
+                    b.HasOne("Servize.Domain.Model.Provider.Provider", "ServizeProvider")
                         .WithMany()
                         .HasForeignKey("ProviderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -745,9 +784,9 @@ namespace Servize.Migrations
                     b.Navigation("ServizeProvider");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeReview", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.Review", b =>
                 {
-                    b.HasOne("Servize.Domain.Model.Provider.ServizeProvider", "ServizeProvider")
+                    b.HasOne("Servize.Domain.Model.Provider.Provider", "ServizeProvider")
                         .WithMany()
                         .HasForeignKey("ProviderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -766,12 +805,12 @@ namespace Servize.Migrations
                     b.Navigation("OrderItems");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeCategory", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.Category", b =>
                 {
                     b.Navigation("SubServices");
                 });
 
-            modelBuilder.Entity("Servize.Domain.Model.Provider.ServizeProvider", b =>
+            modelBuilder.Entity("Servize.Domain.Model.Provider.Provider", b =>
                 {
                     b.Navigation("ServiceCategories");
                 });

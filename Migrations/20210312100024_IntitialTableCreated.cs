@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Servize.Migrations
 {
-    public partial class Test : Migration
+    public partial class IntitialTableCreated : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -171,6 +171,34 @@ namespace Servize.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Client",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Area = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Latitude = table.Column<double>(type: "float", nullable: false),
+                    Longitude = table.Column<double>(type: "float", nullable: false),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProfilePicture = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Client", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Client_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "OrderSummary",
                 columns: table => new
                 {
@@ -179,7 +207,8 @@ namespace Servize.Migrations
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     PromoCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Vat = table.Column<int>(type: "int", nullable: false),
-                    ServiceRequestDateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    ServiceRequestDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Modified = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -193,30 +222,30 @@ namespace Servize.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ServizeProvider",
+                name: "Provider",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CompanyName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EmiratesIdNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CompanyRegistrationNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ModeType = table.Column<int>(type: "int", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Postal = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CompanyRegistrationNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Certificate = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CovidRating = table.Column<int>(type: "int", nullable: false),
                     Latitude = table.Column<double>(type: "float", nullable: false),
                     Longitude = table.Column<double>(type: "float", nullable: false),
                     RegistrationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PackageType = table.Column<int>(type: "int", nullable: false)
+                    PackageType = table.Column<int>(type: "int", nullable: false),
+                    Modified = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ServizeProvider", x => x.Id);
+                    table.PrimaryKey("PK_Provider", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ServizeProvider_AspNetUsers_UserId",
+                        name: "FK_Provider_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -224,34 +253,49 @@ namespace Servize.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserClient",
+                name: "BookingSetting",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Area = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Latitude = table.Column<double>(type: "float", nullable: false),
-                    Longitude = table.Column<double>(type: "float", nullable: false),
-                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProfilePicture = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrderId = table.Column<int>(type: "int", nullable: false)
+                    ProviderId = table.Column<int>(type: "int", nullable: false),
+                    BookingProcess = table.Column<bool>(type: "bit", nullable: false),
+                    SLotsInterval = table.Column<int>(type: "int", nullable: false),
+                    MyProperty = table.Column<bool>(type: "bit", nullable: false),
+                    BookingAssignment = table.Column<int>(type: "int", nullable: false),
+                    AmountMountBasedOnService = table.Column<bool>(type: "bit", nullable: false),
+                    NextAvaliablity = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Modified = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserClient", x => x.Id);
+                    table.PrimaryKey("PK_BookingSetting", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserClient_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        name: "FK_BookingSetting_Provider_ProviderId",
+                        column: x => x.ProviderId,
+                        principalTable: "Provider",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Category",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProviderId = table.Column<int>(type: "int", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    BannerImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Modified = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Category", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserClient_OrderSummary_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "OrderSummary",
+                        name: "FK_Category_Provider_ProviderId",
+                        column: x => x.ProviderId,
+                        principalTable: "Provider",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -267,7 +311,8 @@ namespace Servize.Migrations
                     ItemDiscount = table.Column<double>(type: "float", nullable: false),
                     OrderDateTimne = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Vat = table.Column<int>(type: "int", nullable: false),
-                    Amount = table.Column<double>(type: "float", nullable: false)
+                    Amount = table.Column<double>(type: "float", nullable: false),
+                    Modified = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -279,61 +324,15 @@ namespace Servize.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_OrderItem_ServizeProvider_ProviderId",
+                        name: "FK_OrderItem_Provider_ProviderId",
                         column: x => x.ProviderId,
-                        principalTable: "ServizeProvider",
+                        principalTable: "Provider",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ServizeBookingSetting",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ProviderId = table.Column<int>(type: "int", nullable: false),
-                    BookingProcess = table.Column<bool>(type: "bit", nullable: false),
-                    SLotsInterval = table.Column<int>(type: "int", nullable: false),
-                    MyProperty = table.Column<bool>(type: "bit", nullable: false),
-                    BookingAssignment = table.Column<int>(type: "int", nullable: false),
-                    AmountMountBasedOnService = table.Column<bool>(type: "bit", nullable: false),
-                    NextAvaliablity = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ServizeBookingSetting", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ServizeBookingSetting_ServizeProvider_ProviderId",
-                        column: x => x.ProviderId,
-                        principalTable: "ServizeProvider",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ServizeCategory",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ProviderId = table.Column<int>(type: "int", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    BannerImage = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ServizeCategory", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ServizeCategory_ServizeProvider_ProviderId",
-                        column: x => x.ProviderId,
-                        principalTable: "ServizeProvider",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ServizeProviderBankDetail",
+                name: "ProviderBankDetail",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -344,50 +343,52 @@ namespace Servize.Migrations
                     SwiftCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BankName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Modified = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ServizeProviderBankDetail", x => x.Id);
+                    table.PrimaryKey("PK_ProviderBankDetail", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ServizeProviderBankDetail_ServizeProvider_ProviderId",
+                        name: "FK_ProviderBankDetail_Provider_ProviderId",
                         column: x => x.ProviderId,
-                        principalTable: "ServizeProvider",
+                        principalTable: "Provider",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ServizeReview",
+                name: "Review",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProviderId = table.Column<int>(type: "int", nullable: false),
                     HappinessRating = table.Column<int>(type: "int", nullable: false),
-                    Product = table.Column<int>(type: "int", nullable: false),
-                    ReviewComment = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Product = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ReviewComment = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Modified = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ServizeReview", x => x.Id);
+                    table.PrimaryKey("PK_Review", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ServizeReview_ServizeProvider_ProviderId",
+                        name: "FK_Review_Provider_ProviderId",
                         column: x => x.ProviderId,
-                        principalTable: "ServizeProvider",
+                        principalTable: "Provider",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ServizeProduct",
+                name: "Product",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ServizeCategoryId = table.Column<int>(type: "int", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
                     ServiceName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Category = table.Column<int>(type: "int", nullable: false),
+                    ProductName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ImageList = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -395,15 +396,16 @@ namespace Servize.Migrations
                     PriceQuote = table.Column<double>(type: "float", nullable: false),
                     VariablePrice = table.Column<double>(type: "float", nullable: false),
                     Discount = table.Column<double>(type: "float", nullable: false),
-                    Areas = table.Column<int>(type: "int", nullable: false)
+                    Areas = table.Column<int>(type: "int", nullable: false),
+                    Modified = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ServizeProduct", x => x.Id);
+                    table.PrimaryKey("PK_Product", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ServizeProduct_ServizeCategory_ServizeCategoryId",
-                        column: x => x.ServizeCategoryId,
-                        principalTable: "ServizeCategory",
+                        name: "FK_Product_Category_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Category",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -418,7 +420,8 @@ namespace Servize.Migrations
                     ServizeCategoryId = table.Column<int>(type: "int", nullable: false),
                     ServizeProductId = table.Column<int>(type: "int", nullable: true),
                     Amount = table.Column<int>(type: "int", nullable: false),
-                    CartId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    CartId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Modified = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -430,9 +433,9 @@ namespace Servize.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_CartItem_ServizeProduct_ServizeProductId",
+                        name: "FK_CartItem_Product_ServizeProductId",
                         column: x => x.ServizeProductId,
-                        principalTable: "ServizeProduct",
+                        principalTable: "Product",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -477,6 +480,11 @@ namespace Servize.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BookingSetting_ProviderId",
+                table: "BookingSetting",
+                column: "ProviderId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Cart_UserId",
                 table: "Cart",
                 column: "UserId");
@@ -490,6 +498,16 @@ namespace Servize.Migrations
                 name: "IX_CartItem_ServizeProductId",
                 table: "CartItem",
                 column: "ServizeProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Category_ProviderId",
+                table: "Category",
+                column: "ProviderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Client_UserId",
+                table: "Client",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderItem_OrderNumber",
@@ -507,44 +525,24 @@ namespace Servize.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ServizeBookingSetting_ProviderId",
-                table: "ServizeBookingSetting",
-                column: "ProviderId");
+                name: "IX_Product_CategoryId",
+                table: "Product",
+                column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ServizeCategory_ProviderId",
-                table: "ServizeCategory",
-                column: "ProviderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ServizeProduct_ServizeCategoryId",
-                table: "ServizeProduct",
-                column: "ServizeCategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ServizeProvider_UserId",
-                table: "ServizeProvider",
+                name: "IX_Provider_UserId",
+                table: "Provider",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ServizeProviderBankDetail_ProviderId",
-                table: "ServizeProviderBankDetail",
+                name: "IX_ProviderBankDetail_ProviderId",
+                table: "ProviderBankDetail",
                 column: "ProviderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ServizeReview_ProviderId",
-                table: "ServizeReview",
+                name: "IX_Review_ProviderId",
+                table: "Review",
                 column: "ProviderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserClient_OrderId",
-                table: "UserClient",
-                column: "OrderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserClient_UserId",
-                table: "UserClient",
-                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -565,22 +563,22 @@ namespace Servize.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "BookingSetting");
+
+            migrationBuilder.DropTable(
                 name: "CartItem");
+
+            migrationBuilder.DropTable(
+                name: "Client");
 
             migrationBuilder.DropTable(
                 name: "OrderItem");
 
             migrationBuilder.DropTable(
-                name: "ServizeBookingSetting");
+                name: "ProviderBankDetail");
 
             migrationBuilder.DropTable(
-                name: "ServizeProviderBankDetail");
-
-            migrationBuilder.DropTable(
-                name: "ServizeReview");
-
-            migrationBuilder.DropTable(
-                name: "UserClient");
+                name: "Review");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -589,16 +587,16 @@ namespace Servize.Migrations
                 name: "Cart");
 
             migrationBuilder.DropTable(
-                name: "ServizeProduct");
+                name: "Product");
 
             migrationBuilder.DropTable(
                 name: "OrderSummary");
 
             migrationBuilder.DropTable(
-                name: "ServizeCategory");
+                name: "Category");
 
             migrationBuilder.DropTable(
-                name: "ServizeProvider");
+                name: "Provider");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

@@ -14,33 +14,33 @@ namespace Servize.Controllers
     //[Authorize(Roles = UserRoles.Provider + "," + UserRoles.Admin)]
     [ApiController]
     [Route("[controller]")]
-    public class ServizeCategoryController : ControllerBase
+    public class CategoryController : ControllerBase
     {
 
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ServizeCategoryService _services;
+        private readonly CategoryService _services;
 
 
-        public ServizeCategoryController(ServizeDBContext dbContext,
+        public CategoryController(ServizeDBContext dbContext,
                                          IMapper mapper,
                                          UserManager<ApplicationUser> userManager,
                                         SignInManager<ApplicationUser> signInManager,
-                                        Utilities utitlity
+                                        ContextTransaction transaction
                                          )
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _services = new ServizeCategoryService(dbContext, mapper, utitlity);
+            _services = new CategoryService(dbContext, mapper,transaction);
         }
 
 
         [HttpGet]
         [Route("Get")]
         [Produces("application/json")]
-        public async Task<ActionResult<IList<ServizeCategoryDTO>>> GetAllCategoryList()
+        public async Task<ActionResult<IList<CategoryDTO>>> GetAllCategoryList()
         {
-            Response<IList<ServizeCategoryDTO>> response = await _services.GetAllCategoryList();
+            Response<IList<CategoryDTO>> response = await _services.GetAllCategoryList();
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
             return Problem(statusCode: response.StatusCode, detail: response.Message);
@@ -49,9 +49,9 @@ namespace Servize.Controllers
 
         [HttpGet("{id}")]
         [Produces("application/json")]
-        public async Task<ActionResult<ServizeCategoryDTO>> GetAllCategoryById(int id)
+        public async Task<ActionResult<CategoryDTO>> GetAllCategoryById(int id)
         {
-            Response<ServizeCategoryDTO> response = await _services.GetAllCategoryById(id);
+            Response<CategoryDTO> response = await _services.GetAllCategoryById(id);
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
 
@@ -60,9 +60,9 @@ namespace Servize.Controllers
 
         [HttpPost]
         [Route("AddCategory")]
-        public async Task<ActionResult<ServizeCategoryDTO>> AddServiceCategory([FromBody] ServizeCategoryDTO servizeCategoryDTO)
+        public async Task<ActionResult<CategoryDTO>> AddServiceCategory([FromBody] CategoryDTO servizeCategoryDTO)
         {
-            Response<ServizeCategoryDTO> response    = await _services.AddServiceCategory(servizeCategoryDTO);                
+            Response<CategoryDTO> response    = await _services.AddServiceCategory(servizeCategoryDTO);                
             if (response.IsSuccessStatusCode())
                     return Ok(response.Resource);
             return Problem(statusCode: response.StatusCode, detail: response.Message);
@@ -70,14 +70,16 @@ namespace Servize.Controllers
 
         [HttpPut]
         [Route("UpdateCategory")]
-        public async Task<ActionResult<ServizeCategoryDTO>> UpdateServiceCategory([FromBody] ServizeCategoryDTO servizeCategoryDTO)
+        public async Task<ActionResult<CategoryDTO>> UpdateServiceCategory([FromBody] CategoryDTO servizeCategoryDTO)
         {
 
-            Response<ServizeCategoryDTO> response = await _services.UpdateServiceCategory(servizeCategoryDTO);
+            Response<CategoryDTO> response = await _services.UpdateServiceCategory(servizeCategoryDTO);
 
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
             return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
+
+        
     }
 }

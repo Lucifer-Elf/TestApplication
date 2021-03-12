@@ -5,20 +5,20 @@ using static Servize.Domain.Enums.ServizeEnum;
 
 namespace Servize.Domain.Model.Provider
 {
-    public class ServizeCategory
+    public class Category :BaseEntity
     {
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey("ServizeProvider")]
+        [ForeignKey("Provider")]
         public int ProviderId { get; set; }
-        public ServizeProvider ServizeProvider { get; set; }
+        public Provider Provider { get; set; }
 
         public Categories Type  { get; set; }
 
         public string BannerImage { get; set; }
 
-        public ICollection<ServizeProduct> SubServices { get; set; }
+        public ICollection<Product> SubServices { get; set; }
 
     }
 }

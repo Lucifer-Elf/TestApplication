@@ -4,17 +4,17 @@ using static Servize.Domain.Enums.ServizeEnum;
 
 namespace Servize.Domain.Model.Provider
 {
-    public class ServizeProduct
+    public class Product :BaseEntity
     {
         public int Id { get; set; }
 
-        [ForeignKey("ServizeCategory")]
-        public int ServizeCategoryId { get; set; }
-        public ServizeCategory ServizeCategory { get; set; }
+        [ForeignKey("Category")]
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
 
         public string ServiceName { get; set; }
 
-        public Product Category { get; set; }
+        public string ProductName { get; set; }
 
         public string ImageList { get; set; }
 

@@ -6,13 +6,15 @@ using static Servize.Domain.Enums.ServizeEnum;
 
 namespace Servize.DTO.PROVIDER
 {
-    public class ServizeReviewDTO
+    public class ReviewDTO
     {
 
         public int Rating { get; set; }
 
-        public Product Product { get; set; }
+        public string Product { get; set; }
 
         public string ReviewComment { get; set; }
+
+        public DateTime Modified { get; set; }
     }
 }

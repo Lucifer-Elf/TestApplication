@@ -16,10 +16,7 @@ namespace Servize.Utility
             _context = context;
         }
 
-        public async Task CompleteTransactionAsync()
-        {
-           await _context.SaveChangesAsync();
-        }
+     
 
         public static string GetRoleForstring(string role)
         {
@@ -31,21 +28,4 @@ namespace Servize.Utility
             return UserRoles.Client;
         }
     }
-
-    /*public class AuthenticationCrosPolicy : ICorsPolicyProvider
-    {
-        public async Task<CorsPolicy> GetPolicyAsync(HttpContext context, string policy)
-        {
-            if (policy != "_myWebOrigin") return null;
-            string origin = context.Request.Headers["Origin"].FirstOrDefault();
-
-            return new CorsPolicyBuilder()
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials()
-                .WithOrigins(origin)
-                .Build();
-        
-        }
-    }*/
 }

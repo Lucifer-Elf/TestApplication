@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Servize.DTO.USER
 {
-    public class UserClientDTO
+    public class ClientDTO
     {      
         public int Id { get; set; }
     

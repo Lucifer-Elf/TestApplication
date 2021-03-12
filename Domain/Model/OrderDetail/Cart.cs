@@ -42,7 +42,7 @@ namespace Servize.Domain.Model.OrderDetail
           
         }
 
-        public CartItem AddToCart(ServizeProduct category, int amount)
+        public CartItem AddToCart(Product category, int amount)
         {
             try
             {
@@ -80,7 +80,7 @@ namespace Servize.Domain.Model.OrderDetail
         }
 
 
-        public int  RemoveFromCart(ServizeProduct category, int amount)
+        public int  RemoveFromCart(Product category, int amount)
         {
            
                 var cartItem = _context.CartItem.SingleOrDefault(s => s.ServizeProduct.Id == category.Id && s.CartId == Id);

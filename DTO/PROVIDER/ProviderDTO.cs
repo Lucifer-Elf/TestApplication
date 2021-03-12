@@ -7,11 +7,11 @@ using static Servize.Domain.Enums.ServizeEnum;
 
 namespace Servize.DTO.PROVIDER
 {
-    public class ServizeProviderDTO
+    public class ProviderDTO
     {
-        public ServizeProviderDTO()
+        public ProviderDTO()
         {
-           ServiceCategories = new HashSet<ServizeCategoryDTO>();     
+           ServiceCategories = new HashSet<CategoryDTO>();     
         }
 
         public int Id { get; set; }
@@ -34,7 +34,9 @@ namespace Servize.DTO.PROVIDER
         public DateTime RegistrationDate { get; set; }
 
         public PackageType PackageType { get; set; }
+        
+        public DateTime Modified { get; set; }
 
-        public ICollection<ServizeCategoryDTO> ServiceCategories { get; set; }
+        public ICollection<CategoryDTO> ServiceCategories { get; set; }
     }
 }

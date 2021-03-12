@@ -7,14 +7,14 @@ using static Servize.Domain.Enums.ServizeEnum;
 
 namespace Servize.Domain.Model.Provider
 {
-    public class ServizeBookingSetting
+    public class BookingSetting : BaseEntity
     {
 
         public int Id { get; set; }
 
         [ForeignKey("ServizeProvider")]
         public int ProviderId { get; set; }
-        public ServizeProvider ServizeProvider { get; set; }
+        public Provider ServizeProvider { get; set; }
 
         public bool BookingProcess { get; set; } // on off current state of acceptance 
         public int SLotsInterval { get; set; }

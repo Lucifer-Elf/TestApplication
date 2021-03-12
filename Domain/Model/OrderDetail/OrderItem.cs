@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Servize.Domain.Model.OrderDetail
 {
-    public class OrderItem
+    public class OrderItem : BaseEntity
     {
         public int Id { get; set; }
 
@@ -17,7 +17,7 @@ namespace Servize.Domain.Model.OrderDetail
 
         [ForeignKey("ServizeProvider")]
         public int ProviderId { get; set; }
-        public ServizeProvider ServizeProvider { get; set; }
+        public Provider.Provider ServizeProvider { get; set; }
 
         public double ItemDiscount { get; set; }
 

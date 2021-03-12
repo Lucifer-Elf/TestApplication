@@ -21,9 +21,6 @@ namespace Servize.Domain.Enums
             FIXED = 0,
             FLEXIBLE = 1,
         }
-
-
-
         public enum PackageType
         {
             FREE = 0,
@@ -37,32 +34,37 @@ namespace Servize.Domain.Enums
             ST_ATSHOP
         }
 
-        public enum Product
+        public enum Housing
+        {
+            CLEANING = 0,
+            PAINTING = 1,
+            MOVERANDPACKER = 2,
+            MAIDSERVICE = 3,
+            DISINFECTION = 4,
+            ACSERVICEREPAIRE = 5,
+        }
+        public enum Automative
+        {
+           WASHING = 0,
+           SERVICING = 1,
+        }
+        public enum Personal
+        {
+           GROMING = 0,
+           SPA = 1,
+           MANIANDPEDICURE = 2,
+           PHOTOGRAPHER = 3,
+           MAKEUP = 4,
+           LAUNDRY = 5,
+        }
+             public enum HandyMan
         {
 
-            H_CLEANING = 0,
-            H_PAINTING = 1,
-            H_MOVERANDPACKER = 2,
-            H_MAIDSERVICE = 3,
-            H_DISINFECTION = 4,
-            H_ACSERVICEREPAIRE = 5,
-
-
-            A_WASHING = 10,
-            A_SERVICING = 11,
-
-            P_GROMING = 20,
-            P_SPA = 21,
-            P_MANIANDPEDICURE = 22,
-            P_PHOTOGRAPHER = 23,
-            P_MAKEUP = 24,
-            P_LAUNDRY = 25,
-
-            HM_HANYMAN = 30,
-            HM_ELECTRICIAN = 31,
-            HM_CARPENTER = 32,
-            HM_PLUMBING = 33,
-            HM_ELECTRICALREPAIR = 34,
+           HANYMAN = 30,
+           ELECTRICIAN = 31,
+           CARPENTER = 32,
+           PLUMBING = 33,
+           ELECTRICALREPAIR = 34,
 
             T_ALLSUBJECT = 40,
         }

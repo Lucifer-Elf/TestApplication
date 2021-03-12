@@ -6,7 +6,7 @@ using static Servize.Domain.Enums.ServizeEnum;
 
 namespace Servize.DTO.PROVIDER
 {
-    public class ServizeProductDTO
+    public class ProductDTO
     {
         public int Id { get; set; }
         
@@ -14,7 +14,7 @@ namespace Servize.DTO.PROVIDER
 
         public string ServiceName { get; set; }
 
-        public Product Category { get; set; }
+        public string Product { get; set; }
 
         public string ImageList { get; set; }
 
@@ -31,5 +31,7 @@ namespace Servize.DTO.PROVIDER
         public double Discount { get; set; }
 
         public Area Areas { get; set; }
+
+        public DateTime Modified { get; set; }
     }
 }

@@ -15,23 +15,24 @@ namespace Servize.Controllers
     [Authorize(Roles = UserRoles.Client + "," + UserRoles.Admin)]
     [ApiController]
     [Route("[controller]")]
-    public class ServizeUserController : ControllerBase
+    public class ClientController : ControllerBase
     {
         //UserClientDTO
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ServizeUserServices _services;
+        private readonly ClientServices _services;
 
-        public ServizeUserController(ServizeDBContext dbContext,
+        public ClientController(ServizeDBContext dbContext,
                                          IMapper mapper,
                                          UserManager<ApplicationUser> userManager,
                                         SignInManager<ApplicationUser> signInManager,
+                                        ContextTransaction transaction,
                                         Utilities utitlity
                                          )
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _services = new ServizeUserServices(dbContext, mapper, utitlity);
+            _services = new ClientServices(dbContext, mapper,transaction, utitlity);
         }
 
 
@@ -39,10 +40,10 @@ namespace Servize.Controllers
         [HttpGet]
         [Route("GetALL")]
         [Produces("application/json")]
-        public async Task<ActionResult<IList<UserClientDTO>>> GetAllServizeUserList()
+        public async Task<ActionResult<IList<ClientDTO>>> GetAllServizeUserList()
         {
 
-            Response<IList<UserClientDTO>> response = await _services.GetAllServizeUserList();
+            Response<IList<ClientDTO>> response = await _services.GetAllServizeUserList();
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
 
@@ -52,9 +53,9 @@ namespace Servize.Controllers
 
         [HttpGet("{id}")]
         [Produces("application/json")]
-        public async Task<ActionResult<UserClientDTO>> GetServizeUserById(string id)
+        public async Task<ActionResult<ClientDTO>> GetServizeUserById(string id)
         {
-            Response<UserClientDTO> response = await _services.GetAllServizeUserById(id);
+            Response<ClientDTO> response = await _services.GetAllServizeUserById(id);
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Servize.Domain.Model.OrderDetail
 {
-    public class CartItem
+    public class CartItem : BaseEntity
     {
         public int Id { get; set; }
 
@@ -15,7 +15,7 @@ namespace Servize.Domain.Model.OrderDetail
 
         public int ServizeCategoryId { get; set; }
 
-        public ServizeProduct ServizeProduct { get; set; }
+        public Product ServizeProduct { get; set; }
 
         public int Amount { get; set; }
 
