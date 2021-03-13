@@ -58,17 +58,17 @@ namespace Servize
             services.AddScoped<Cart>();
             services.AddScoped<ContextTransaction>();
 
-            string connectionString = @$"Server={AzureVault.GetValue("DbServer")};
+            /*string connectionString = @$"Server={AzureVault.GetValue("DbServer")};
                                         Database={AzureVault.GetValue("DatabaseName")};
                                         User Id ={AzureVault.GetValue("DbUserId")};
                                         Password={AzureVault.GetValue("DbPassword")};
-                                        MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+                                        MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";*/
 
-           /* string connectionString = "Server=servizetest.database.windows.net;" +
+          string connectionString = "Server=servizetest.database.windows.net;" +
                                         "Database=serviceTestDb;" +
                                        " User Id =servizeAdmin;" +
                                         "Password=@Lfred1205;" +
-                                        "MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";*/
+                                        "MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
             //EnitiyFrameWork
             services.AddDbContext<ServizeDBContext>(options => options.UseSqlServer(connectionString));
