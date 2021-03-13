@@ -113,8 +113,8 @@ namespace Servize
 
      .AddGoogle(options =>
         {
-            options.ClientId = AzureVault.GetValue("GoogleClientId");
-            options.ClientSecret = AzureVault.GetValue("GoogleSecret");
+            options.ClientId = "GoogleClientId";
+            options.ClientSecret = "GoogleSecret";
             // to change call back Url
             //options.CallbackPath
         })
