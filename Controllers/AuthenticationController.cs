@@ -54,7 +54,7 @@ namespace Servize.Controllers
 
 
         //Authentication/RegisterUser
-        [HttpPost(Name = "Client")]
+        [HttpPost]
         [Route("RegisterClient")]
         public async Task<ActionResult> RegisterUser([FromBody] RegistrationInputModel model)
         {
@@ -70,8 +70,10 @@ namespace Servize.Controllers
 
 
         //Authentication/RegisterAdmin
-        [HttpPost(Name = "Admin")]
+        [HttpPost]
         [Route("RegisterAdmin")]
+        [Produces("application/json")]
+        [Consumes("application/json")]
         public async Task<ActionResult> RegisterAdmin([FromBody] RegistrationInputModel model)
         {
             await AddUserToIdentityWithSpecificRoles(model, "ADMIN");
@@ -85,7 +87,7 @@ namespace Servize.Controllers
         }
 
         //Authentication/RegisterProvider
-        [HttpPost(Name = "Provider")]
+        [HttpPost]
         [Route("RegisterProvider")]
         public async Task<ActionResult> RegisterServizeProvider([FromBody] RegistrationInputModel model)
         {
@@ -102,6 +104,8 @@ namespace Servize.Controllers
         //Authentication/UserToken
         [HttpGet]
         [Route("UserToken")]
+        [Produces("application/json")]
+        [Consumes("application/json")]
         public async Task<ActionResult> GetUserToken([FromBody] InputLoginModel model)
         {
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
@@ -125,6 +129,8 @@ namespace Servize.Controllers
         //Authentication/UserTokenExpire
         [HttpGet]
         [Route("UserTokenValidty")]
+        [Produces("application/json")]
+        [Consumes("application/json")]
         public async Task<ActionResult> GetUserTokenValidity([FromBody] InputLoginModel model)
         {
 
