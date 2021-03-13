@@ -1,5 +1,6 @@
 ﻿using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
+using Serilog;
 using System;
 using System.Runtime.Caching;
 using System.Threading.Tasks;
@@ -38,6 +39,7 @@ namespace Servize.Utility.Configurations
                 }
                 catch (Exception e)
                 {
+                    Log.Error(e.Message);
                     Console.WriteLine(e.Message);
                 }
                 return null;
