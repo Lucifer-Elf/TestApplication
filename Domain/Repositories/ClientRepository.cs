@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace Servize.Domain.Repositories
 {
-    public class ClientRepository
+    public class ClientRepository:BaseRepository<ServizeDBContext>
     {
         private readonly ServizeDBContext _context;
-        public ClientRepository(ServizeDBContext dBContext)
+        public ClientRepository(ServizeDBContext dBContext):base(dBContext)
         {
             _context = dBContext;
         }

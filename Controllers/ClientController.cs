@@ -62,6 +62,15 @@ namespace Servize.Controllers
             return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
 
+        public async Task<ActionResult<ClientDTO>> PatchClientDetails(ClientDTO clientDTO)
+        {
+            Response<ClientDTO> response = await _services.PatchClientDetails(clientDTO);
+            if (response.IsSuccessStatusCode())
+                return Ok(response.Resource);
+
+            return Problem(statusCode: response.StatusCode, detail: response.Message);
+        }
+
 
     }
 }

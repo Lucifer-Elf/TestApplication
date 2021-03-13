@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Servize.Utility.Cors;
 using Servize.Utility;
+using Servize.Utility.Configurations;
 
 namespace Servize
 {
@@ -36,17 +37,17 @@ namespace Servize
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers(); // controller Registered
-           services.AddCors(options =>
-            {
-                options.AddPolicy(name: MyAllowSpecificOrigins,
-                                  builder =>
-                                  {
-                                      builder.AllowAnyOrigin()
-                                      .AllowAnyHeader()
-                                      .AllowAnyMethod()  ;
+            services.AddCors(options =>
+             {
+                 options.AddPolicy(name: MyAllowSpecificOrigins,
+                                   builder =>
+                                   {
+                                       builder.AllowAnyOrigin()
+                                       .AllowAnyHeader()
+                                       .AllowAnyMethod();
 
-                                  });
-            });
+                                   });
+             });
 
 
             services.AddScoped<ProviderRespository>();
@@ -57,24 +58,23 @@ namespace Servize
             services.AddScoped<Cart>();
             services.AddScoped<ContextTransaction>();
 
-            /*string connectionString = @$"Server={Configuration.GetValue<string>("Server")};
-                                        Database={Configuration.GetValue<string>("DatabaseName")};
-                                        User Id ={Configuration.GetValue<string>("User Id")};
-                                        Password={Configuration.GetValue<string>("Password")};
+            string connectionString = @$"Server={AzureVault.GetValue("DbServer")};
+                                        Database={AzureVault.GetValue("DatabaseName")};
+                                        User Id ={AzureVault.GetValue("DbUserId")};
+                                        Password={AzureVault.GetValue("DbPassword")};
+                                        MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
-                                        MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";*/
-            string connectionString = "Server=servizetest.database.windows.net;" +
+           /* string connectionString = "Server=servizetest.database.windows.net;" +
                                         "Database=serviceTestDb;" +
                                        " User Id =servizeAdmin;" +
                                         "Password=@Lfred1205;" +
-                                        "MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+                                        "MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";*/
 
             //EnitiyFrameWork
             services.AddDbContext<ServizeDBContext>(options => options.UseSqlServer(connectionString));
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); // instance of http 
             services.AddScoped(sp => Cart.GetCart(sp));  // diffenrt instance to differnt user
-
 
             //Identity
             services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -90,10 +90,8 @@ namespace Servize
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            
+
             })
-
-
 
            //Adding Jwt Bearer
            .AddJwtBearer(options =>
@@ -115,8 +113,8 @@ namespace Servize
 
      .AddGoogle(options =>
         {
-            options.ClientId = Utility.Configurations.Configuration.GetValue<string>("GoogleClientId");
-            options.ClientSecret = Utility.Configurations.Configuration.GetValue<string>("GoogleSecret");
+            options.ClientId = AzureVault.GetValue("GoogleClientId");
+            options.ClientSecret = AzureVault.GetValue("GoogleSecret");
             // to change call back Url
             //options.CallbackPath
         })
@@ -126,11 +124,15 @@ namespace Servize
          options.AppSecret = Utility.Configurations.Configuration.GetValue<string>("AppSecret");
          // to change call back Url
          //options.CallbackPath
-     })
-     ;
+     });
+     
 
-
-
+            services.AddSession(options =>
+            {
+                options.Cookie.Name = "otp";
+                options.IdleTimeout = TimeSpan.FromSeconds(45);
+                options.Cookie.IsEssential = true;
+            });
 
             var config = new AutoMapper.MapperConfiguration(config =>
             {
@@ -138,17 +140,8 @@ namespace Servize
             });
             var mapper = config.CreateMapper();
             services.AddSingleton(mapper);
-
             services.AddDistributedMemoryCache();
-
-            services.AddSession(/*options =>
-            {
-                options.IdleTimeout = TimeSpan.FromSeconds(10);
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
-            }*/);
             services.AddScoped<IAuthService, AuthService>();
-
         }
 
 

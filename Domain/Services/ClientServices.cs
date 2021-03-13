@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Serilog;
 using Servize.Domain.Model;
 using Servize.Domain.Repositories;
 using Servize.DTO.USER;
@@ -67,5 +69,28 @@ namespace Servize.Domain.Services
             }
         }
 
+        public async Task<Response<ClientDTO>> PatchClientDetails(ClientDTO clientDTO)
+        {
+            try
+            {
+                if (clientDTO == null) return new Response<ClientDTO>("Failed to Load Client With Specific Id", StatusCodes.Status400BadRequest);
+
+                Client clientEntity = await _respository.GetContext().Client.SingleOrDefaultAsync(p => p.Id == clientDTO.Id);
+                if (clientEntity == null)
+                    return new Response<ClientDTO>("failed to find Client", StatusCodes.Status404NotFound);
+
+                PatchEntities.PatchEntity<ClientDTO, Client>(_respository.GetContext(), _mapper, clientEntity, clientDTO);
+
+                await _transaction.CompleteAsync();
+                ClientDTO mappedResponse = _mapper.Map<Client, ClientDTO>(clientEntity);
+                return new Response<ClientDTO>(mappedResponse, StatusCodes.Status200OK);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return new Response<ClientDTO>("Client Could Not be Updated", StatusCodes.Status200OK);
+            }
+
+        }
     }
 }

@@ -40,7 +40,7 @@ namespace Servize.Controllers
             IConfiguration configuration,
              SignInManager<ApplicationUser> signInManager,
              ServizeDBContext context,
-             IAuthService service,ContextTransaction transaction
+             IAuthService service, ContextTransaction transaction
             )
         {
             _userManager = userManager;
@@ -54,28 +54,49 @@ namespace Servize.Controllers
 
 
         //Authentication/RegisterUser
-        [HttpPost]
+        [HttpPost(Name = "Client")]
         [Route("RegisterClient")]
         public async Task<ActionResult> RegisterUser([FromBody] RegistrationInputModel model)
         {
-            return await AddUserToIdentityWithSpecificRoles(model, "CLIENT");
+            await AddUserToIdentityWithSpecificRoles(model, "CLIENT");
+            var LoginModel = new InputLoginModel
+            {
+                Email = model.Email,
+                Password = model.Password,
+                RememberMe = model.RememberMe
+            };
+            return await Login(LoginModel);
         }
 
 
         //Authentication/RegisterAdmin
-        [HttpPost]
+        [HttpPost(Name = "Admin")]
         [Route("RegisterAdmin")]
         public async Task<ActionResult> RegisterAdmin([FromBody] RegistrationInputModel model)
         {
-            return await AddUserToIdentityWithSpecificRoles(model, "ADMIN");
+            await AddUserToIdentityWithSpecificRoles(model, "ADMIN");
+            var LoginModel = new InputLoginModel
+            {
+                Email = model.Email,
+                Password = model.Password,
+                RememberMe = model.RememberMe
+            };
+            return await Login(LoginModel);
         }
 
         //Authentication/RegisterProvider
-        [HttpPost]
+        [HttpPost(Name = "Provider")]
         [Route("RegisterProvider")]
         public async Task<ActionResult> RegisterServizeProvider([FromBody] RegistrationInputModel model)
         {
-            return await AddUserToIdentityWithSpecificRoles(model, "PROVIDER");
+            await AddUserToIdentityWithSpecificRoles(model, "PROVIDER");
+            var LoginModel = new InputLoginModel
+            {
+                Email = model.Email,
+                Password = model.Password,
+                RememberMe = model.RememberMe
+            };
+            return await Login(LoginModel);
         }
 
         //Authentication/UserToken
@@ -106,31 +127,77 @@ namespace Servize.Controllers
         [Route("UserTokenValidty")]
         public async Task<ActionResult> GetUserTokenValidity([FromBody] InputLoginModel model)
         {
-          
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user != null)
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user != null)
+            {
+                var refreshToken = await _userManager.GetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken");
+
+
+                if (refreshToken != null)
                 {
-                    var refreshToken = await _userManager.GetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken");
-
-
-                    if (refreshToken != null)
-                    {
-                        var token = new JwtSecurityTokenHandler().ReadJwtToken(refreshToken);
-                        if (token.ValidTo > DateTime.Now)
-                            return Ok(new
-                            {
-                                isValid = false
-                            });
+                    var token = new JwtSecurityTokenHandler().ReadJwtToken(refreshToken);
+                    if (token.ValidTo > DateTime.Now)
                         return Ok(new
                         {
-                            isValid = true,
-                            expiryDate = token.ValidTo.ToString("yyyy-MM-ddThh:mm:ss")
-                        }); ;
-                    }
+                            isValid = false
+                        });
+                    return Ok(new
+                    {
+                        isValid = true,
+                        expiryDate = token.ValidTo.ToString("yyyy-MM-ddThh:mm:ss")
+                    }); ;
                 }
-           
+            }
+
             return Unauthorized();
         }
+
+        [HttpPost("GetOtp/{number}")]
+        [Produces("application/json")]
+        [Consumes("application/json")]
+        public async Task<ActionResult> SMSToken(long number)
+        {
+            var value = await SMSAuthService.SendTokenSMSAsync(number);
+            Console.WriteLine(value);
+            HttpContext.Session.SetInt32("otp", value);
+            return Ok();
+        }
+
+        [HttpPost("VerifyOtp")]
+        public async Task<ActionResult> VerifySMSToken(RegistrationInputModel model)
+        {
+            try
+            {
+                if (HttpContext.Session.GetInt32("otp") == model.Otp)
+                {
+                    HttpContext.Session.SetInt32("otp", 0);
+                    if (!string.IsNullOrEmpty(model.Role))
+                    {
+                        if (model.Role.ToUpper() == "CLIENT")
+                            return await RegisterUser(model);
+                        if (model.Role.ToUpper() == "ADMIN")                        
+                            return await RegisterAdmin(model);
+                        else
+                            return await RegisterServizeProvider(model);                      
+                    }
+                    else {
+                       return  await RegisterUser(model);
+                    }                   
+                }
+                return Problem(detail: "TryAgain", statusCode: StatusCodes.Status503ServiceUnavailable);
+        
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+                return Problem(detail: "Error While Verifying Otp", statusCode: StatusCodes.Status500InternalServerError);
+            }
+
+            
+        }
+
 
 
         //Authentication/Login
@@ -149,10 +216,10 @@ namespace Servize.Controllers
                 {
                     var refreshToken = await _userManager.GetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken");
 
-                    
+
                     if (refreshToken != null)
                     {
-                        return Ok(new { msg = "AlreadyLogin",RefreshToken =refreshToken });
+                        return Ok(new { msg = "AlreadyLogin", RefreshToken = refreshToken });
                     }
                     var userRoles = await _userManager.GetRolesAsync(user);
                     var authClaims = new List<Claim>
@@ -231,8 +298,8 @@ namespace Servize.Controllers
                     return StatusCode(StatusCodes.Status409Conflict, new Response("User Already exist", StatusCodes.Status409Conflict));
                 }
                 ApplicationUser user = new ApplicationUser()
-                {                  
-                    UserName= model.Email,
+                {
+                    UserName = model.Email,
                     Email = model.Email,
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
@@ -248,7 +315,7 @@ namespace Servize.Controllers
 
         private async Task<ActionResult> CreateNewUserBasedOnRole(RegistrationInputModel model, string role, ApplicationUser user)
         {
-            
+
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (!result.Succeeded)
@@ -261,12 +328,12 @@ namespace Servize.Controllers
                 await _userManager.AddToRoleAsync(user, Utility.Utilities.GetRoleForstring(role));
             }
 
-          
+
             if (Utility.Utilities.GetRoleForstring(role) == "Provider")
             {
                 Provider provider = new Provider
                 {
-                    UserId = user.Id,                  
+                    UserId = user.Id,
                     CompanyName = model.CompanyName,
                     CompanyRegistrationNumber = model.CompanyRegistrationNumber
                 };
@@ -274,10 +341,10 @@ namespace Servize.Controllers
             }
             else
             {
-               Client client = new Client
+                Client client = new Client
                 {
                     UserId = user.Id,
-                    FirstName =  model.FirstName,
+                    FirstName = model.FirstName,
                     LastName = model.LastName
                 };
                 _context.Add(client);
@@ -296,7 +363,7 @@ namespace Servize.Controllers
             }, model);
         }
 
-     
+
 
         [HttpGet]
         [Route("LoginData/{id}")]
@@ -310,7 +377,7 @@ namespace Servize.Controllers
 
                 InputLoginModel model = new InputLoginModel
                 {
-                    
+
                     Email = userExist.UserName,
 
                 };
@@ -362,17 +429,17 @@ namespace Servize.Controllers
 
                 if (user != null)
                     return Ok(user);
-                
+
                 user = await _userManager.FindByEmailAsync(payload.Email);
                 if (user == null)
                 {
-                     user = new ApplicationUser()
+                    user = new ApplicationUser()
                     {
-                         UserName= payload.Email,
-                         Email = payload.Email,
-                         SecurityStamp = Guid.NewGuid().ToString()
+                        UserName = payload.Email,
+                        Email = payload.Email,
+                        SecurityStamp = Guid.NewGuid().ToString()
                     };
-                
+
                     await _userManager.CreateAsync(user);
                     await CreateRoleInDatabase();
 
@@ -385,64 +452,64 @@ namespace Servize.Controllers
                     {
                         Provider provider = new Provider
                         {
-                            UserId = user.Id,                           
+                            UserId = user.Id,
                             CompanyName = payload.Name,
                             CompanyRegistrationNumber = "XXXXXXXX"
 
                         };
                         _context.Provider.Add(provider);
-           
+
                     }
                     else if (Utility.Utilities.GetRoleForstring(userView.Role) == "Admin")
-                     {
-                          // return Ok(new Response("Admin is Created Sucessfully", StatusCodes.Status201Created));
-                     }
+                    {
+                        // return Ok(new Response("Admin is Created Sucessfully", StatusCodes.Status201Created));
+                    }
                     else
                     {
                         Client client = new Client
                         {
                             UserId = user.Id,
-                            FirstName= payload.GivenName,
+                            FirstName = payload.GivenName,
                             LastName = payload.FamilyName
                         };
-                        _context.Client.Add(client);                  
+                        _context.Client.Add(client);
                     }
                 }
                 var info = new UserLoginInfo(userView.Provider, payload.Subject, userView.Provider.ToUpperInvariant());
                 var result = await _userManager.AddLoginAsync(user, info);
                 if (result.Succeeded)
                 {
-                     var userRoles = await _userManager.GetRolesAsync(user);
-                     var authClaims = new List<Claim>
+                    var userRoles = await _userManager.GetRolesAsync(user);
+                    var authClaims = new List<Claim>
                          {
                          new Claim(ClaimTypes.Name,user.UserName),
                          new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
                           };
-                     foreach (var userRole in userRoles)
-                     {
-                         authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-                     }
-                     var authSignInKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-                     var token = new JwtSecurityToken(
-                         issuer: _configuration["JWT:ValidIssuer"],
-                         audience: _configuration["JWT:ValidAudience"],
-                         expires: DateTime.Now.AddDays(1),
-                         claims: authClaims,
-                         signingCredentials: new SigningCredentials(authSignInKey, SecurityAlgorithms.HmacSha256)
+                    foreach (var userRole in userRoles)
+                    {
+                        authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                    }
+                    var authSignInKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+                    var token = new JwtSecurityToken(
+                        issuer: _configuration["JWT:ValidIssuer"],
+                        audience: _configuration["JWT:ValidAudience"],
+                        expires: DateTime.Now.AddDays(1),
+                        claims: authClaims,
+                        signingCredentials: new SigningCredentials(authSignInKey, SecurityAlgorithms.HmacSha256)
 
-                         );
-                     var tokenHolder = new
-                     {
+                        );
+                    var tokenHolder = new
+                    {
 
-                         token = new JwtSecurityTokenHandler().WriteToken(token),
-                         validTo = token.ValidTo.ToString("yyyy-MM-ddThh:mm:ss"),
-                         userId = user.Id,
-                         userName = user.UserName
+                        token = new JwtSecurityTokenHandler().WriteToken(token),
+                        validTo = token.ValidTo.ToString("yyyy-MM-ddThh:mm:ss"),
+                        userId = user.Id,
+                        userName = user.UserName
 
-                     };
-                     await _userManager.SetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken", tokenHolder.token);
+                    };
+                    await _userManager.SetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken", tokenHolder.token);
                     await _transaction.CompleteAsync();
-                     return Ok(tokenHolder);
+                    return Ok(tokenHolder);
                 }
             }
             catch (Exception ex)
@@ -452,6 +519,8 @@ namespace Servize.Controllers
             }
             return BadRequest();
         }
+
+
     }
 }
 
