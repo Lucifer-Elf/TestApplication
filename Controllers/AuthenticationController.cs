@@ -164,10 +164,17 @@ namespace Servize.Controllers
         [Consumes("application/json")]
         public async Task<ActionResult> SMSToken(long number)
         {
-            var value = await SMSAuthService.SendTokenSMSAsync(number);
-            Console.WriteLine(value);
-            HttpContext.Session.SetInt32("otp", value);
-            return Ok();
+            try
+            {
+                var value = await SMSAuthService.SendTokenSMSAsync(number);
+                HttpContext.Session.SetInt32("otp", value);
+                return Ok($"Otp Send Sucessfully{value}");
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex.Message);
+                return Problem(detail: "Error while Sending SMS", statusCode: StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpPost("VerifyOtp")]
@@ -192,8 +199,6 @@ namespace Servize.Controllers
                     }                   
                 }
                 return Problem(detail: "TryAgain", statusCode: StatusCodes.Status503ServiceUnavailable);
-        
-
             }
             catch (Exception ex)
             {
