@@ -30,8 +30,14 @@ namespace Servize.Utility
 
         private static async Task SendSMS(long phoneNumber, string message)
         {
-             string account_id =  AzureVault.GetValue("TwilioId");
+             /*string account_id =  AzureVault.GetValue("TwilioId");
              string auth_token = AzureVault.GetValue("TwilioToken");
+            */
+           
+              string account_id =  "ACd519bd096ffd5420f221241cd37918c0";
+             string auth_token = "9f4886a1d6056d69f4e5eb6b7a2e8c11";
+             
+             
 
             var to = new PhoneNumber($"+{phoneNumber}");
             var from = new PhoneNumber("+16193502531");
