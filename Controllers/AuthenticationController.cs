@@ -63,7 +63,7 @@ namespace Servize.Controllers
             {
                 Email = model.Email,
                 Password = model.Password,
-                RememberMe = model.RememberMe
+                RememberMe = model.RememberMe                
             };
             return await Login(LoginModel);
         }
@@ -312,7 +312,8 @@ namespace Servize.Controllers
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    SecurityStamp = Guid.NewGuid().ToString()
+                    SecurityStamp = Guid.NewGuid().ToString()              
+
                 };
                 return await CreateNewUserBasedOnRole(model, role, user);
 
@@ -346,7 +347,8 @@ namespace Servize.Controllers
                 {
                     UserId = user.Id,
                     CompanyName = model.CompanyName,
-                    CompanyRegistrationNumber = model.CompanyRegistrationNumber
+                    CompanyRegistrationNumber = model.CompanyRegistrationNumber,
+                    PhoneNumber = model.PhoneNumber
                 };
                 _context.Add(provider);
             }
@@ -356,7 +358,8 @@ namespace Servize.Controllers
                 {
                     UserId = user.Id,
                     FirstName = model.FirstName,
-                    LastName = model.LastName
+                    LastName = model.LastName,
+                    PhoneNumber = model.PhoneNumber
                 };
                 _context.Add(client);
             }

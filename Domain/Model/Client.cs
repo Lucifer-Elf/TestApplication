@@ -33,6 +33,7 @@ namespace Servize.Domain.Model
 
         public string ProfilePicture { get; set; }
 
-
+        public string PhoneNumber { get; internal set; }
+    
     }
 }

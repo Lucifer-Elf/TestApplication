@@ -14,16 +14,18 @@ namespace Servize.DTO
         [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; }
 
+        [Required(ErrorMessage = "PhoneNumber is required")]
         public string PhoneNumber { get; set; }
 
         public string FirstName { get; set; }
-        public string LastName  { get; set; }
+        public string LastName  { get; set; }        
 
         public string CompanyName { get; set; }
         public string CompanyRegistrationNumber { get; set; }
 
         public int Otp { get; set; }
         public string Role { get; set; }
+
         public bool RememberMe { get; set; }
 
         

@@ -42,5 +42,8 @@ namespace Servize.Domain.Model.Provider
         public PackageType PackageType { get; set; }
 
         public ICollection<Category> ServiceCategories { get; set; }
+
+        public string PhoneNumber { get; internal set; }
+    
     }
 }
