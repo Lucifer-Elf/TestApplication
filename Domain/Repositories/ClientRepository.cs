@@ -20,8 +20,7 @@ namespace Servize.Domain.Repositories
         {
             try
             {
-                List<Client> servizeProviderList = await _context.Client.AsNoTracking()
-                                                                                        .ToListAsync();
+                List<Client> servizeProviderList = await _context.Client.AsNoTracking().ToListAsync();
                 return new Response<IList<Client>>(servizeProviderList, StatusCodes.Status200OK);
             }
             catch (Exception e)
@@ -35,8 +34,7 @@ namespace Servize.Domain.Repositories
         {
             try
             {
-                Client client = await _context.Client.AsNoTracking()
-                                                                                .SingleOrDefaultAsync(c => c.UserId == Id);
+                Client client = await _context.Client.AsNoTracking().SingleOrDefaultAsync(c => c.UserId == Id);
                 if (client == null)
                     return new Response<Client>("Failed to find Id", StatusCodes.Status404NotFound);
                 return new Response<Client>(client, StatusCodes.Status200OK);

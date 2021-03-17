@@ -1,52 +1,52 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Servize.Authentication;
 using Servize.Domain.Enums;
 using Servize.Domain.Services;
-using Servize.DTO.USER;
+using Servize.DTO;
 using Servize.Utility;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Servize.Controllers
 {
-    [Authorize(Roles = UserRoles.Client + "," + UserRoles.Admin)]
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
-    public class ClientController : ControllerBase
+    public class ProductController : ControllerBase
     {
-      
-        private readonly ClientServices _services;
+        private readonly ProductService _services;
 
-        public ClientController(ServizeDBContext dbContext,
+        public ProductController(ServizeDBContext dbContext,
                                          IMapper mapper, ContextTransaction transaction,
-                                        Utilities utitlity )
-        {        
-            _services = new ClientServices(dbContext, mapper,transaction, utitlity);
+                                        Utilities utitlity)
+        {
+            _services = new ProductService(dbContext, mapper, transaction, utitlity);
         }
 
         [Authorize(Roles = UserRoles.Admin)]
-        [HttpGet]     
+        [HttpGet]
         [Produces("application/json")]
-        public async Task<ActionResult<IList<ClientDTO>>> GetAllUserList()
+        public async Task<ActionResult<IList<ProductDTO>>> GetAllProductList()
         {
 
-            Response<IList<ClientDTO>> response = await _services.GetAllUserList();
+            Response<IList<ProductDTO>> response = await _services.GetAllProductList();
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
 
             return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
 
-       
+
 
         [HttpGet("{id}")]
         [Produces("application/json")]
-        public async Task<ActionResult<ClientDTO>> GetUserById(string id)
+        public async Task<ActionResult<ProductDTO>> GetProductById(int id)
         {
-            Response<ClientDTO> response = await _services.GetUserById(id);
+            Response<ProductDTO> response = await _services.GetProductById(id);
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
 
@@ -54,15 +54,13 @@ namespace Servize.Controllers
         }
 
         [HttpPatch]
-        public async Task<ActionResult<ClientDTO>> PatchClientDetails(ClientDTO clientDTO)
+        public async Task<ActionResult<ProductDTO>> PatchDetails(ProductDTO ProductDTO)
         {
-            Response<ClientDTO> response = await _services.PatchClientDetails(clientDTO);
+            Response<ProductDTO> response = await _services.PatchDetails(ProductDTO);
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
 
             return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
-
-
     }
 }

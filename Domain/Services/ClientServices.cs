@@ -29,7 +29,7 @@ namespace Servize.Domain.Services
 
         }
 
-        public async Task<Response<IList<ClientDTO>>> GetAllServizeUserList()
+        public async Task<Response<IList<ClientDTO>>> GetAllUserList()
         {
             try
             {
@@ -51,7 +51,7 @@ namespace Servize.Domain.Services
 
       
 
-        public async Task<Response<ClientDTO>> GetAllServizeUserById(string Id)
+        public async Task<Response<ClientDTO>> GetUserById(string Id)
         {
             try
             {
