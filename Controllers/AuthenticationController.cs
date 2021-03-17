@@ -13,6 +13,7 @@ using Servize.Domain.Model.Provider;
 using Servize.DTO;
 using Servize.DTO.ADMIN;
 using Servize.Utility;
+using Servize.Utility.Sms;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -22,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace Servize.Controllers
 {
-    [EnableCors("_myWebOrigin")]
+    [EnableCors("MyPolicy")]
     [Route("[controller]")]
     [ApiController]
     public class AuthenticationController : ControllerBase
@@ -63,7 +64,7 @@ namespace Servize.Controllers
             {
                 Email = model.Email,
                 Password = model.Password,
-                RememberMe = model.RememberMe                
+                RememberMe = model.RememberMe
             };
             return await Login(LoginModel);
         }
@@ -170,7 +171,7 @@ namespace Servize.Controllers
                 HttpContext.Session.SetInt32("otp", value);
                 return Ok($"Otp Send Sucessfully{value}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.Error(ex.Message);
                 return Problem(detail: "Error while Sending SMS", statusCode: StatusCodes.Status500InternalServerError);
@@ -185,18 +186,7 @@ namespace Servize.Controllers
                 if (HttpContext.Session.GetInt32("otp") == model.Otp)
                 {
                     HttpContext.Session.SetInt32("otp", 0);
-                    if (!string.IsNullOrEmpty(model.Role))
-                    {
-                        if (model.Role.ToUpper() == "CLIENT")
-                            return await RegisterUser(model);
-                        if (model.Role.ToUpper() == "ADMIN")                        
-                            return await RegisterAdmin(model);
-                        else
-                            return await RegisterServizeProvider(model);                      
-                    }
-                    else {
-                       return  await RegisterUser(model);
-                    }                   
+                    return await Register(model);
                 }
                 return Problem(detail: "TryAgain", statusCode: StatusCodes.Status503ServiceUnavailable);
             }
@@ -206,7 +196,24 @@ namespace Servize.Controllers
                 return Problem(detail: "Error While Verifying Otp", statusCode: StatusCodes.Status500InternalServerError);
             }
 
-            
+
+        }
+
+        private async Task<ActionResult> Register(RegistrationInputModel model)
+        {
+            if (!string.IsNullOrEmpty(model.Role))
+            {
+                if (model.Role.ToUpper() == "CLIENT")
+                    return await RegisterUser(model);
+                if (model.Role.ToUpper() == "ADMIN")
+                    return await RegisterAdmin(model);
+                else
+                    return await RegisterServizeProvider(model);
+            }
+            else
+            {
+                return await RegisterUser(model);
+            }
         }
 
 
@@ -265,13 +272,12 @@ namespace Servize.Controllers
                     return Ok(tokenHolder);
                 }
             }
-
             return Unauthorized();
         }
 
         //Authentication/Logout
         [HttpPost]
-        [Route("LogOut")]
+        [Route("Logout")]
         public async Task<ActionResult> LogOut()
         {
             try
@@ -279,7 +285,6 @@ namespace Servize.Controllers
                 await _signInManager.SignOutAsync();
                 return Ok();
             }
-
             catch
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response("Error On LogOut ", StatusCodes.Status500InternalServerError));
@@ -312,7 +317,7 @@ namespace Servize.Controllers
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    SecurityStamp = Guid.NewGuid().ToString()              
+                    SecurityStamp = Guid.NewGuid().ToString()
 
                 };
                 return await CreateNewUserBasedOnRole(model, role, user);
@@ -367,15 +372,7 @@ namespace Servize.Controllers
             return Ok(new Response("Profile Created Sucessfully", StatusCodes.Status201Created));
         }
 
-        private void RedirectToLoginAfterRegister(RegistrationInputModel model)
-        {
-            CreatedAtRoute(nameof(Login), new
-            {
-                Email = model.Email,
-                Password = model.Password,
-                RememberMe = false
-            }, model);
-        }
+
 
 
 
@@ -432,14 +429,15 @@ namespace Servize.Controllers
         }
 
         [HttpPost]
-        [Route("Google-login")]
-        public async Task<ActionResult> Google([FromBody] DTO.ADMIN.ExternalLoginDTO userView)
+        [Route("googlelogin")]
+        public async Task<ActionResult> Google([FromBody] ExternalLoginDTO externalInputModel)
         {
             try
             {
-                var payload = GoogleJsonWebSignature.ValidateAsync(userView.TokenId, new GoogleJsonWebSignature.ValidationSettings()).Result;
 
-                var user = await _userManager.FindByLoginAsync(userView.Provider, payload.Subject);
+                var payload = GoogleJsonWebSignature.ValidateAsync(externalInputModel.TokenId, new GoogleJsonWebSignature.ValidationSettings()).Result;
+
+                var user = await _userManager.FindByLoginAsync(externalInputModel.Provider, payload.Subject);
 
                 if (user != null)
                     return Ok(user);
@@ -447,49 +445,19 @@ namespace Servize.Controllers
                 user = await _userManager.FindByEmailAsync(payload.Email);
                 if (user == null)
                 {
-                    user = new ApplicationUser()
+
+                    RegistrationInputModel register = new RegistrationInputModel
                     {
-                        UserName = payload.Email,
                         Email = payload.Email,
-                        SecurityStamp = Guid.NewGuid().ToString()
+                        FirstName = payload.GivenName,
+                        LastName = payload.FamilyName,
+                        Role = externalInputModel.Role
                     };
+                    await Register(register);
 
-                    await _userManager.CreateAsync(user);
-                    await CreateRoleInDatabase();
 
-                    if (await _roleManager.RoleExistsAsync(Utility.Utilities.GetRoleForstring(userView.Role)))
-                    {
-                        await _userManager.AddToRoleAsync(user, Utility.Utilities.GetRoleForstring(userView.Role));
-                    }
-
-                    if (Utility.Utilities.GetRoleForstring(userView.Role) == "Provider")
-                    {
-                        Provider provider = new Provider
-                        {
-                            UserId = user.Id,
-                            CompanyName = payload.Name,
-                            CompanyRegistrationNumber = "XXXXXXXX"
-
-                        };
-                        _context.Provider.Add(provider);
-
-                    }
-                    else if (Utility.Utilities.GetRoleForstring(userView.Role) == "Admin")
-                    {
-                        // return Ok(new Response("Admin is Created Sucessfully", StatusCodes.Status201Created));
-                    }
-                    else
-                    {
-                        Client client = new Client
-                        {
-                            UserId = user.Id,
-                            FirstName = payload.GivenName,
-                            LastName = payload.FamilyName
-                        };
-                        _context.Client.Add(client);
-                    }
                 }
-                var info = new UserLoginInfo(userView.Provider, payload.Subject, userView.Provider.ToUpperInvariant());
+                var info = new UserLoginInfo(externalInputModel.Provider, payload.Subject, externalInputModel.Provider.ToUpperInvariant());
                 var result = await _userManager.AddLoginAsync(user, info);
                 if (result.Succeeded)
                 {
@@ -512,17 +480,16 @@ namespace Servize.Controllers
                         signingCredentials: new SigningCredentials(authSignInKey, SecurityAlgorithms.HmacSha256)
 
                         );
-                    var tokenHolder = new
+                    var tokenHolder = new TokenHolder
                     {
 
-                        token = new JwtSecurityTokenHandler().WriteToken(token),
-                        validTo = token.ValidTo.ToString("yyyy-MM-ddThh:mm:ss"),
-                        userId = user.Id,
-                        userName = user.UserName
-
+                        Token = new JwtSecurityTokenHandler().WriteToken(token),
+                        ValidTo = token.ValidTo.ToString("yyyy-MM-ddThh:mm:ss"),
+                        UserId = user.Id,
+                        UserName = user.UserName
                     };
-                    await _userManager.SetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken", tokenHolder.token);
-                    await _transaction.CompleteAsync();
+                    await _userManager.SetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken", tokenHolder.Token);
+
                     return Ok(tokenHolder);
                 }
             }
@@ -535,6 +502,13 @@ namespace Servize.Controllers
         }
 
 
+        /*[HttpPost]
+        [Route("facebookLogin")]
+        public async Task<ActionResult> Facebook([FromBody] ExternalLoginDTO externalInputModel)
+        {
+            var client = new FacebookClient;
+        }*/
     }
+
 }
 

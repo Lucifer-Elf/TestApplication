@@ -17,17 +17,16 @@
     },
     "Servize": {
       "commandName": "Project",
-      "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",     
-        "AppId": "527735858190215",
-        "AppSecret": "35c7e9fbe416b54c5ce9f45ada3d725b",       
         "azure.vault.url": "https://servizetestkeyvalut.vault.azure.net/",
-        "azure.vault.tenantid": "850f4f34-5e1a-4bac-881c-bb5925b1ffed",
+        "AppSecret": "35c7e9fbe416b54c5ce9f45ada3d725b",
         "azure.vault.clientid": "81a793e3-cf6b-429c-a0e9-b34c4fc91e1f",
-        "azure.vault.clientsecret": ".V-bBy-fKyP6c0S0k.aw-js_eg83U1QHqd"
+        "azure.vault.clientsecret": ".V-bBy-fKyP6c0S0k.aw-js_eg83U1QHqd",
+        "azure.vault.tenantid": "850f4f34-5e1a-4bac-881c-bb5925b1ffed",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "AppId": "527735858190215"
       },
-      "applicationUrl": "https://localhost:5001;https://localhost:5000;http://10.122.1.117:5002"
+      "applicationUrl": "http://localhost:5000;"
     },
     "Docker": {
       "commandName": "Docker",

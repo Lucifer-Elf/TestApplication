@@ -1,3 +1,4 @@
+using IdentityServer4;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,25 +9,20 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Session;
 using Servize.Authentication;
 using Servize.Controllers;
 using Servize.Domain.Mapper;
 using Servize.Domain.Model.OrderDetail;
 using Servize.Domain.Repositories;
+using Servize.Utility;
 using System;
 using System.Text;
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Servize.Utility.Cors;
-using Servize.Utility;
-using Servize.Utility.Configurations;
 
 namespace Servize
 {
     public class Startup
     {
-        readonly string MyAllowSpecificOrigins = "_myWebOrigin";
+        readonly string MyAllowSpecificOrigins = "MyPolicy";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -36,18 +32,14 @@ namespace Servize
         public IConfiguration Configuration { get; }
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers(); // controller Registered
-            services.AddCors(options =>
-             {
-                 options.AddPolicy(name: MyAllowSpecificOrigins,
-                                   builder =>
-                                   {
-                                       builder.AllowAnyOrigin()
-                                       .AllowAnyHeader()
-                                       .AllowAnyMethod();
 
-                                   });
-             });
+            services.AddCors(o => o.AddPolicy(name: MyAllowSpecificOrigins, builder =>
+            {
+                builder.WithOrigins("https://localhost:3000","https://localhost:5001")
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
+
 
 
             services.AddScoped<ProviderRespository>();
@@ -58,17 +50,17 @@ namespace Servize
             services.AddScoped<Cart>();
             services.AddScoped<ContextTransaction>();
 
-            /*string connectionString = @$"Server={AzureVault.GetValue("DbServer")};
+            string connectionString = @$"Server={AzureVault.GetValue("DbServer")};
                                         Database={AzureVault.GetValue("DatabaseName")};
                                         User Id ={AzureVault.GetValue("DbUserId")};
                                         Password={AzureVault.GetValue("DbPassword")};
-                                        MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";*/
+                                        MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
-          string connectionString = "Server=servizetest.database.windows.net;" +
+         /* string connectionString = "Server=servizetest.database.windows.net;" +
                                         "Database=serviceTestDb;" +
                                        " User Id =servizeAdmin;" +
                                         "Password=@Lfred1205;" +
-                                        "MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+                                        "MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";*/
 
             //EnitiyFrameWork
             services.AddDbContext<ServizeDBContext>(options => options.UseSqlServer(connectionString));
@@ -113,8 +105,9 @@ namespace Servize
 
      .AddGoogle(options =>
         {
-            options.ClientId = "GoogleClientId";
-            options.ClientSecret = "GoogleSecret";
+            options.ClientId = "767916686704-fql4bubmbka31ftnadb70t656pa5kvab.apps.googleusercontent.com";
+            options.ClientSecret = "_IASP8rZypXBJdYi3TMO8xyb";
+            options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
             // to change call back Url
             //options.CallbackPath
         })
@@ -125,8 +118,8 @@ namespace Servize
          // to change call back Url
          //options.CallbackPath
      });
-     
 
+            services.AddControllers(); // controller Registered
             services.AddSession(options =>
             {
                 options.Cookie.Name = "otp";
@@ -160,8 +153,7 @@ namespace Servize
             // app.UseSerilogRequestLogging();
 
             app.UseRouting();
-            app.UseCors(MyAllowSpecificOrigins);
-            app.UseCookiePolicy();
+            app.UseCors(MyAllowSpecificOrigins);       
             app.UseAuthentication();   // add to pipline 
             app.UseAuthorization();
 

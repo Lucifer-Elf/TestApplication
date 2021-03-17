@@ -9,12 +9,8 @@ namespace Servize.DTO
     public class RegistrationInputModel
     {
         [Required(ErrorMessage = "Email is required")]
-        public string Email { get; set; }
-
-        [Required(ErrorMessage = "Password is required")]
-        public string Password { get; set; }
-
-        [Required(ErrorMessage = "PhoneNumber is required")]
+        public string Email { get; set; }   
+        public string Password { get; set; }     
         public string PhoneNumber { get; set; }
 
         public string FirstName { get; set; }

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Servize.DTO
 {
-    public class InputLoginModel
+    public class LoginViewModel
     {
         [Required(ErrorMessage = "Email is required")]
         public string Email { get; set; }
@@ -14,5 +14,8 @@ namespace Servize.DTO
 
         public bool RememberMe { get; set; }
 
+        public string ReturnUrl { get; set; }
+
+        public IList<AuthenticationScheme> ExternalLogins { get; set; }
     }
 }
