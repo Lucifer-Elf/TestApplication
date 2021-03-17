@@ -15,6 +15,7 @@ using Servize.Domain.Mapper;
 using Servize.Domain.Model.OrderDetail;
 using Servize.Domain.Repositories;
 using Servize.Utility;
+using Servize.Utility.Configurations;
 using System;
 using System.Text;
 
