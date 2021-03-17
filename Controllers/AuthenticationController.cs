@@ -160,16 +160,25 @@ namespace Servize.Controllers
             return Unauthorized();
         }
 
-        [HttpPost("GetOtp/{number}")]
+        [HttpPost("Getotp/{number}")]
         [Produces("application/json")]
         [Consumes("application/json")]
-        public async Task<ActionResult> SMSToken(long number)
+        public async Task<ActionResult> SMSToken(string number)
         {
+            if (User != null)
+            {
+                _signInManager.IsSignedIn(User);
+                var user = _userManager.GetUserAsync(User);
+                string Phno = user.Result.PhoneNumber;
+                if (!Phno.StartsWith("+"))
+                    Phno = "+" + Phno;
+                number = Phno;
+            }
             try
             {
                 var value = await SMSAuthService.SendTokenSMSAsync(number);
                 HttpContext.Session.SetInt32("otp", value);
-                return Ok($"Otp Send Sucessfully{value}");
+                return Ok($"Otp Send Sucessfully => {value}");
             }
             catch (Exception ex)
             {
@@ -178,7 +187,7 @@ namespace Servize.Controllers
             }
         }
 
-        [HttpPost("VerifyOtp")]
+        [HttpPost("Verifyotp")]
         public async Task<ActionResult> VerifySMSToken(RegistrationInputModel model)
         {
             try
@@ -317,7 +326,8 @@ namespace Servize.Controllers
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    SecurityStamp = Guid.NewGuid().ToString()
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    PhoneNumber = model.PhoneNumber,
 
                 };
                 return await CreateNewUserBasedOnRole(model, role, user);
@@ -353,7 +363,7 @@ namespace Servize.Controllers
                     UserId = user.Id,
                     CompanyName = model.CompanyName,
                     CompanyRegistrationNumber = model.CompanyRegistrationNumber,
-                    PhoneNumber = model.PhoneNumber
+                 
                 };
                 _context.Add(provider);
             }
@@ -364,7 +374,7 @@ namespace Servize.Controllers
                     UserId = user.Id,
                     FirstName = model.FirstName,
                     LastName = model.LastName,
-                    PhoneNumber = model.PhoneNumber
+                 
                 };
                 _context.Add(client);
             }
@@ -502,12 +512,7 @@ namespace Servize.Controllers
         }
 
 
-        /*[HttpPost]
-        [Route("facebookLogin")]
-        public async Task<ActionResult> Facebook([FromBody] ExternalLoginDTO externalInputModel)
-        {
-            var client = new FacebookClient;
-        }*/
+
     }
 
 }

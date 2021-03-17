@@ -8,7 +8,7 @@ namespace Servize.Utility.Sms
 {
     public class SMSAuthService
     {
-        public static async Task<int> SendTokenSMSAsync(long phoneNumber)
+        public static async Task<int> SendTokenSMSAsync(string phoneNumber)
         {
             try
             {
@@ -25,7 +25,7 @@ namespace Servize.Utility.Sms
             }
         }
 
-        private static async Task SendSMS(long phoneNumber, string message)
+        private static async Task SendSMS(string phoneNumber, string message)
         {
              /*string account_id =  AzureVault.GetValue("TwilioId");
              string auth_token = AzureVault.GetValue("TwilioToken");
@@ -36,7 +36,7 @@ namespace Servize.Utility.Sms
              
              
 
-            var to = new PhoneNumber($"+{phoneNumber}");
+            var to = new PhoneNumber($"{phoneNumber}");
             var from = new PhoneNumber("+16193502531");
             TwilioClient.Init(account_id, auth_token);
             await MessageResource.CreateAsync(to: to,

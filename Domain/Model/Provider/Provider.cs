@@ -43,7 +43,6 @@ namespace Servize.Domain.Model.Provider
 
         public ICollection<Category> ServiceCategories { get; set; }
 
-        public string PhoneNumber { get; internal set; }
     
     }
 }
