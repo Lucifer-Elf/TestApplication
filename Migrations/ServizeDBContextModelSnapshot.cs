@@ -246,9 +246,6 @@ namespace Servize.Migrations
                     b.Property<double>("Longitude")
                         .HasColumnType("float");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ProfilePicture")
                         .HasColumnType("nvarchar(max)");
 
@@ -536,9 +533,6 @@ namespace Servize.Migrations
 
                     b.Property<int>("PackageType")
                         .HasColumnType("int");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Postal")
                         .HasColumnType("nvarchar(max)");

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Servize.Migrations
 {
-    public partial class IntitialTableCreated : Migration
+    public partial class NewTestDatabase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
