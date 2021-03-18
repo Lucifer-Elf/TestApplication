@@ -23,6 +23,7 @@
         "azure.vault.clientid": "81a793e3-cf6b-429c-a0e9-b34c4fc91e1f",
         "azure.vault.clientsecret": ".V-bBy-fKyP6c0S0k.aw-js_eg83U1QHqd",
         "azure.vault.tenantid": "850f4f34-5e1a-4bac-881c-bb5925b1ffed",
+        "applicationinsightInstrumentkey": "912d3faf-93fd-48c5-bdee-21cfb4d34974",
         "ASPNETCORE_ENVIRONMENT": "Development",
         "AppId": "527735858190215"
       },

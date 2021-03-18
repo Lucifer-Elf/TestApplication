@@ -48,7 +48,7 @@ namespace Servize.Domain.Repositories
             }
         }
 
-        public async Task<Response<Category>> AddServiceCategory(Category category)
+        public async Task<Response<Category>> PostCategory(Category category)
         {
             if (category == null)
                 return new Response<Category>("Request not parsable", StatusCodes.Status400BadRequest);

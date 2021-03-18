@@ -6,6 +6,7 @@ using Servize.Domain.Model;
 using Servize.Domain.Repositories;
 using Servize.DTO.USER;
 using Servize.Utility;
+using Servize.Utility.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -31,6 +32,7 @@ namespace Servize.Domain.Services
 
         public async Task<Response<IList<ClientDTO>>> GetAllUserList()
         {
+            Logger.LogInformation(0,"GetAll Client service Started !");
             try
             {
                 Response<IList<Client>> response = await _respository.GetAllServizeUserList();
@@ -45,7 +47,11 @@ namespace Servize.Domain.Services
             }
             catch (Exception e)
             {
-                return new Response<IList<ClientDTO>>($"Failed to Load user List Error:{e.Message}", StatusCodes.Status500InternalServerError);
+                Logger.LogError(e);
+                return new Response<IList<ClientDTO>>($"Failed to Load user List Error", StatusCodes.Status500InternalServerError);
+            }
+            finally {
+                Logger.LogInformation(0,"GetAll Client service finished !");
             }
         }
 
@@ -53,6 +59,7 @@ namespace Servize.Domain.Services
 
         public async Task<Response<ClientDTO>> GetUserById(string Id)
         {
+            Logger.LogInformation(0, "Get Client By id service started !");
             try
             {
                 Response<Client> response = await _respository.GetAllServizeUserById(Id);
@@ -65,12 +72,18 @@ namespace Servize.Domain.Services
             }
             catch (Exception e)
             {
-                return new Response<ClientDTO>($"Failed to Load User Error:{e.Message}", StatusCodes.Status500InternalServerError);
+                Logger.LogError(e);
+                return new Response<ClientDTO>($"Failed to Get User Error By Id", StatusCodes.Status500InternalServerError);
+            }
+            finally
+            {
+                Logger.LogInformation(0, "Get Client By id service finished !");
             }
         }
 
         public async Task<Response<ClientDTO>> PatchClientDetails(ClientDTO clientDTO)
         {
+            Logger.LogInformation(0, "Patch Service for Client service started !");
             try
             {
                 if (clientDTO == null) return new Response<ClientDTO>("Failed to Load Client With Specific Id", StatusCodes.Status400BadRequest);
@@ -91,6 +104,10 @@ namespace Servize.Domain.Services
                 return new Response<ClientDTO>("Client Could Not be Updated", StatusCodes.Status200OK);
             }
 
+            finally
+            {
+                Logger.LogInformation(0, "Patch Service for Client service finished !");
+            }
         }
     }
 }

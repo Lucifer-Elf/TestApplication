@@ -62,7 +62,7 @@ namespace Servize.Controllers
         [Route("AddCategory")]
         public async Task<ActionResult<CategoryDTO>> AddServiceCategory([FromBody] CategoryDTO servizeCategoryDTO)
         {
-            Response<CategoryDTO> response    = await _services.AddServiceCategory(servizeCategoryDTO);                
+            Response<CategoryDTO> response    = await _services.PostCategory(servizeCategoryDTO);                
             if (response.IsSuccessStatusCode())
                     return Ok(response.Resource);
             return Problem(statusCode: response.StatusCode, detail: response.Message);

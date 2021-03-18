@@ -72,14 +72,14 @@ namespace Servize.Utility.Logging
         private LoggerBuildSingleton(bool isDbConfigurationAvailable)
         {
             LogOptions options;
-            if (isDbConfigurationAvailable)
-            {
-                options = ConfigureLogHandlerOnDatabaseAvailable();
-            }
-            else
-            {
-                options = ConfigureDefaultLogHandler();
-            }
+           // if (isDbConfigurationAvailable)
+            //{
+                options = DefaultConfiguration();
+            //}
+            ///else
+           // {
+//options = ConfigureDefaultLogHandler();
+           // }
             Logger.CreateLogger(options);
         }
 
@@ -87,28 +87,28 @@ namespace Servize.Utility.Logging
         /// this function set basic handler to log builder
         /// </summary>
         /// <returns></returns>
-        private static LogOptions ConfigureDefaultLogHandler()
+       /* private static LogOptions ConfigureDefaultLogHandler()
         {
             return new LogOptions
             {
                 EnableConsole = Configuration.GetValue<bool>("base.logging.console.enable", true),
                // FilePath = Configuration.GetValue<string>("base.logging.file.path", Utility.GetLogFilePath()),
             };
-        }
+        }*/
 
         /// <summary>
         /// this function check the setting in database or environment and initlize he log handler
         /// </summary>
         /// <returns></returns>
-        private static LogOptions ConfigureLogHandlerOnDatabaseAvailable()
+        private static LogOptions DefaultConfiguration()
         {
             return new LogOptions
             {
-                EnableConsole = Configuration.GetValue<bool>("base.logging.console.enable", false),
-                ApplicationInsightInstrumentKey = Configuration.GetValue<string>("base.logging.applicationinsight.instrumentkey"),
-                EnableElasticSearch = Configuration.GetValue<bool>("base.logging.elasticsearch.enable", false),
-                ElasticSearchHost = Configuration.GetValue<string>("base.logging.elasticsearch.host", "http://localhost:9200/"),
-                FilePath = Configuration.GetValue<string>("base.logging.file.path"),
+                EnableConsole = Configuration.GetValue<bool>("ConsoleEnable", true),
+                ApplicationInsightInstrumentKey = Configuration.GetValue<string>("applicationinsightInstrumentkey"),
+                //EnableElasticSearch = Configuration.GetValue<bool>("base.logging.elasticsearch.enable", false),
+                //ElasticSearchHost = Configuration.GetValue<string>("base.logging.elasticsearch.host", "http://localhost:9200/"),
+                //FilePath = Configuration.GetValue<string>("base.logging.file.path"),
             };
         }
 

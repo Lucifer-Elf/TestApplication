@@ -129,6 +129,8 @@ namespace Servize
             services.AddSingleton(mapper);
             services.AddDistributedMemoryCache();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddApplicationInsightsTelemetry();
+
         }
 
 

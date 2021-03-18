@@ -11,6 +11,7 @@ using Servize.Domain.Model;
 using Servize.Domain.Model.Provider;
 using Serilog;
 using Microsoft.EntityFrameworkCore;
+using Servize.Utility.Logging;
 
 namespace Servize.Domain.Services
 {
@@ -92,6 +93,7 @@ namespace Servize.Domain.Services
 
         public async Task<Response<ProviderDTO>> PatchServizeProvider(ProviderDTO providerDTO)
         {
+            Logger.LogInformation(0, "Patch for Product  service started !");
             try
             {
                 if (providerDTO == null) return new Response<ProviderDTO>("Failed to Load ServizeProvider With Specific Id", StatusCodes.Status400BadRequest);
@@ -108,8 +110,12 @@ namespace Servize.Domain.Services
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message);
+                Logger.LogError(ex);
                 return new Response<ProviderDTO>("Provider Could Not be Updated", StatusCodes.Status200OK);
+            }
+            finally
+            {
+                Logger.LogInformation(0, "Patch for Product  service finished !");
             }
 
         }
@@ -137,7 +143,7 @@ namespace Servize.Domain.Services
         }*/
         public async Task<Response<ProviderDTO>> UpdateServizeProvider(ProviderDTO servizeProviderDTO)
         {
-
+            Logger.LogInformation(0, "Update for Product  service started !");
             try
             {
                 Provider serviceProvider = _mapper.Map<ProviderDTO, Provider>(servizeProviderDTO);
@@ -146,7 +152,7 @@ namespace Servize.Domain.Services
                 if (response.IsSuccessStatusCode())
                 {
                     ProviderDTO serviceDTO = _mapper.Map<Provider, ProviderDTO>(response.Resource);
-                  
+
                     return new Response<ProviderDTO>(serviceDTO, StatusCodes.Status200OK);
                 }
 
@@ -154,7 +160,12 @@ namespace Servize.Domain.Services
             }
             catch (Exception e)
             {
+                Logger.LogError(e);
                 return new Response<ProviderDTO>($"Failed to Add ServizeProvider Error:{e.Message}", StatusCodes.Status500InternalServerError);
+            }
+            finally
+            {
+                Logger.LogInformation(0, "Update for Product  service finished !");
             }
         }
 

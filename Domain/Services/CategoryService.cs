@@ -4,6 +4,7 @@ using Servize.Domain.Model.Provider;
 using Servize.Domain.Repositories;
 using Servize.DTO.PROVIDER;
 using Servize.Utility;
+using Servize.Utility.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,8 +26,10 @@ namespace Servize.Domain.Services
             _transacation = transaction;
             _mapper = mapper;
         }
+
         public async Task<Response<IList<CategoryDTO>>> GetAllCategoryList()
         {
+            Logger.LogInformation(0, " Category GetAll Service Started");
             try
             {
                 Response<IList<Category>> response = await _respository.GetAllServizeCategoryList();
@@ -41,16 +44,22 @@ namespace Servize.Domain.Services
             }
             catch (Exception e)
             {
-                return new Response<IList<CategoryDTO>>($"Failed to Load ServizeCategory List Error:{e.Message}", StatusCodes.Status500InternalServerError);
+                Logger.LogError(e);
+                return new Response<IList<CategoryDTO>>($"Failed to Load ServizeCategory List Error", StatusCodes.Status500InternalServerError);
+            }
+            finally {
+
+                Logger.LogInformation(0, " Category Get AllService Finished");
             }
         }
 
 
-        public async Task<Response<CategoryDTO>> GetAllCategoryById(int Id)
+        public async Task<Response<CategoryDTO>> GetAllCategoryById(int id)
         {
+            Logger.LogInformation(0, " Category GetAll Service Started By id");
             try
             {
-                Response<Category> response = await _respository.GetAllServizeCategoryById(Id);
+                Response<Category> response = await _respository.GetAllServizeCategoryById(id);
                 if (response.IsSuccessStatusCode())
                 {
                     CategoryDTO serviceDTO = _mapper.Map<Category, CategoryDTO>(response.Resource);
@@ -60,17 +69,21 @@ namespace Servize.Domain.Services
             }
             catch (Exception e)
             {
+                Logger.LogError(e);
                 return new Response<CategoryDTO>($"Failed to Load ServizeCategory Error:{e.Message}", StatusCodes.Status500InternalServerError);
+            }
+            finally {
+                Logger.LogInformation(0, " Category Get AllService Finished");
             }
         }
 
-        public async Task<Response<CategoryDTO>> AddServiceCategory(CategoryDTO servizeCategoryDTO )
+        public async Task<Response<CategoryDTO>> PostCategory(CategoryDTO servizeCategoryDTO )
         {
+            Logger.LogInformation(0, " Add Category Service Started");
             try
             {
                 Category serviceCategory = _mapper.Map<CategoryDTO, Category>(servizeCategoryDTO);
-
-                Response<Category> response = await _respository.AddServiceCategory(serviceCategory);
+                Response<Category> response = await _respository.PostCategory(serviceCategory);
                 if (response.IsSuccessStatusCode())
                 {
                     await _transacation.CompleteAsync();
@@ -79,14 +92,19 @@ namespace Servize.Domain.Services
                 }
                 return new Response<CategoryDTO>("Failed to Add ServizeCategory With Specific Id", response.StatusCode);
             }
-            catch (Exception e)
+            catch (Exception e){
+                Logger.LogError(e);
+                return new Response<CategoryDTO>($"Failed to Add ategory Error", StatusCodes.Status500InternalServerError);
+            }
+            finally
             {
-                return new Response<CategoryDTO>($"Failed to Add ServizeCategory Error:{e.Message}", StatusCodes.Status500InternalServerError);
+                Logger.LogInformation(0, " Category Get AllService Finished");
             }
         }
 
         public async Task<Response<CategoryDTO>> UpdateServiceCategory(CategoryDTO servizeCategoryDTO)
         {
+            Logger.LogInformation(0, " Update Category Service Started");
             try
             {
                 Category serviceCategory = _mapper.Map<CategoryDTO, Category>(servizeCategoryDTO);
@@ -102,7 +120,12 @@ namespace Servize.Domain.Services
             }
             catch (Exception e)
             {
+                Logger.LogError(e);
                 return new Response<CategoryDTO>($"Failed to Add ServizeCategory Error:{e.Message}", StatusCodes.Status500InternalServerError);
+            }
+            finally
+            {
+                Logger.LogInformation(0, " Category Get AllService Finished");
             }
         }
 

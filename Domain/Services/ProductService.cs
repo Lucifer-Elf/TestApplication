@@ -6,6 +6,7 @@ using Servize.Domain.Model.Provider;
 using Servize.Domain.Repositories;
 using Servize.DTO;
 using Servize.Utility;
+using Servize.Utility.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,7 @@ namespace Servize.Domain.Services
 
         public async Task<Response<IList<ProductDTO>>> GetAllProductList()
         {
+            Logger.LogInformation(0, "Get All Product service started !");
             try
             {
                 Response<IList<Product>> response = await _respository.GetAllProductList();
@@ -46,7 +48,11 @@ namespace Servize.Domain.Services
             }
             catch (Exception e)
             {
-                return new Response<IList<ProductDTO>>($"Failed to Load Product List Error:{e.Message}", StatusCodes.Status500InternalServerError);
+                Logger.LogError(e);
+                return new Response<IList<ProductDTO>>($"Failed to Load Product List Error", StatusCodes.Status500InternalServerError);
+            }
+            finally {
+                Logger.LogInformation(0, "Get All Product service finished !");
             }
         }
 
@@ -54,6 +60,7 @@ namespace Servize.Domain.Services
 
         public async Task<Response<ProductDTO>> GetProductById(int Id)
         {
+            Logger.LogInformation(0, "Get All Product By id service started !");
             try
             {
                 Response<Product> response = await _respository.GetProductById(Id);
@@ -66,12 +73,18 @@ namespace Servize.Domain.Services
             }
             catch (Exception e)
             {
+                Logger.LogError(e);
                 return new Response<ProductDTO>($"Failed to Get Product Id", StatusCodes.Status500InternalServerError);
+            }
+            finally
+            {
+                Logger.LogInformation(0, "Get All Product By id  service finished !");
             }
         }
 
         public async Task<Response<ProductDTO>> PatchDetails(ProductDTO productDTO)
         {
+            Logger.LogInformation(0, "Patch for Product  service started !");
             try
             {
                 if (productDTO == null) return new Response<ProductDTO>("Failed to Load Product With Specific Id", StatusCodes.Status400BadRequest);
@@ -90,6 +103,10 @@ namespace Servize.Domain.Services
             {
                 Log.Error(ex.Message);
                 return new Response<ProductDTO>("Product Could Not be Updated", StatusCodes.Status200OK);
+            }
+            finally
+            {
+                Logger.LogInformation(0, "Patch for Product  service finished !");
             }
         }
 
