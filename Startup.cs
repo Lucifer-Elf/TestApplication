@@ -49,6 +49,7 @@ namespace Servize
             services.AddScoped<Utility.Utilities>();
             services.AddScoped<Cart>();
             services.AddScoped<ContextTransaction>();
+            services.AddScoped<ProductRepository>();
 
            /* string connectionString = @$"Server={AzureVault.GetValue("DbServer")};
                                         Database={AzureVault.GetValue("DatabaseName")};

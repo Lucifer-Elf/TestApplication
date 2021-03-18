@@ -169,10 +169,13 @@ namespace Servize.Controllers
             {
                 _signInManager.IsSignedIn(User);
                 var user = _userManager.GetUserAsync(User);
-                string Phno = user.Result.PhoneNumber;
-                if (!Phno.StartsWith("+"))
-                    Phno = "+" + Phno;
-                number = Phno;
+                if (user.Result != null)
+                {
+                    string Phno = user.Result.PhoneNumber;
+                    if (!Phno.StartsWith("+"))
+                        Phno = "+" + Phno;
+                    number = Phno;
+                }
             }
             try
             {
