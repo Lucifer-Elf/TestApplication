@@ -15,7 +15,6 @@ using Servize.Domain.Mapper;
 using Servize.Domain.Model.OrderDetail;
 using Servize.Domain.Repositories;
 using Servize.Utility;
-using Servize.Utility.Configurations;
 using System;
 using System.Text;
 
@@ -51,17 +50,17 @@ namespace Servize
             services.AddScoped<Cart>();
             services.AddScoped<ContextTransaction>();
 
-            string connectionString = @$"Server={AzureVault.GetValue("DbServer")};
+           /* string connectionString = @$"Server={AzureVault.GetValue("DbServer")};
                                         Database={AzureVault.GetValue("DatabaseName")};
                                         User Id ={AzureVault.GetValue("DbUserId")};
                                         Password={AzureVault.GetValue("DbPassword")};
-                                        MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+                                        MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";*/
 
-         /* string connectionString = "Server=servizetest.database.windows.net;" +
+        string connectionString = "Server=servizetest.database.windows.net;" +
                                         "Database=serviceTestDb;" +
                                        " User Id =servizeAdmin;" +
                                         "Password=@Lfred1205;" +
-                                        "MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";*/
+                                        "MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
             //EnitiyFrameWork
             services.AddDbContext<ServizeDBContext>(options => options.UseSqlServer(connectionString));
@@ -106,19 +105,12 @@ namespace Servize
 
      .AddGoogle(options =>
         {
-            options.ClientId = AzureVault.GetValue("GoogleClientId");
-            options.ClientSecret = AzureVault.GetValue("GoogleSecret");
+            options.ClientId = "767916686704-fql4bubmbka31ftnadb70t656pa5kvab.apps.googleusercontent.com";
+            options.ClientSecret = "_IASP8rZypXBJdYi3TMO8xyb";
             options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
             // to change call back Url
             //options.CallbackPath
-        })
-     .AddFacebook(options =>
-     {
-         options.AppId = AzureVault.GetValue("FBAppId");
-         options.AppSecret = AzureVault.GetValue("FBAppSecret");
-         // to change call back Url
-         //options.CallbackPath
-     });
+        });   
 
             services.AddControllers(); // controller Registered
             services.AddSession(options =>

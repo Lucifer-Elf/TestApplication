@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Servize.Controllers
 {
-    [Authorize(Roles = UserRoles.Client + "," + UserRoles.Admin)]
+   // [Authorize(Roles = UserRoles.Client + "," + UserRoles.Admin)]
     [ApiController]
     [Route("[controller]")]
     public class ClientController : ControllerBase
@@ -27,7 +27,7 @@ namespace Servize.Controllers
             _services = new ClientServices(dbContext, mapper,transaction, utitlity);
         }
 
-        [Authorize(Roles = UserRoles.Admin)]
+       // [Authorize(Roles = UserRoles.Admin)]
         [HttpGet]     
         [Produces("application/json")]
         public async Task<ActionResult<IList<ClientDTO>>> GetAllUserList()
