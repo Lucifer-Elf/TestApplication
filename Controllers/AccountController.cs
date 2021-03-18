@@ -13,6 +13,7 @@ using Servize.Domain.Model.Provider;
 using Servize.DTO;
 using Servize.DTO.ADMIN;
 using Servize.Utility;
+using Servize.Utility.Logging;
 using Servize.Utility.Sms;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace Servize.Controllers
     [EnableCors("MyPolicy")]
     [Route("[controller]")]
     [ApiController]
-    public class AuthenticationController : ControllerBase
+    public class AccountController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -36,7 +37,7 @@ namespace Servize.Controllers
         private IAuthService _authService;
         private readonly ContextTransaction _transaction;
 
-        public AuthenticationController(UserManager<ApplicationUser> userManager,
+        public AccountController(UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
             IConfiguration configuration,
              SignInManager<ApplicationUser> signInManager,
@@ -53,7 +54,11 @@ namespace Servize.Controllers
             _transaction = transaction;
         }
 
-
+        /// <summary>
+        /// Register Client
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         //Authentication/RegisterUser
         [HttpPost]
         [Route("RegisterClient")]
@@ -70,6 +75,11 @@ namespace Servize.Controllers
         }
 
 
+        /// <summary>
+        /// RegisterAdmin
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         //Authentication/RegisterAdmin
         [HttpPost]
         [Route("RegisterAdmin")]
@@ -87,6 +97,12 @@ namespace Servize.Controllers
             return await Login(LoginModel);
         }
 
+
+        /// <summary>
+        /// Register provider
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         //Authentication/RegisterProvider
         [HttpPost]
         [Route("RegisterProvider")]
@@ -102,6 +118,11 @@ namespace Servize.Controllers
             return await Login(LoginModel);
         }
 
+        /// <summary>
+        /// Get token for User
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         //Authentication/UserToken
         [HttpGet]
         [Route("UserToken")]
@@ -116,8 +137,6 @@ namespace Servize.Controllers
                 if (user != null)
                 {
                     var refreshToken = await _userManager.GetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken");
-
-                    //var isValid = await _userManager.VerifyUserTokenAsync(user, "ServizeApp", "RefreshToken", refreshToken);
                     if (refreshToken != null)
                     {
                         return Ok(refreshToken);
@@ -127,6 +146,11 @@ namespace Servize.Controllers
             return Unauthorized();
         }
 
+        /// <summary>
+        /// Get token is valid or not based on user details
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         //Authentication/UserTokenExpire
         [HttpGet]
         [Route("UserTokenValidty")]
@@ -160,6 +184,11 @@ namespace Servize.Controllers
             return Unauthorized();
         }
 
+        /// <summary>
+        /// Getotp token for number
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
         [HttpPost("Getotp/{number}")]
         [Produces("application/json")]
         [Consumes("application/json")]
@@ -192,6 +221,13 @@ namespace Servize.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Verify SmS token
+        /// </summary>
+        /// <param name="model"> RegistrationModel With all Detail</param>
+        /// <returns></returns>
+
         [HttpPost("Verifyotp")]
         public async Task<ActionResult> VerifySMSToken(RegistrationInputModel model)
         {
@@ -213,22 +249,6 @@ namespace Servize.Controllers
 
         }
 
-        private async Task<ActionResult> Register(RegistrationInputModel model)
-        {
-            if (!string.IsNullOrEmpty(model.Role))
-            {
-                if (model.Role.ToUpper() == "CLIENT")
-                    return await RegisterUser(model);
-                if (model.Role.ToUpper() == "ADMIN")
-                    return await RegisterAdmin(model);
-                else
-                    return await RegisterServizeProvider(model);
-            }
-            else
-            {
-                return await RegisterUser(model);
-            }
-        }
 
 
 
@@ -253,26 +273,8 @@ namespace Servize.Controllers
                     {
                         return Ok(new { msg = "AlreadyLogin", RefreshToken = refreshToken });
                     }
-                    var userRoles = await _userManager.GetRolesAsync(user);
-                    var authClaims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Name,user.UserName),
-                        new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
-                     };
-                    foreach (var userRole in userRoles)
-                    {
-                        authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-                    }
-                    var authSignInKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
 
-                    var token = new JwtSecurityToken(
-                        issuer: _configuration["JWT:ValidIssuer"],
-                        audience: _configuration["JWT:ValidAudience"],
-                        expires: DateTime.Now.AddDays(1),
-                        claims: authClaims,
-                        signingCredentials: new SigningCredentials(authSignInKey, SecurityAlgorithms.HmacSha256)
-
-                        );
+                    JwtSecurityToken token = await GetToken(user);
                     var tokenHolder = new TokenHolder
                     {
                         Token = new JwtSecurityTokenHandler().WriteToken(token),
@@ -368,7 +370,7 @@ namespace Servize.Controllers
                     UserId = user.Id,
                     CompanyName = model.CompanyName,
                     CompanyRegistrationNumber = model.CompanyRegistrationNumber,
-                 
+
                 };
                 _context.Add(provider);
             }
@@ -379,7 +381,7 @@ namespace Servize.Controllers
                     UserId = user.Id,
                     FirstName = model.FirstName,
                     LastName = model.LastName,
-                 
+
                 };
                 _context.Add(client);
             }
@@ -389,7 +391,11 @@ namespace Servize.Controllers
 
 
 
-
+        /// <summary>
+        /// Get User by id
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
 
         [HttpGet]
         [Route("LoginData/{id}")]
@@ -415,6 +421,11 @@ namespace Servize.Controllers
             }
         }
 
+        /// <summary>
+        /// Change password
+        /// </summary>
+        /// <param name="changepassword"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("ChangePassword")]
         public async Task<ActionResult<InputLoginModel>> ChangePassword(UserChangePassWordDTO changepassword)
@@ -443,13 +454,20 @@ namespace Servize.Controllers
             }
         }
 
+
+
+        /// <summary>
+        /// Google login 
+        /// </summary>
+        /// <param name="externalInputModel"></param>
+        /// <returns></returns>
         [HttpPost]
-        [Route("googlelogin")]
+        [Route("Googlelogin")]
         public async Task<ActionResult> Google([FromBody] ExternalLoginDTO externalInputModel)
         {
+            Logger.LogInformation(0, "Google login service started");
             try
             {
-
                 var payload = GoogleJsonWebSignature.ValidateAsync(externalInputModel.TokenId, new GoogleJsonWebSignature.ValidationSettings()).Result;
 
                 var user = await _userManager.FindByLoginAsync(externalInputModel.Provider, payload.Subject);
@@ -470,53 +488,80 @@ namespace Servize.Controllers
                     };
                     await Register(register);
 
-
                 }
                 var info = new UserLoginInfo(externalInputModel.Provider, payload.Subject, externalInputModel.Provider.ToUpperInvariant());
                 var result = await _userManager.AddLoginAsync(user, info);
-                if (result.Succeeded)
+                if (!result.Succeeded)
+                    return Problem(detail: result.Errors.ToString(), statusCode: StatusCodes.Status500InternalServerError);
+
+
+                var userRoles = await _userManager.GetRolesAsync(user);
+                JwtSecurityToken token = await GetToken(user);
+                var tokenHolder = new TokenHolder
                 {
-                    var userRoles = await _userManager.GetRolesAsync(user);
-                    var authClaims = new List<Claim>
+
+                    Token = new JwtSecurityTokenHandler().WriteToken(token),
+                    ValidTo = token.ValidTo.ToString("yyyy-MM-ddThh:mm:ss"),
+                    UserId = user.Id,
+                    UserName = user.UserName
+                };
+                await _userManager.SetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken", tokenHolder.Token);
+                return Ok(tokenHolder);
+
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return BadRequest();
+            }
+            finally
+            {
+                Logger.LogInformation(0, "Google login service finished");
+            }
+
+        }
+
+        private async Task<JwtSecurityToken> GetToken(ApplicationUser user)
+        {
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var authClaims = new List<Claim>
                          {
                          new Claim(ClaimTypes.Name,user.UserName),
                          new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
                           };
-                    foreach (var userRole in userRoles)
-                    {
-                        authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-                    }
-                    var authSignInKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-                    var token = new JwtSecurityToken(
-                        issuer: _configuration["JWT:ValidIssuer"],
-                        audience: _configuration["JWT:ValidAudience"],
-                        expires: DateTime.Now.AddDays(1),
-                        claims: authClaims,
-                        signingCredentials: new SigningCredentials(authSignInKey, SecurityAlgorithms.HmacSha256)
-
-                        );
-                    var tokenHolder = new TokenHolder
-                    {
-
-                        Token = new JwtSecurityTokenHandler().WriteToken(token),
-                        ValidTo = token.ValidTo.ToString("yyyy-MM-ddThh:mm:ss"),
-                        UserId = user.Id,
-                        UserName = user.UserName
-                    };
-                    await _userManager.SetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken", tokenHolder.Token);
-
-                    return Ok(tokenHolder);
-                }
-            }
-            catch (Exception ex)
+            foreach (var userRole in userRoles)
             {
-                Console.WriteLine(ex.Message);
-
+                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
             }
-            return BadRequest();
+            var authSignInKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["JWT:ValidIssuer"],
+                audience: _configuration["JWT:ValidAudience"],
+                expires: DateTime.Now.AddDays(1),
+                claims: authClaims,
+                signingCredentials: new SigningCredentials(authSignInKey, SecurityAlgorithms.RsaSha256Signature)
+
+                );
+            return token;
         }
 
-
+        private async Task<ActionResult> Register(RegistrationInputModel model)
+        {
+            if (!string.IsNullOrEmpty(model.Role))
+            {
+                if (model.Role.ToUpper() == "CLIENT")
+                    return await RegisterUser(model);
+                if (model.Role.ToUpper() == "ADMIN")
+                    return await RegisterAdmin(model);
+                else
+                    return await RegisterServizeProvider(model);
+            }
+            else
+            {
+                return await RegisterUser(model);
+            }
+        }
 
     }
 
