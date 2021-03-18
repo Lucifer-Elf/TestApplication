@@ -106,16 +106,16 @@ namespace Servize
 
      .AddGoogle(options =>
         {
-            options.ClientId = "767916686704-fql4bubmbka31ftnadb70t656pa5kvab.apps.googleusercontent.com";
-            options.ClientSecret = "_IASP8rZypXBJdYi3TMO8xyb";
+            options.ClientId = AzureVault.GetValue("GoogleClientId");
+            options.ClientSecret = AzureVault.GetValue("GoogleSecret");
             options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
             // to change call back Url
             //options.CallbackPath
         })
      .AddFacebook(options =>
      {
-         options.AppId = Utility.Configurations.Configuration.GetValue<string>("AppId");
-         options.AppSecret = Utility.Configurations.Configuration.GetValue<string>("AppSecret");
+         options.AppId = AzureVault.GetValue("FBAppId");
+         options.AppSecret = AzureVault.GetValue("FBAppSecret");
          // to change call back Url
          //options.CallbackPath
      });

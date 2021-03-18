@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Servize.Utility.Configurations;
+using System;
 using System.Threading.Tasks;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
@@ -27,12 +28,12 @@ namespace Servize.Utility.Sms
 
         private static async Task SendSMS(string phoneNumber, string message)
         {
-             /*string account_id =  AzureVault.GetValue("TwilioId");
-             string auth_token = AzureVault.GetValue("TwilioToken");
-            */
+             string account_id =   AzureVault.GetValue("TwilioId");
+             string auth_token =   AzureVault.GetValue("TwilioToken");
            
-              string account_id =  "ACd519bd096ffd5420f221241cd37918c0";
-             string auth_token = "9f4886a1d6056d69f4e5eb6b7a2e8c11";
+           
+             /* string account_id =  "ACd519bd096ffd5420f221241cd37918c0";
+             string auth_token = "9f4886a1d6056d69f4e5eb6b7a2e8c11";*/
              
              
 
