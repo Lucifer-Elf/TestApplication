@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Web.Services3.Security.Utility;
 using Serilog;
 using Servize.Authentication;
 using Servize.Domain.Enums;
@@ -14,10 +16,12 @@ using Servize.DTO;
 using Servize.DTO.ADMIN;
 using Servize.Utility;
 using Servize.Utility.Logging;
+using Servize.Utility.QueryFilter;
 using Servize.Utility.Sms;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -60,8 +64,7 @@ namespace Servize.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         //Authentication/RegisterUser
-        [HttpPost]
-        [Route("RegisterClient")]
+        [HttpPost("RegisterClient")]       
         public async Task<ActionResult> RegisterUser([FromBody] RegistrationInputModel model)
         {
             await AddUserToIdentityWithSpecificRoles(model, "CLIENT");
@@ -81,8 +84,7 @@ namespace Servize.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         //Authentication/RegisterAdmin
-        [HttpPost]
-        [Route("RegisterAdmin")]
+        [HttpPost("RegisterAdmin")]  
         [Produces("application/json")]
         [Consumes("application/json")]
         public async Task<ActionResult> RegisterAdmin([FromBody] RegistrationInputModel model)
@@ -124,8 +126,7 @@ namespace Servize.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         //Authentication/UserToken
-        [HttpGet]
-        [Route("UserToken")]
+        [HttpGet("UserToken")]     
         [Produces("application/json")]
         [Consumes("application/json")]
         public async Task<ActionResult> GetUserToken([FromBody] InputLoginModel model)
@@ -152,8 +153,7 @@ namespace Servize.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         //Authentication/UserTokenExpire
-        [HttpGet]
-        [Route("UserTokenValidty")]
+        [HttpGet("UserTokenValidty")]      
         [Produces("application/json")]
         [Consumes("application/json")]
         public async Task<ActionResult> GetUserTokenValidity([FromBody] InputLoginModel model)
@@ -253,8 +253,7 @@ namespace Servize.Controllers
 
 
         //Authentication/Login
-        [HttpPost]
-        [Route("Login")]
+        [HttpPost("Login")]     
         [Produces("application/json")]
         [Consumes("application/json")]
         public async Task<ActionResult> Login([FromBody] InputLoginModel model)
@@ -266,6 +265,7 @@ namespace Servize.Controllers
                 var user = await _userManager.FindByEmailAsync(model.Email);
                 if (user != null)
                 {
+                   
                     var refreshToken = await _userManager.GetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken");
 
 
@@ -274,11 +274,11 @@ namespace Servize.Controllers
                         return Ok(new { msg = "AlreadyLogin", RefreshToken = refreshToken });
                     }
 
-                    JwtSecurityToken token = await GetToken(user);
-                    var tokenHolder = new TokenHolder
+                    SecurityTokenDescriptor token = await GetToken(user);               
+                    var tokenHolder = new AuthSuccessResponse
                     {
-                        Token = new JwtSecurityTokenHandler().WriteToken(token),
-                        ValidTo = token.ValidTo.ToString("yyyy-MM-ddThh:mm:ss"),
+                        Token = GetTokenValue(token),
+                        ValidTo = token.Expires.ToString(),
                         UserId = user.Id,
                         UserName = user.UserName
 
@@ -292,8 +292,7 @@ namespace Servize.Controllers
         }
 
         //Authentication/Logout
-        [HttpPost]
-        [Route("Logout")]
+        [HttpPost("Logout")]       
         public async Task<ActionResult> LogOut()
         {
             try
@@ -426,8 +425,7 @@ namespace Servize.Controllers
         /// </summary>
         /// <param name="changepassword"></param>
         /// <returns></returns>
-        [HttpGet]
-        [Route("ChangePassword")]
+        [HttpGet("ChangePassword")]     
         public async Task<ActionResult<InputLoginModel>> ChangePassword(UserChangePassWordDTO changepassword)
         {
             try
@@ -496,13 +494,13 @@ namespace Servize.Controllers
 
 
                 var userRoles = await _userManager.GetRolesAsync(user);
-                JwtSecurityToken token = await GetToken(user);
-                var tokenHolder = new TokenHolder
+                SecurityTokenDescriptor token = await GetToken(user);
+                var tokenHolder = new AuthSuccessResponse
                 {
 
-                    Token = new JwtSecurityTokenHandler().WriteToken(token),
-                    ValidTo = token.ValidTo.ToString("yyyy-MM-ddThh:mm:ss"),
-                    UserId = user.Id,
+                    Token = GetTokenValue(token),
+                    ValidTo = token.Expires.ToString(),
+                    UserId =  user.Id,
                     UserName = user.UserName
                 };
                 await _userManager.SetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken", tokenHolder.Token);
@@ -521,7 +519,25 @@ namespace Servize.Controllers
 
         }
 
-        private async Task<JwtSecurityToken> GetToken(ApplicationUser user)
+        public static string GetTokenValue(SecurityTokenDescriptor tokenDescriptor)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
+        [HttpGet]
+        [Route("AllAccoutHolder")]
+        public async Task<ActionResult<IList<IdentityUser>>> GetListofAllAccountHolder([FromQuery] Query query)
+        {
+            IQueryable<IdentityRole> identityRole = _roleManager.Roles.ApplyQuery(query);
+            IList<IdentityRole> identityRoleList = await identityRole.ToListAsync();
+            IList<ApplicationUser> usersList = await _userManager.Users.ToListAsync();
+         
+            return Ok((from r in identityRole join u in usersList on r.Id equals u.Id select u).Distinct());
+              
+        }
+        private async Task<SecurityTokenDescriptor> GetToken(ApplicationUser user)
         {
             var userRoles = await _userManager.GetRolesAsync(user);
             var authClaims = new List<Claim>
@@ -535,14 +551,17 @@ namespace Servize.Controllers
             }
             var authSignInKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
 
-            var token = new JwtSecurityToken(
-                issuer: _configuration["JWT:ValidIssuer"],
-                audience: _configuration["JWT:ValidAudience"],
-                expires: DateTime.Now.AddDays(1),
-                claims: authClaims,
-                signingCredentials: new SigningCredentials(authSignInKey, SecurityAlgorithms.RsaSha256Signature)
+            var token = new SecurityTokenDescriptor{
+                Subject = new ClaimsIdentity( new[]
+                {
+                new Claim(JwtRegisteredClaimNames.Sub,user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Email,user.Email),
+                }),
+                Expires = DateTime.UtcNow.AddDays(2),              
+                SigningCredentials = new SigningCredentials(authSignInKey, SecurityAlgorithms.HmacSha256)
 
-                );
+                };
             return token;
         }
 

@@ -76,7 +76,19 @@ namespace Servize
                 .AddDefaultTokenProviders()
                 .AddTokenProvider("ServizeApp", typeof(DataProtectorTokenProvider<ApplicationUser>));
 
+            var tokenParameter = new TokenValidationParameters()
+            {
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["JWT:Secret"])),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateIssuerSigningKey = true,
+                ValidAudience = Configuration["JWT:ValidAudience"],
+                ValidIssuer = Configuration["JWT:ValidIssuer"],
+                ValidateLifetime = true
 
+
+
+            };
             //Add Authentication
             services.AddAuthentication(options =>
             {
@@ -91,17 +103,7 @@ namespace Servize
            {
                options.SaveToken = true;
                options.RequireHttpsMetadata = false;
-               options.TokenValidationParameters = new TokenValidationParameters()
-               {
-                   ValidateIssuer = true,
-                   ValidateAudience = true,
-                   ValidateIssuerSigningKey = true,
-                   ValidAudience = Configuration["JWT:ValidAudience"],
-                   ValidIssuer = Configuration["JWT:ValidIssuer"],
-                   IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["JWT:Secret"])),
-
-
-               };
+               options.TokenValidationParameters = tokenParameter;
            })
 
      .AddGoogle(options =>
@@ -129,13 +131,17 @@ namespace Servize
             services.AddSingleton(mapper);
             services.AddDistributedMemoryCache();
             services.AddScoped<IAuthService, AuthService>();
-            services.AddApplicationInsightsTelemetry();
+            services.AddSingleton(tokenParameter);
+           // services.AddApplicationInsightsTelemetry();
+       
+            services.AddSwaggerDocument();
 
         }
 
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            
             using (var scope = app.ApplicationServices.CreateScope())
             {
                 scope.ServiceProvider.GetService<ServizeDBContext>().Database.Migrate();
@@ -145,8 +151,10 @@ namespace Servize
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseOpenApi();
+            app.UseSwaggerUi3();
             // app.UseSerilogRequestLogging();
+
 
             app.UseRouting();
             app.UseCors(MyAllowSpecificOrigins);       

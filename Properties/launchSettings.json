@@ -17,13 +17,15 @@
     },
     "Servize": {
       "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
       "environmentVariables": {
         "azure.vault.url": "https://servizetestkeyvalut.vault.azure.net/",
         "AppSecret": "35c7e9fbe416b54c5ce9f45ada3d725b",
         "azure.vault.clientid": "81a793e3-cf6b-429c-a0e9-b34c4fc91e1f",
         "azure.vault.clientsecret": ".V-bBy-fKyP6c0S0k.aw-js_eg83U1QHqd",
-        "azure.vault.tenantid": "850f4f34-5e1a-4bac-881c-bb5925b1ffed",
         "applicationinsightInstrumentkey": "912d3faf-93fd-48c5-bdee-21cfb4d34974",
+        "azure.vault.tenantid": "850f4f34-5e1a-4bac-881c-bb5925b1ffed",
         "ASPNETCORE_ENVIRONMENT": "Development",
         "AppId": "527735858190215"
       },

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Servize.Domain.Model.Provider;
 using Servize.Utility;
+using Servize.Utility.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,6 +45,7 @@ namespace Servize.Domain.Repositories
             }
             catch (Exception e)
             {
+                Logger.LogError(e);
                 return new Response<Product>($"Failed to get product Error", StatusCodes.Status500InternalServerError);
             }
         }
