@@ -33,6 +33,7 @@ namespace Servize
         public void ConfigureServices(IServiceCollection services)
         {
 
+          
             services.AddCors(o => o.AddPolicy(name: MyAllowSpecificOrigins, builder =>
             {
                 builder.WithOrigins("https://localhost:3000","https://localhost:5001")
@@ -82,8 +83,7 @@ namespace Servize
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 ValidateIssuerSigningKey = true,
-                ValidAudience = Configuration["JWT:ValidAudience"],
-                ValidIssuer = Configuration["JWT:ValidIssuer"],
+                RequireExpirationTime = false,             
                 ValidateLifetime = true
 
 
@@ -101,8 +101,7 @@ namespace Servize
            //Adding Jwt Bearer
            .AddJwtBearer(options =>
            {
-               options.SaveToken = true;
-               options.RequireHttpsMetadata = false;
+               options.SaveToken = true;          
                options.TokenValidationParameters = tokenParameter;
            })
 
@@ -136,6 +135,8 @@ namespace Servize
        
             services.AddSwaggerDocument();
 
+         
+
         }
 
 
@@ -154,14 +155,13 @@ namespace Servize
             app.UseOpenApi();
             app.UseSwaggerUi3();
             // app.UseSerilogRequestLogging();
-
-
+            
             app.UseRouting();
             app.UseCors(MyAllowSpecificOrigins);       
             app.UseAuthentication();   // add to pipline 
             app.UseAuthorization();
 
-            app.UseSession();
+            app.UseSession();     
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

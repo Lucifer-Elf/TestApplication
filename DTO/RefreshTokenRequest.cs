@@ -5,11 +5,9 @@ using System.Threading.Tasks;
 
 namespace Servize.DTO
 {
-    public class AuthSuccessResponse
+    public class RefreshTokenRequest
     {
         public string Token { get; set; }    
         public string RefreshToken { get; set; }
-        public IEnumerable<String> Errors { get; set; }
-
     }
 }

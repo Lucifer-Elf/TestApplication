@@ -27,14 +27,21 @@ namespace Servize
 
         public DbSet<Cart> Cart { get; set; }
 
+        public DbSet<RefreshToken> RefreshToken { get; set; }
+
         public ServizeDBContext(DbContextOptions<ServizeDBContext> options):
             base(options)
         {
 
         }
-
+      
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<RefreshToken>(entity =>
+            {
+                entity.Property(i => i.Token).HasMaxLength(2000);
+
+            });
             base.OnModelCreating(builder);
         }
 
