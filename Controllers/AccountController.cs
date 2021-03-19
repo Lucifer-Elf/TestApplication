@@ -24,7 +24,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Web;
 namespace Servize.Controllers
 {
     [EnableCors("MyPolicy")]
@@ -116,31 +116,42 @@ namespace Servize.Controllers
             return Problem(statusCode: Response.StatusCode, detail: Response.Message);
         }
 
-        /// <summary>
-        /// Get token for User
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        //Authentication/UserToken
-        [HttpGet("UserToken")]
-        [Produces("application/json")]
-        [Consumes("application/json")]
-        public async Task<ActionResult> GetUserToken([FromBody] InputLoginModel model)
+        /* /// <summary>
+         /// Get token for User
+         /// </summary>
+         /// <param name="model"></param>
+         /// <returns></returns>
+         //Authentication/UserToken
+         [HttpGet("UserToken")]
+         [Produces("application/json")]
+         [Consumes("application/json")]
+         public async Task<ActionResult> GetUserToken([FromBody] InputLoginModel model)
+         {
+             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+             if (result.Succeeded)
+             {
+                 var user = await _userManager.FindByEmailAsync(model.Email);
+                 if (user != null)
+                 {
+                     var refreshToken = await _userManager.GetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken");
+                     if (refreshToken != null)
+                     {
+                         return Ok(refreshToken);
+                     }
+                 }
+             }
+             return Unauthorized();
+         }*/
+        [HttpPost("RefreshToken")]
+        public async Task<ActionResult<Response<AuthSuccessResponse>>> RefreshToken([FromBody] RefreshTokenRequest refreshRequest)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
-            if (result.Succeeded)
-            {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user != null)
-                {
-                    var refreshToken = await _userManager.GetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken");
-                    if (refreshToken != null)
-                    {
-                        return Ok(refreshToken);
-                    }
-                }
-            }
-            return Unauthorized();
+
+            Response<AuthSuccessResponse> response = await RefreshTokenAsync(refreshRequest.Token, refreshRequest.RefreshToken);
+            if (response.IsSuccessStatusCode())
+                return Ok(response.Resource);
+
+
+            return Problem(detail: response.Message, statusCode: response.StatusCode);
         }
 
         private async Task<Response<AuthSuccessResponse>> RefreshTokenAsync(string token, string refreshToken)
@@ -188,21 +199,9 @@ namespace Servize.Controllers
 
             var user = await _userManager.FindByIdAsync(validatedToken.Claims.Single(x => x.Type == "id").Value);
             return await GenrateAuthenticationTokenForUser(user);
-
-
         }
 
-        [HttpPost("RefreshToken")]
-        public async Task<ActionResult<Response<AuthSuccessResponse>>> RefreshToken([FromBody] RefreshTokenRequest refreshRequest)
-        {
-
-             Response<AuthSuccessResponse> response =  await RefreshTokenAsync(refreshRequest.Token, refreshRequest.RefreshToken);
-            if (response.IsSuccessStatusCode())
-                return Ok(response.Resource);
-
-
-            return Problem(detail: response.Message, statusCode: response.StatusCode);
-        }
+        
         private ClaimsPrincipal GetPrincipalFromToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -234,48 +233,11 @@ namespace Servize.Controllers
 
 
         /// <summary>
-        /// Get token is valid or not based on user details
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        //Authentication/UserTokenExpire
-        [HttpGet("UserTokenValidty")]
-        [Produces("application/json")]
-        [Consumes("application/json")]
-        public async Task<ActionResult> GetUserTokenValidity([FromBody] InputLoginModel model)
-        {
-
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user != null)
-            {
-                var refreshToken = await _userManager.GetAuthenticationTokenAsync(user, "ServizeApp", "RefreshToken");
-
-
-                if (refreshToken != null)
-                {
-                    var token = new JwtSecurityTokenHandler().ReadJwtToken(refreshToken);
-                    if (token.ValidTo > DateTime.Now)
-                        return Ok(new
-                        {
-                            isValid = false
-                        });
-                    return Ok(new
-                    {
-                        isValid = true,
-                        expiryDate = token.ValidTo.ToString("yyyy-MM-ddThh:mm:ss")
-                    }); ;
-                }
-            }
-
-            return Unauthorized();
-        }
-
-        /// <summary>
         /// Getotp token for number
         /// </summary>
         /// <param name="number"></param>
         /// <returns></returns>
-        [HttpPost("Getotp/{number}")]
+        [HttpPost("GetOtp/{number}")]
         [Produces("application/json")]
         [Consumes("application/json")]
         public async Task<ActionResult> SMSToken(string number)
@@ -314,7 +276,7 @@ namespace Servize.Controllers
         /// <param name="model"> RegistrationModel With all Detail</param>
         /// <returns></returns>
 
-        [HttpPost("Verifyotp")]
+        [HttpPost("VerifyOtp")]
         public async Task<ActionResult> VerifySMSToken(RegistrationInputModel model)
         {
             try
@@ -402,13 +364,13 @@ namespace Servize.Controllers
         }
 
         //Authentication/Logout
-        [HttpPost("Logout")]
+        [HttpPost("LogOut")]
         public async Task<ActionResult> LogOut()
         {
             try
             {
                 await _signInManager.SignOutAsync();
-                return Ok();
+                return Ok("logout Sucessfully");
             }
             catch
             {
@@ -518,7 +480,7 @@ namespace Servize.Controllers
         /// <param name="Id"></param>
         /// <returns></returns>
 
-        [HttpGet]
+       /* [HttpGet]
         [Route("LoginData/{id}")]
         public async Task<ActionResult<InputLoginModel>> GetUserDataById(string Id)
         {
@@ -540,14 +502,14 @@ namespace Servize.Controllers
             {
                 return Problem(detail: "Error while getting UserDetaild From Identity", statusCode: StatusCodes.Status500InternalServerError);
             }
-        }
+        }*/
 
         /// <summary>
         /// Change password
         /// </summary>
         /// <param name="changepassword"></param>
         /// <returns></returns>
-        [HttpGet("ChangePassword")]
+        [HttpPost("ChangePassword")]
         public async Task<ActionResult<InputLoginModel>> ChangePassword(UserChangePassWordDTO changepassword)
         {
             try
@@ -581,8 +543,7 @@ namespace Servize.Controllers
         /// </summary>
         /// <param name="externalInputModel"></param>
         /// <returns></returns>
-        [HttpPost]
-        [Route("Googlelogin")]
+        [HttpPost("Googlelogin")]       
         public async Task<ActionResult<Response<AuthSuccessResponse>>> Google([FromBody] ExternalLoginDTO externalInputModel)
         {
             Logger.LogInformation(0, "Google login service started");

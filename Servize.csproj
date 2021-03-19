@@ -19,7 +19,7 @@
     <PackageReference Include="Google.Apis.Admin.Directory.directory_v1" Version="1.49.0.1982" />
     <PackageReference Include="IdentityServer4" Version="4.1.2" />
     <PackageReference Include="MailKit" Version="2.11.1" />
-    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.17.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.17.0" /> 
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="5.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.4" />
@@ -35,6 +35,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.28.0" />
+ 
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" /> 
     <PackageReference Include="NEST" Version="7.11.1" />

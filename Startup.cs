@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using NSwag;
+using NSwag.Generation.Processors.Security;
 using Servize.Authentication;
 using Servize.Controllers;
 using Servize.Domain.Mapper;
@@ -16,6 +18,8 @@ using Servize.Domain.Model.OrderDetail;
 using Servize.Domain.Repositories;
 using Servize.Utility;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Servize
@@ -33,10 +37,10 @@ namespace Servize
         public void ConfigureServices(IServiceCollection services)
         {
 
-          
+
             services.AddCors(o => o.AddPolicy(name: MyAllowSpecificOrigins, builder =>
             {
-                builder.WithOrigins("https://localhost:3000","https://localhost:5001")
+                builder.WithOrigins("https://localhost:3000", "https://localhost:5001")
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             }));
@@ -52,17 +56,17 @@ namespace Servize
             services.AddScoped<ContextTransaction>();
             services.AddScoped<ProductRepository>();
 
-           /* string connectionString = @$"Server={AzureVault.GetValue("DbServer")};
-                                        Database={AzureVault.GetValue("DatabaseName")};
-                                        User Id ={AzureVault.GetValue("DbUserId")};
-                                        Password={AzureVault.GetValue("DbPassword")};
-                                        MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";*/
+            /* string connectionString = @$"Server={AzureVault.GetValue("DbServer")};
+                                         Database={AzureVault.GetValue("DatabaseName")};
+                                         User Id ={AzureVault.GetValue("DbUserId")};
+                                         Password={AzureVault.GetValue("DbPassword")};
+                                         MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";*/
 
-        string connectionString = "Server=servizetest.database.windows.net;" +
-                                        "Database=serviceTestDb;" +
-                                       " User Id =servizeAdmin;" +
-                                        "Password=@Lfred1205;" +
-                                        "MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+            string connectionString = "Server=servizetest.database.windows.net;" +
+                                            "Database=serviceTestDb;" +
+                                           " User Id =servizeAdmin;" +
+                                            "Password=@Lfred1205;" +
+                                            "MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
             //EnitiyFrameWork
             services.AddDbContext<ServizeDBContext>(options => options.UseSqlServer(connectionString));
@@ -83,7 +87,7 @@ namespace Servize
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 ValidateIssuerSigningKey = true,
-                RequireExpirationTime = false,             
+                RequireExpirationTime = false,
                 ValidateLifetime = true
 
 
@@ -101,7 +105,7 @@ namespace Servize
            //Adding Jwt Bearer
            .AddJwtBearer(options =>
            {
-               options.SaveToken = true;          
+               options.SaveToken = true;
                options.TokenValidationParameters = tokenParameter;
            })
 
@@ -112,7 +116,7 @@ namespace Servize
             options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
             // to change call back Url
             //options.CallbackPath
-        });   
+        });
 
             services.AddControllers(); // controller Registered
             services.AddSession(options =>
@@ -131,11 +135,52 @@ namespace Servize
             services.AddDistributedMemoryCache();
             services.AddScoped<IAuthService, AuthService>();
             services.AddSingleton(tokenParameter);
-           // services.AddApplicationInsightsTelemetry();
-       
-            services.AddSwaggerDocument();
+            // services.AddApplicationInsightsTelemetry();
 
-         
+            services.AddSwaggerDocument(config =>
+            {
+                config.PostProcess = document =>
+                {
+                    document.Info.Version = "v1";
+                    document.Info.Title = "Servize API";
+                    document.Info.Description = "A simple ASP.NET Core web API";
+                    document.Info.TermsOfService = "None";
+                    document.Info.Contact = new NSwag.OpenApiContact
+                    {
+                        Name = "Alfred Paul",
+                        Email = "Alfred@Servize.com",
+                        Url = "https://twitter.com/spboyer"
+                    };
+                    document.Info.License = new NSwag.OpenApiLicense
+                    {
+                        Name = "under Servize.com",
+                        Url = "https://example.com/license"
+                    };
+                };
+                config.AddSecurity("bearer", Enumerable.Empty<string>(), new OpenApiSecurityScheme
+                {
+                    Type = OpenApiSecuritySchemeType.OAuth2,
+                    Description = "My Authentication",
+                    Flow = OpenApiOAuth2Flow.Implicit,
+                    Flows = new OpenApiOAuthFlows()
+                    {
+                        Implicit = new OpenApiOAuthFlow()
+                        {
+                            Scopes = new Dictionary<string, string>
+                    {
+                        {"api1", "My API"}
+
+                    },
+                            TokenUrl = "http://localhost:5000/connect/token",
+                            AuthorizationUrl = "http://localhost:5000/connect/authorize",
+
+                        },
+                    }
+                });
+
+                config.OperationProcessors.Add(
+                    new AspNetCoreOperationSecurityScopeProcessor("bearer"));
+            });
 
         }
 
