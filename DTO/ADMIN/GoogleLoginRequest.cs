@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace Servize.DTO.ADMIN
 {
    
-    public class ExternalLoginDTO
+    public class GoogleLoginRequest
     {
         public string TokenId { get; set; }
         public string Provider { get; set; }

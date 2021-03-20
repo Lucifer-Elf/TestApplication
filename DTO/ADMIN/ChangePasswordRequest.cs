@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Servize.DTO.ADMIN
 {
-    public class UserChangePassWordDTO
+    public class ChangePasswordRequest
     {
         public string UserId { get; set; }
 
