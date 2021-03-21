@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Servize.Authentication;
 using Servize.Domain.Enums;
 using Servize.Domain.Model;
-using Servize.Domain.Model.Provider;
+using Servize.Domain.Model.VendorModel;
 using Servize.DTO;
 using Servize.DTO.ADMIN;
 using Servize.Utility;
@@ -98,16 +98,16 @@ namespace Servize.Domain.Repositories
             }
 
 
-            if (Utility.Utilities.GetRoleForstring(role) == "Provider")
+            if (Utility.Utilities.GetRoleForstring(role).ToUpper() == "VENDOR")
             {
-                Provider provider = new Provider
+                Vendor vendor = new Vendor
                 {
                     UserId = user.Id,
                     CompanyName = model.CompanyName,
                     CompanyRegistrationNumber = model.CompanyRegistrationNumber,
 
                 };
-                _context.Add(provider);
+                _context.Add(vendor);
             }
             else
             {
@@ -134,8 +134,8 @@ namespace Servize.Domain.Repositories
                 await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
             if (!await _roleManager.RoleExistsAsync(UserRoles.Client))
                 await _roleManager.CreateAsync(new IdentityRole(UserRoles.Client));
-            if (!await _roleManager.RoleExistsAsync(UserRoles.Provider))
-                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Provider));
+            if (!await _roleManager.RoleExistsAsync(UserRoles.Vendor))
+                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Vendor));
         }
         private async Task<Response<AuthSuccessResponse>> GenrateAuthenticationTokenForUser(ApplicationUser user)
         {

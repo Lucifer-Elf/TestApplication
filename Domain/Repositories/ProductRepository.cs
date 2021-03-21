@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Servize.Domain.Model.Provider;
+using Servize.Domain.Model.VendorModel;
 using Servize.Utility;
 using Servize.Utility.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Servize.Domain.Repositories

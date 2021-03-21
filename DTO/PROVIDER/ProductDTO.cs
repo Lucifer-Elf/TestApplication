@@ -10,7 +10,7 @@ namespace Servize.DTO.PROVIDER
     {
         public int Id { get; set; }
         
-        public int ServizeCategoryId { get; set; }      
+        public int CategoryId { get; set; }      
 
         public string ServiceName { get; set; }
 

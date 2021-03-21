@@ -3,12 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Servize.Authentication;
-using Servize.Domain.Model.Provider;
+using Servize.Domain.Model.VendorModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Servize.Domain.Model.OrderDetail
 {
@@ -21,6 +20,10 @@ namespace Servize.Domain.Model.OrderDetail
         public ApplicationUser ApplicationUser { get; set; }
 
         public List<CartItem> CartItems { get; set; }
+
+
+
+
 
         private readonly ServizeDBContext _context;
         public Cart(ServizeDBContext context)
@@ -46,16 +49,16 @@ namespace Servize.Domain.Model.OrderDetail
         {
             try
             {
-                var cartItem = _context.CartItem.SingleOrDefault(s => s.ServizeProduct.Id == category.Id && s.CartId == Id);
+                var cartItem = _context.CartItem.SingleOrDefault(s => s.Product.Id == category.Id && s.CartId == Id);
 
                 if (cartItem == null)
                 {
 
                     cartItem = new CartItem
                     {
-                        ProviderId = 1,
+                        VendorId = 1,
                         CartId = Id,
-                        ServizeProduct = category,
+                        Product = category,
                         Amount = amount
                     };
 
@@ -80,10 +83,10 @@ namespace Servize.Domain.Model.OrderDetail
         }
 
 
-        public int  RemoveFromCart(Product category, int amount)
+        public int  RemoveFromCart(Product product, int amount)
         {
            
-                var cartItem = _context.CartItem.SingleOrDefault(s => s.ServizeProduct.Id == category.Id && s.CartId == Id);
+                var cartItem = _context.CartItem.SingleOrDefault(s => s.Product.Id == product.Id && s.CartId == Id);
 
                 var localAmount = 0;
                 if (cartItem == null)
@@ -106,7 +109,7 @@ namespace Servize.Domain.Model.OrderDetail
 
         public List<CartItem> GetCartItem()
         {
-            return CartItems ?? (CartItems = _context.CartItem.Where(c => c.CartId == Id).Include(i => i.ServizeProduct).ToList());
+            return CartItems ?? (CartItems = _context.CartItem.Where(c => c.CartId == Id).Include(i => i.Product).ToList());
         }
 
 
@@ -121,7 +124,7 @@ namespace Servize.Domain.Model.OrderDetail
 
         public double GetCartTotal()
         {
-            var total = _context.CartItem.Where(c => c.CartId == Id).Select(C => C.ServizeProduct.PriceQuote * C.Amount).Sum();
+            var total = _context.CartItem.Where(c => c.CartId == Id).Select(C => C.Product.PriceQuote * C.Amount).Sum();
             return total;
         
         }

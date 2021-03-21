@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Servize.Domain.Model.Provider;
+using Servize.Domain.Model.VendorModel;
 using Servize.Utility;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Servize.Domain.Repositories
@@ -17,11 +16,11 @@ namespace Servize.Domain.Repositories
             _context = dBContext;
         }
 
-        public async Task<Response<IList<Category>>> GetAllServizeCategoryList()
+        public async Task<Response<IList<Category>>> GetAllCategoryList()
         {
             try
             {
-                List<Category> servizeProviderList = await _context.Category.Include(i => i.SubServices).ToListAsync();
+                List<Category> servizeProviderList = await _context.Category.Include(i => i.Products).ToListAsync();
                 return new Response<IList<Category>>(servizeProviderList, StatusCodes.Status200OK);
             }
             catch (Exception e)
@@ -31,11 +30,11 @@ namespace Servize.Domain.Repositories
 
         }
 
-        public async Task<Response<Category>> GetAllServizeCategoryById(int Id)
+        public async Task<Response<Category>> GetAllCategoryById(int Id)
         {
             try
             {
-                Category servizeProvider = await _context.Category.Include(i => i.SubServices)
+                Category servizeProvider = await _context.Category.Include(i => i.Products)
                                                                                  .AsNoTracking()
                                                                                 .SingleOrDefaultAsync(c => c.Id == Id);
                 if (servizeProvider == null)
@@ -53,13 +52,13 @@ namespace Servize.Domain.Repositories
             if (category == null)
                 return new Response<Category>("Request not parsable", StatusCodes.Status400BadRequest);
 
-            bool isProviderAvaliable = await ProviderIsValid(category.ProviderId);
+            bool isProviderAvaliable = await ProviderIsValid(category.VendorId);
             if (!isProviderAvaliable)
                 return new Response<Category>("Category couldnot be created due to provider is not exist", StatusCodes.Status424FailedDependency);
 
-            if (category.SubServices.Count > 0)
+            if (category.Products.Count > 0)
             {
-                foreach (Product subservice in category.SubServices)
+                foreach (Product subservice in category.Products)
                 {
                     Product servizeProduct = await _context.Product.FindAsync(subservice.Id);
                     if (servizeProduct == null)
@@ -87,13 +86,13 @@ namespace Servize.Domain.Repositories
             if (category == null)
                 return new Response<Category>("Request not parsable", StatusCodes.Status400BadRequest);
 
-            bool isProviderAvaliable = await ProviderIsValid(category.ProviderId);
+            bool isProviderAvaliable = await ProviderIsValid(category.VendorId);
             if (!isProviderAvaliable)
                 return new Response<Category>("Category couldnot be created due to provider is not exist", StatusCodes.Status424FailedDependency);
 
-            if (category.SubServices.Count > 0)
+            if (category.Products.Count > 0)
             {
-                foreach (Product subservice in category.SubServices)
+                foreach (Product subservice in category.Products)
                 {
                     Product servizeProduct = await _context.Product.FindAsync(subservice.Id);
                     if (servizeProduct != null)
@@ -117,12 +116,12 @@ namespace Servize.Domain.Repositories
         }
 
 
-        private async Task<bool> ProviderIsValid(int? ProviderId)
+        private async Task<bool> ProviderIsValid(int? VendorId)
         {
             bool isValid = false;
-            if (ProviderId != null)
+            if (VendorId != null)
             {
-                Provider provider = await _context.Provider.AsNoTracking().SingleOrDefaultAsync(i => i.Id == ProviderId);
+                Vendor provider = await _context.Vendor.AsNoTracking().SingleOrDefaultAsync(i => i.Id == VendorId);
                 if (provider != null)
                     isValid = true;
             }

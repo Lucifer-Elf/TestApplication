@@ -1,7 +1,5 @@
-﻿
-using Servize.Domain.Model.Provider;
+﻿using Servize.Domain.Model.VendorModel;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -11,13 +9,15 @@ namespace Servize.Domain.Model.OrderDetail
     {
         public int Id { get; set; }
 
-        [ForeignKey("Order")]
-        public int OrderNumber { get; set; }
+      
+        public int OrderId { get; set; }
+        [ForeignKey(nameof(OrderId))]
         public OrderSummary Order { get; set; }
 
-        [ForeignKey("ServizeProvider")]
-        public int ProviderId { get; set; }
-        public Provider.Provider ServizeProvider { get; set; }
+      
+        public int VendorId { get; set; }
+        [ForeignKey(nameof(VendorId))]
+        public Vendor Vendor { get; set; }
 
         public double ItemDiscount { get; set; }
 

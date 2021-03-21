@@ -6,9 +6,9 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static Servize.Domain.Enums.ServizeEnum;
 
-namespace Servize.Domain.Model.Provider
+namespace Servize.Domain.Model.VendorModel
 {
-    public class Provider : BaseEntity
+    public class Vendor : BaseEntity
     {
         [Key]
         public int Id { get; set; }
@@ -41,7 +41,7 @@ namespace Servize.Domain.Model.Provider
 
         public PackageType PackageType { get; set; }
 
-        public ICollection<Category> ServiceCategories { get; set; }
+        public ICollection<Category> Categories { get; set; }
 
     
     }

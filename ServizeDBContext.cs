@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Servize.Authentication;
 using Servize.Domain.Model;
 using Servize.Domain.Model.OrderDetail;
-using Servize.Domain.Model.Provider;
+using Servize.Domain.Model.VendorModel;
 using System;
 using System.Linq;
 
@@ -13,21 +13,21 @@ namespace Servize
     public class ServizeDBContext : IdentityDbContext<ApplicationUser>
     {
      
-        public DbSet<Category> Category { get; set; }
-        public DbSet<Provider> Provider { get; set; }
-        public DbSet<Review> Review { get; set; }
-        public DbSet<Product> Product { get; set; }
-        public DbSet<BookingSetting> BookingSetting { get; set; }
-        public DbSet<ProviderBankDetail> ProviderBankDetail { get; set; }
+        public DbSet<Category>               Category { get; set; }
+        public DbSet<Vendor>                 Vendor { get; set; }
+        public DbSet<Review>                 Review { get; set; }
+        public DbSet<Product>                Product { get; set; }
+        public DbSet<BookingSetting>         BookingSetting { get; set; }
+        public DbSet<VendorBankDetail>       VendorBankDetail { get; set; }
 
-        public DbSet<OrderItem> OrderItem { get; set; }
-        public DbSet<OrderSummary> OrderSummary { get; set; }
-        public DbSet<Client> Client { get; set; }
-        public DbSet<CartItem> CartItem { get; set; }
+        public DbSet<OrderItem>             OrderItem { get; set; }
+        public DbSet<OrderSummary>          OrderSummary { get; set; }
+        public DbSet<Client>                Client { get; set; }
+        public DbSet<CartItem>              CartItem { get; set; }
 
-        public DbSet<Cart> Cart { get; set; }
+        public DbSet<Cart>                  Cart { get; set; }
 
-        public DbSet<RefreshToken> RefreshToken { get; set; }
+        public DbSet<RefreshToken>          RefreshToken { get; set; }
 
         public ServizeDBContext(DbContextOptions<ServizeDBContext> options):
             base(options)
@@ -45,7 +45,7 @@ namespace Servize
             base.OnModelCreating(builder);
         }
 
-        private void updateModifiedProperty(EntityEntry entry)
+        private static void UpdateModifiedProperty(EntityEntry entry)
         {
             if (entry == null) return;
 
@@ -69,7 +69,7 @@ namespace Servize
 
             foreach (var entityEntry in entries)
             {
-                updateModifiedProperty(entityEntry);
+                UpdateModifiedProperty(entityEntry);
             }
         
         }

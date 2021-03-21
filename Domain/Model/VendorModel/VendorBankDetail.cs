@@ -4,15 +4,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Servize.Domain.Model.Provider
+namespace Servize.Domain.Model.VendorModel
 {
-    public class ProviderBankDetail : BaseEntity
+    public class VendorBankDetail : BaseEntity
     {
         public int Id { get; set; }
 
-        [ForeignKey("ServizeProvider")]
-        public int ProviderId { get; set; }
-        public Provider ServizeProvider { get; set; }
+        public int VendorId { get; set; }
+        [ForeignKey(nameof(VendorId))]
+        public Vendor Vendor { get; set; }
 
         public string AccountHolderName { get; set; }
         public Double AccountNumber { get; set; }

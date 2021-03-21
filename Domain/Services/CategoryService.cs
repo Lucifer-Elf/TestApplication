@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
-using Servize.Domain.Model.Provider;
+using Servize.Domain.Model.VendorModel;
 using Servize.Domain.Repositories;
 using Servize.DTO.PROVIDER;
 using Servize.Utility;
 using Servize.Utility.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Servize.Domain.Services
@@ -32,7 +31,7 @@ namespace Servize.Domain.Services
             Logger.LogInformation(0, " Category GetAll Service Started");
             try
             {
-                Response<IList<Category>> response = await _respository.GetAllServizeCategoryList();
+                Response<IList<Category>> response = await _respository.GetAllCategoryList();
 
                 if (response.IsSuccessStatusCode())
                 {
@@ -59,7 +58,7 @@ namespace Servize.Domain.Services
             Logger.LogInformation(0, " Category GetAll Service Started By id");
             try
             {
-                Response<Category> response = await _respository.GetAllServizeCategoryById(id);
+                Response<Category> response = await _respository.GetAllCategoryById(id);
                 if (response.IsSuccessStatusCode())
                 {
                     CategoryDTO serviceDTO = _mapper.Map<Category, CategoryDTO>(response.Resource);

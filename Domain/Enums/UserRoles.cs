@@ -10,7 +10,7 @@ namespace Servize.Domain.Enums
     {
         public const string Client = "Client";
         public const string Admin = "Admin";
-        public const string Provider = "Provider";
+        public const string Vendor = "Vendor";
     }
   
 }

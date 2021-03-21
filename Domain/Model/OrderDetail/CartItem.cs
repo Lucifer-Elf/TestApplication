@@ -1,9 +1,5 @@
-﻿using Servize.Domain.Model.Provider;
-using System;
-using System.Collections.Generic;
+﻿using Servize.Domain.Model.VendorModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Servize.Domain.Model.OrderDetail
 {
@@ -11,16 +7,18 @@ namespace Servize.Domain.Model.OrderDetail
     {
         public int Id { get; set; }
 
-        public int ProviderId { get; set; }
 
-        public int ServizeCategoryId { get; set; }
+        public int VendorId { get; set; }
 
-        public Product ServizeProduct { get; set; }
+        public int CategoryId { get; set; }
+
+        public Product Product { get; set; }
 
         public int Amount { get; set; }
 
-        [ForeignKey("Cart")]
+        
         public string CartId { get; set; }
+        [ForeignKey(nameof(CartId))]
         public Cart Cart { get; set; }
     }
 }

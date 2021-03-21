@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using static Servize.Domain.Enums.ServizeEnum;
 
-namespace Servize.Domain.Model.Provider
+namespace Servize.Domain.Model.VendorModel
 {
     public class Product :BaseEntity
     {

@@ -10,17 +10,17 @@ namespace Servize.DTO.PROVIDER
     {
         public CategoryDTO()
         {
-            SubServices = new HashSet<ProductDTO>();
+            Products = new HashSet<ProductDTO>();
         }
         public int Id { get; set; }
       
-        public int ProviderId { get; set; }
+        public int VendorId { get; set; }
        
         public Categories Type { get; set; }
 
         public string BannerImage { get; set; }
         public DateTime Modified { get; set; }
-        public ICollection<ProductDTO> SubServices { get; set; }
-     
+        public ICollection<ProductDTO> Products { get; set; }
+
     }
 }

@@ -47,7 +47,7 @@ namespace Servize
 
 
 
-            services.AddScoped<ProviderRespository>();
+            services.AddScoped<VendorRespository>();
             services.AddScoped<CategoryRepository>();
             services.AddScoped<ClientRepository>();
             services.AddScoped<CartController>();

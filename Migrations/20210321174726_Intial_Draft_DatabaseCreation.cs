@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Servize.Migrations
 {
-    public partial class NewTestDatabase : Migration
+    public partial class Intial_Draft_DatabaseCreation : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -222,7 +222,30 @@ namespace Servize.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Provider",
+                name: "RefreshToken",
+                columns: table => new
+                {
+                    Token = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
+                    JwtId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Used = table.Column<bool>(type: "bit", nullable: false),
+                    Invalidated = table.Column<bool>(type: "bit", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshToken", x => x.Token);
+                    table.ForeignKey(
+                        name: "FK_RefreshToken_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Vendor",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -243,9 +266,9 @@ namespace Servize.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Provider", x => x.Id);
+                    table.PrimaryKey("PK_Vendor", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Provider_AspNetUsers_UserId",
+                        name: "FK_Vendor_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -258,9 +281,9 @@ namespace Servize.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ProviderId = table.Column<int>(type: "int", nullable: false),
+                    VendorId = table.Column<int>(type: "int", nullable: false),
                     BookingProcess = table.Column<bool>(type: "bit", nullable: false),
-                    SLotsInterval = table.Column<int>(type: "int", nullable: false),
+                    SlotsInterval = table.Column<int>(type: "int", nullable: false),
                     MyProperty = table.Column<bool>(type: "bit", nullable: false),
                     BookingAssignment = table.Column<int>(type: "int", nullable: false),
                     AmountMountBasedOnService = table.Column<bool>(type: "bit", nullable: false),
@@ -271,9 +294,9 @@ namespace Servize.Migrations
                 {
                     table.PrimaryKey("PK_BookingSetting", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BookingSetting_Provider_ProviderId",
-                        column: x => x.ProviderId,
-                        principalTable: "Provider",
+                        name: "FK_BookingSetting_Vendor_VendorId",
+                        column: x => x.VendorId,
+                        principalTable: "Vendor",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -284,7 +307,7 @@ namespace Servize.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ProviderId = table.Column<int>(type: "int", nullable: false),
+                    VendorId = table.Column<int>(type: "int", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
                     BannerImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Modified = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -293,9 +316,9 @@ namespace Servize.Migrations
                 {
                     table.PrimaryKey("PK_Category", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Category_Provider_ProviderId",
-                        column: x => x.ProviderId,
-                        principalTable: "Provider",
+                        name: "FK_Category_Vendor_VendorId",
+                        column: x => x.VendorId,
+                        principalTable: "Vendor",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -306,8 +329,8 @@ namespace Servize.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    OrderNumber = table.Column<int>(type: "int", nullable: false),
-                    ProviderId = table.Column<int>(type: "int", nullable: false),
+                    OrderId = table.Column<int>(type: "int", nullable: false),
+                    VendorId = table.Column<int>(type: "int", nullable: false),
                     ItemDiscount = table.Column<double>(type: "float", nullable: false),
                     OrderDateTimne = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Vat = table.Column<int>(type: "int", nullable: false),
@@ -318,41 +341,15 @@ namespace Servize.Migrations
                 {
                     table.PrimaryKey("PK_OrderItem", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_OrderItem_OrderSummary_OrderNumber",
-                        column: x => x.OrderNumber,
+                        name: "FK_OrderItem_OrderSummary_OrderId",
+                        column: x => x.OrderId,
                         principalTable: "OrderSummary",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_OrderItem_Provider_ProviderId",
-                        column: x => x.ProviderId,
-                        principalTable: "Provider",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProviderBankDetail",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ProviderId = table.Column<int>(type: "int", nullable: false),
-                    AccountHolderName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AccountNumber = table.Column<double>(type: "float", nullable: false),
-                    SwiftCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BankName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Modified = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProviderBankDetail", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ProviderBankDetail_Provider_ProviderId",
-                        column: x => x.ProviderId,
-                        principalTable: "Provider",
+                        name: "FK_OrderItem_Vendor_VendorId",
+                        column: x => x.VendorId,
+                        principalTable: "Vendor",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -363,7 +360,7 @@ namespace Servize.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ProviderId = table.Column<int>(type: "int", nullable: false),
+                    VendorId = table.Column<int>(type: "int", nullable: false),
                     HappinessRating = table.Column<int>(type: "int", nullable: false),
                     Product = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ReviewComment = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -373,9 +370,35 @@ namespace Servize.Migrations
                 {
                     table.PrimaryKey("PK_Review", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Review_Provider_ProviderId",
-                        column: x => x.ProviderId,
-                        principalTable: "Provider",
+                        name: "FK_Review_Vendor_VendorId",
+                        column: x => x.VendorId,
+                        principalTable: "Vendor",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VendorBankDetail",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    VendorId = table.Column<int>(type: "int", nullable: false),
+                    AccountHolderName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AccountNumber = table.Column<double>(type: "float", nullable: false),
+                    SwiftCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BankName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Modified = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VendorBankDetail", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_VendorBankDetail_Vendor_VendorId",
+                        column: x => x.VendorId,
+                        principalTable: "Vendor",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -416,9 +439,9 @@ namespace Servize.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ProviderId = table.Column<int>(type: "int", nullable: false),
-                    ServizeCategoryId = table.Column<int>(type: "int", nullable: false),
-                    ServizeProductId = table.Column<int>(type: "int", nullable: true),
+                    VendorId = table.Column<int>(type: "int", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: true),
                     Amount = table.Column<int>(type: "int", nullable: false),
                     CartId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Modified = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -433,8 +456,8 @@ namespace Servize.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_CartItem_Product_ServizeProductId",
-                        column: x => x.ServizeProductId,
+                        name: "FK_CartItem_Product_ProductId",
+                        column: x => x.ProductId,
                         principalTable: "Product",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -480,9 +503,9 @@ namespace Servize.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BookingSetting_ProviderId",
+                name: "IX_BookingSetting_VendorId",
                 table: "BookingSetting",
-                column: "ProviderId");
+                column: "VendorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Cart_UserId",
@@ -495,14 +518,14 @@ namespace Servize.Migrations
                 column: "CartId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CartItem_ServizeProductId",
+                name: "IX_CartItem_ProductId",
                 table: "CartItem",
-                column: "ServizeProductId");
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Category_ProviderId",
+                name: "IX_Category_VendorId",
                 table: "Category",
-                column: "ProviderId");
+                column: "VendorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Client_UserId",
@@ -510,14 +533,14 @@ namespace Servize.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderItem_OrderNumber",
+                name: "IX_OrderItem_OrderId",
                 table: "OrderItem",
-                column: "OrderNumber");
+                column: "OrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderItem_ProviderId",
+                name: "IX_OrderItem_VendorId",
                 table: "OrderItem",
-                column: "ProviderId");
+                column: "VendorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderSummary_UserId",
@@ -530,19 +553,24 @@ namespace Servize.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Provider_UserId",
-                table: "Provider",
+                name: "IX_RefreshToken_UserId",
+                table: "RefreshToken",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProviderBankDetail_ProviderId",
-                table: "ProviderBankDetail",
-                column: "ProviderId");
+                name: "IX_Review_VendorId",
+                table: "Review",
+                column: "VendorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Review_ProviderId",
-                table: "Review",
-                column: "ProviderId");
+                name: "IX_Vendor_UserId",
+                table: "Vendor",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VendorBankDetail_VendorId",
+                table: "VendorBankDetail",
+                column: "VendorId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -575,10 +603,13 @@ namespace Servize.Migrations
                 name: "OrderItem");
 
             migrationBuilder.DropTable(
-                name: "ProviderBankDetail");
+                name: "RefreshToken");
 
             migrationBuilder.DropTable(
                 name: "Review");
+
+            migrationBuilder.DropTable(
+                name: "VendorBankDetail");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -596,7 +627,7 @@ namespace Servize.Migrations
                 name: "Category");
 
             migrationBuilder.DropTable(
-                name: "Provider");
+                name: "Vendor");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

@@ -12,14 +12,14 @@ using System.Threading.Tasks;
 
 namespace Servize.Controllers
 {
-    [Authorize(Roles = UserRoles.Provider + "," + UserRoles.Admin)]
+    //[Authorize(Roles = UserRoles.Vendor + "," + UserRoles.Admin)]
     [ApiController]
     [Route("[controller]")]
     public class ServizeProviderController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ProviderServices _services;
+        private readonly VendorServices _services;
 
         public ServizeProviderController(ServizeDBContext dbContext,
                                          IMapper mapper,
@@ -30,17 +30,16 @@ namespace Servize.Controllers
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _services = new ProviderServices(dbContext, mapper, transaction, utitlity);
+            _services = new VendorServices(dbContext, mapper, transaction, utitlity);
         }
 
         [Authorize(Roles = UserRoles.Admin)]
-        [HttpGet]
-        [Route("GetALL")]
+        [HttpGet]  
         [Produces("application/json")]
-        public async Task<ActionResult<IList<ProviderDTO>>> GetAllServizeProviderList()
+        public async Task<ActionResult<IList<VendorDTO>>> GetAllVendorList()
         {
 
-            Response<IList<ProviderDTO>> response = await _services.GetAllServizeProviderList();
+            Response<IList<VendorDTO>> response = await _services.GetAllVendorList();
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
 
@@ -50,9 +49,9 @@ namespace Servize.Controllers
 
         [HttpGet("{id}")]
         [Produces("application/json")]
-        public async Task<ActionResult<ProviderDTO>> GetServizeProviderById(string id)
+        public async Task<ActionResult<VendorDTO>> GetAllVendorById(string id)
         {
-            Response<ProviderDTO> response = await _services.GetAllServizeProviderById(id);
+            Response<VendorDTO> response = await _services.GetAllVendorById(id);
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
 
@@ -62,9 +61,9 @@ namespace Servize.Controllers
         [Authorize(Roles = UserRoles.Admin)]
         [HttpGet("modetype/{id}")]
         [Produces("application/json")]
-        public async Task<ActionResult<IList<ProviderDTO>>> GetAllServizeProviderByModeType(int modeType)
+        public async Task<ActionResult<IList<VendorDTO>>> GetAllVendorByModeType(int modeType)
         {
-            Response<IList<ProviderDTO>> response = await _services.GetAllServizeProviderByModeType(modeType);
+            Response<IList<VendorDTO>> response = await _services.GetAllVendorByModeType(modeType);
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
 
@@ -75,10 +74,10 @@ namespace Servize.Controllers
         [Route("UpdateProvider")]
         [Produces("application/json")]
         [Consumes("application/json")]
-        public async Task<ActionResult<ProviderDTO>> UpdateServizeProvider(ProviderDTO servizeProviderDTO)
+        public async Task<ActionResult<VendorDTO>> UpdateVendor(VendorDTO servizeProviderDTO)
         {
 
-            Response<ProviderDTO> response = await _services.UpdateServizeProvider(servizeProviderDTO);
+            Response<VendorDTO> response = await _services.UpdateVendor(servizeProviderDTO);
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
 
@@ -86,9 +85,9 @@ namespace Servize.Controllers
 
         }
 
-        public async Task<ActionResult<ProviderDTO>> PatchServizeProvider(ProviderDTO providerDTO)
+        public async Task<ActionResult<VendorDTO>> PatchVendor(VendorDTO providerDTO)
         {
-            Response<ProviderDTO> response = await _services.PatchServizeProvider(providerDTO);
+            Response<VendorDTO> response = await _services.PatchVendor(providerDTO);
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
 

@@ -7,14 +7,15 @@ using static Servize.Domain.Enums.ServizeEnum;
 
 namespace Servize.DTO.PROVIDER
 {
-    public class ProviderDTO
+    public class VendorDTO
     {
-        public ProviderDTO()
+        public VendorDTO()
         {
-           ServiceCategories = new HashSet<CategoryDTO>();     
+           Categories = new HashSet<CategoryDTO>();     
         }
 
         public int Id { get; set; }
+
         public string CompanyName { get; set; }
        
         public string EmiratesIdNumber { get; set; }
@@ -37,6 +38,6 @@ namespace Servize.DTO.PROVIDER
         
         public DateTime Modified { get; set; }
 
-        public ICollection<CategoryDTO> ServiceCategories { get; set; }
+        public ICollection<CategoryDTO> Categories { get; set; }
     }
 }

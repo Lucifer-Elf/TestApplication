@@ -1,5 +1,4 @@
-﻿using Google.Apis.Auth;
-using Microsoft.AspNetCore.Cors;
+﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,24 +7,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Servize.Authentication;
-using Servize.Domain.Enums;
-using Servize.Domain.Model;
-using Servize.Domain.Model.Provider;
 using Servize.Domain.Repositories;
 using Servize.DTO;
 using Servize.DTO.ADMIN;
 using Servize.Utility;
-using Servize.Utility.Logging;
 using Servize.Utility.QueryFilter;
 using Servize.Utility.Sms;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 namespace Servize.Controllers
 {
     [EnableCors("MyPolicy")]
@@ -100,7 +91,7 @@ namespace Servize.Controllers
         [Consumes("application/json")]
         public async Task<ActionResult<Response<AuthSuccessResponse> >> RegisterServizeProvider([FromBody] RegistrationInputModel model)
         {
-            Response<AuthSuccessResponse> Response = await _repository.AddUserToIdentityWithSpecificRoles(model, "PROVIDER");
+            Response<AuthSuccessResponse> Response = await _repository.AddUserToIdentityWithSpecificRoles(model, "VENDOR");
             if (Response.IsSuccessStatusCode())
             {
                 return Ok(Response.Resource);

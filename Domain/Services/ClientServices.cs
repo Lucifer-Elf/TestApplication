@@ -57,12 +57,12 @@ namespace Servize.Domain.Services
 
       
 
-        public async Task<Response<ClientDTO>> GetUserById(string Id)
+        public async Task<Response<ClientDTO>> GetUserById(string id)
         {
             Logger.LogInformation(0, "Get Client By id service started !");
             try
             {
-                Response<Client> response = await _respository.GetAllServizeUserById(Id);
+                Response<Client> response = await _respository.GetAllServizeUserById(id);
                 if (response.IsSuccessStatusCode())
                 {
                     ClientDTO serviceDTO = _mapper.Map<Client, ClientDTO>(response.Resource);

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Servize.Domain.Enums;
 using Servize.Domain.Model.OrderDetail;
-using Servize.Domain.Model.Provider;
+using Servize.Domain.Model.VendorModel;
 using Servize.DTO.PROVIDER;
 using Servize.Utility;
 using System.Collections.Generic;
@@ -40,7 +40,7 @@ namespace Servize.Controllers
         [Route("AddToCart")]
         public ActionResult<Response<CartItem>> AddtoCart([FromBody] CartDTO cartDTO)
         {
-            var category = _context.Product.FirstOrDefault(p => p.Id == cartDTO.ServizeCategoryNumber);
+            var category = _context.Product.FirstOrDefault(p => p.Id == cartDTO.CategoryId);
             if (category != null)
             {
                 var item = _cart.AddToCart(category, cartDTO.Amount);
@@ -57,11 +57,11 @@ namespace Servize.Controllers
         [Route("RemoveFromCart")]
         public ActionResult<Response<Product>> RemoveFromCart(int productId, int amount)
         {
-            var category = _context.Product.FirstOrDefault(p => p.Id == productId);
-            if (category != null)
+            var product = _context.Product.FirstOrDefault(p => p.Id == productId);
+            if (product != null)
             {
-                _cart.RemoveFromCart(category, amount);
-                return new Response<Product>(category, StatusCodes.Status200OK);
+                _cart.RemoveFromCart(product, amount);
+                return new Response<Product>(product, StatusCodes.Status200OK);
             }
             return new Response<Product>("Category Id is not avaliable", StatusCodes.Status404NotFound);
 

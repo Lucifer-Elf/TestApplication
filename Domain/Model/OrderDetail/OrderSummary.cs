@@ -1,11 +1,8 @@
 ﻿using Servize.Authentication;
-using Servize.Domain.Model.Provider;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Servize.Domain.Model.OrderDetail
 {
