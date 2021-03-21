@@ -15,13 +15,13 @@ namespace Servize.Controllers
     //[Authorize(Roles = UserRoles.Vendor + "," + UserRoles.Admin)]
     [ApiController]
     [Route("[controller]")]
-    public class ServizeProviderController : ControllerBase
+    public class VendorController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly VendorServices _services;
 
-        public ServizeProviderController(ServizeDBContext dbContext,
+        public VendorController(ServizeDBContext dbContext,
                                          IMapper mapper,
                                          UserManager<ApplicationUser> userManager,
                                         SignInManager<ApplicationUser> signInManager, ContextTransaction transaction,
@@ -58,7 +58,7 @@ namespace Servize.Controllers
             return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
 
-        [Authorize(Roles = UserRoles.Admin)]
+       // [Authorize(Roles = UserRoles.Admin)]
         [HttpGet("modetype/{id}")]
         [Produces("application/json")]
         public async Task<ActionResult<IList<VendorDTO>>> GetAllVendorByModeType(int modeType)
@@ -70,8 +70,7 @@ namespace Servize.Controllers
             return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
 
-        [HttpPut]
-        [Route("UpdateProvider")]
+        [HttpPut]   
         [Produces("application/json")]
         [Consumes("application/json")]
         public async Task<ActionResult<VendorDTO>> UpdateVendor(VendorDTO servizeProviderDTO)
@@ -85,6 +84,9 @@ namespace Servize.Controllers
 
         }
 
+        [HttpPatch]
+        [Produces("application/json")]
+        [Consumes("application/json")]
         public async Task<ActionResult<VendorDTO>> PatchVendor(VendorDTO providerDTO)
         {
             Response<VendorDTO> response = await _services.PatchVendor(providerDTO);
