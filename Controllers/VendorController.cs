@@ -73,10 +73,10 @@ namespace Servize.Controllers
         [HttpPut]   
         [Produces("application/json")]
         [Consumes("application/json")]
-        public async Task<ActionResult<VendorDTO>> UpdateVendor(VendorDTO servizeProviderDTO)
+        public async Task<ActionResult<VendorDTO>> UpdateVendor(VendorDTO vendorDTO)
         {
 
-            Response<VendorDTO> response = await _services.UpdateVendor(servizeProviderDTO);
+            Response<VendorDTO> response = await _services.UpdateVendor(vendorDTO);
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
 
@@ -87,9 +87,9 @@ namespace Servize.Controllers
         [HttpPatch]
         [Produces("application/json")]
         [Consumes("application/json")]
-        public async Task<ActionResult<VendorDTO>> PatchVendor(VendorDTO providerDTO)
+        public async Task<ActionResult<VendorDTO>> PatchVendor(VendorDTO vendorDTO)
         {
-            Response<VendorDTO> response = await _services.PatchVendor(providerDTO);
+            Response<VendorDTO> response = await _services.PatchVendor(vendorDTO);
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
 

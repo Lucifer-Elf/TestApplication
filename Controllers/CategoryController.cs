@@ -60,9 +60,9 @@ namespace Servize.Controllers
 
         [HttpPost]
         [Route("AddCategory")]
-        public async Task<ActionResult<CategoryDTO>> AddServiceCategory([FromBody] CategoryDTO servizeCategoryDTO)
+        public async Task<ActionResult<CategoryDTO>> AddServiceCategory([FromBody] CategoryDTO categoryDTO)
         {
-            Response<CategoryDTO> response    = await _services.PostCategory(servizeCategoryDTO);                
+            Response<CategoryDTO> response    = await _services.PostCategory(categoryDTO);                
             if (response.IsSuccessStatusCode())
                     return Ok(response.Resource);
             return Problem(statusCode: response.StatusCode, detail: response.Message);
@@ -70,10 +70,10 @@ namespace Servize.Controllers
 
         [HttpPut]
         [Route("UpdateCategory")]
-        public async Task<ActionResult<CategoryDTO>> UpdateServiceCategory([FromBody] CategoryDTO servizeCategoryDTO)
+        public async Task<ActionResult<CategoryDTO>> UpdateServiceCategory([FromBody] CategoryDTO categoryDTO)
         {
 
-            Response<CategoryDTO> response = await _services.UpdateServiceCategory(servizeCategoryDTO);
+            Response<CategoryDTO> response = await _services.UpdateServiceCategory(categoryDTO);
 
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
