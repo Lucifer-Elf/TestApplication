@@ -26,27 +26,22 @@ namespace Servize.Domain.Repositories
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ServizeDBContext _context;
-        private readonly IConfiguration _configuration;
-        private IAuthService _authService;
+        private readonly ServizeDBContext _context;    
         private readonly ContextTransaction _transaction;
         private readonly TokenValidationParameters _tokenValidationParameter;
 
         public AccountRepository(UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager,
-            IConfiguration configuration,
+            RoleManager<IdentityRole> roleManager,         
              SignInManager<ApplicationUser> signInManager,
              ServizeDBContext context,
-             IAuthService service, ContextTransaction transaction,
+            ContextTransaction transaction,
              TokenValidationParameters tokenValidationParameter
             )
         {
             _userManager = userManager;
-            _roleManager = roleManager;
-            _configuration = configuration;
+            _roleManager = roleManager;       
             _signInManager = signInManager;
-            _context = context;
-            _authService = service;
+            _context = context;       
             _transaction = transaction;
             _tokenValidationParameter = tokenValidationParameter;
         }
@@ -122,7 +117,12 @@ namespace Servize.Domain.Repositories
             }
             await _transaction.CompleteAsync();
 
-            return await GenrateAuthenticationTokenForUser(user);
+            var response = await GenrateAuthenticationTokenForUser(user);
+            if (response.IsSuccessStatusCode())
+                return new  Response<AuthSuccessResponse>(response.Resource,response.StatusCode);
+
+            return new Response<AuthSuccessResponse>(response.Message, response.StatusCode);
+
 
         }
 
@@ -139,14 +139,16 @@ namespace Servize.Domain.Repositories
         }
         private async Task<Response<AuthSuccessResponse>> GenrateAuthenticationTokenForUser(ApplicationUser user)
         {
-            var userRoles = await _userManager.GetRolesAsync(user);
-
-            var authSignInKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("sdfsdfsd"));
-
-            var tokendescriptor = new SecurityTokenDescriptor
+            try
             {
-                Subject = new ClaimsIdentity(new[]
+                var userRoles = await _userManager.GetRolesAsync(user);
+
+                var authSignInKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("RandomKEyIsvalid1234"));
+
+                var tokendescriptor = new SecurityTokenDescriptor
                 {
+                    Subject = new ClaimsIdentity(new[]
+                    {
 
                 new Claim(JwtRegisteredClaimNames.Sub,user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
@@ -154,31 +156,40 @@ namespace Servize.Domain.Repositories
                 new Claim(ClaimTypes.Role,userRoles.FirstOrDefault<string>()),
                 new Claim("id",user.Id)
                 }),
-                Expires = DateTime.UtcNow.AddSeconds(45),
-                SigningCredentials = new SigningCredentials(authSignInKey, SecurityAlgorithms.HmacSha256)
+                    Expires = DateTime.UtcNow.AddSeconds(45),
+                    SigningCredentials = new SigningCredentials(authSignInKey, SecurityAlgorithms.HmacSha256)
 
-            };
-            var tokenHandler = new JwtSecurityTokenHandler();
+                };
+                var tokenHandler = new JwtSecurityTokenHandler();
 
-            var token = tokenHandler.CreateToken(tokendescriptor);
+                var token = tokenHandler.CreateToken(tokendescriptor);
 
-            var refreshToken = new RefreshToken
+                var refreshToken = new RefreshToken
+                {
+                    JwtId = token.Id,
+                    UserId = user.Id,
+                    CreationDate = DateTime.UtcNow,
+                    ExpiryDate = DateTime.UtcNow.AddMonths(6)
+                };
+                await _context.RefreshToken.AddAsync(refreshToken);
+                await _transaction.CompleteAsync();
+
+                var succesResponse = new AuthSuccessResponse
+                {
+                    Token = tokenHandler.WriteToken(token),
+                    RefreshToken = refreshToken.Token,
+
+                };
+                return new Response<AuthSuccessResponse>(succesResponse, StatusCodes.Status200OK);
+            }
+            catch (Exception ex)
             {
-                JwtId = token.Id,
-                UserId = user.Id,
-                CreationDate = DateTime.UtcNow,
-                ExpiryDate = DateTime.UtcNow.AddMonths(6)
-            };
-            await _context.RefreshToken.AddAsync(refreshToken);
-            await _transaction.CompleteAsync();
+                Logger.LogError(ex);
+                return new Response<AuthSuccessResponse>("Error while genrating Token", StatusCodes.Status200OK);
 
-            var succesResponse = new AuthSuccessResponse
-            {
-                Token = tokenHandler.WriteToken(token),
-                RefreshToken = refreshToken.Token,
+            }
 
-            };
-            return new Response<AuthSuccessResponse>(succesResponse, StatusCodes.Status200OK);
+
         }
 
         public async Task<Response<AuthSuccessResponse>> RefreshTokenAsync(string token, string refreshToken)
