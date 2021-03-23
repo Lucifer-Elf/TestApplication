@@ -43,7 +43,7 @@ namespace Servize.Domain.Services
                     return new Response<IList<ProductDTO>>(serviceDTO, StatusCodes.Status200OK);
                 }
 
-                return new Response<IList<ProductDTO>>("Failed to Product User List", response.StatusCode);
+                return new Response<IList<ProductDTO>>(response.Message, response.StatusCode);
             }
             catch (Exception e)
             {
@@ -68,7 +68,7 @@ namespace Servize.Domain.Services
                     ProductDTO serviceDTO = _mapper.Map<Product, ProductDTO>(response.Resource);
                     return new Response<ProductDTO>(serviceDTO, StatusCodes.Status200OK);
                 }
-                return new Response<ProductDTO>("Failed to Load User With Specific Id", response.StatusCode);
+                return new Response<ProductDTO>(response.Message, response.StatusCode);
             }
             catch (Exception e)
             {

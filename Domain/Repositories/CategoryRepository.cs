@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Servize.Domain.Model.VendorModel;
 using Servize.Utility;
+using Servize.Utility.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -25,6 +26,7 @@ namespace Servize.Domain.Repositories
             }
             catch (Exception e)
             {
+                Logger.LogError(e);
                 return new Response<IList<Category>>($"Failed to get ServiceCategoryList Error:{e.Message}", StatusCodes.Status500InternalServerError);
             }
 
@@ -34,85 +36,104 @@ namespace Servize.Domain.Repositories
         {
             try
             {
-                Category servizeProvider = await _context.Category.Include(i => i.Products)
+                Category category = await _context.Category.Include(i => i.Products)
                                                                                  .AsNoTracking()
                                                                                 .SingleOrDefaultAsync(c => c.Id == Id);
-                if (servizeProvider == null)
+                if (category == null)
                     return new Response<Category>("Failed to find Id", StatusCodes.Status404NotFound);
-                return new Response<Category>(servizeProvider, StatusCodes.Status200OK);
+                return new Response<Category>(category, StatusCodes.Status200OK);
             }
             catch (Exception e)
             {
+                Logger.LogError(e);
                 return new Response<Category>($"Failed to get ServiceCategory Error:{e.Message}", StatusCodes.Status500InternalServerError);
             }
         }
 
         public async Task<Response<Category>> PostCategory(Category category)
         {
-            if (category == null)
-                return new Response<Category>("Request not parsable", StatusCodes.Status400BadRequest);
-
-            bool isProviderAvaliable = await ProviderIsValid(category.VendorId);
-            if (!isProviderAvaliable)
-                return new Response<Category>("Category couldnot be created due to provider is not exist", StatusCodes.Status424FailedDependency);
-
-            if (category.Products.Count > 0)
+            try
             {
-                foreach (Product subservice in category.Products)
+                if (category == null)
+                    return new Response<Category>("Request not parsable", StatusCodes.Status400BadRequest);
+
+                bool isProviderAvaliable = await ProviderIsValid(category.VendorId);
+                if (!isProviderAvaliable)
+                    return new Response<Category>("Category couldnot be created due to vendor is not exist", StatusCodes.Status424FailedDependency);
+
+                if (category.Products.Count > 0)
                 {
-                    Product servizeProduct = await _context.Product.FindAsync(subservice.Id);
-                    if (servizeProduct == null)
+                    foreach (Product subservice in category.Products)
                     {
-                        _context.Product.Add(subservice);
+                        Product product = await _context.Product.FindAsync(subservice.Id);
+                        if (product == null)
+                        {
+                            _context.Product.Add(subservice);
+                        }
                     }
                 }
-            }
 
-            if (category.Id > 0)
+                if (category.Id > 0)
+                {
+                    Category servizeCategory = await _context.Category.FindAsync(category.Id);
+                    if (servizeCategory != null)
+                        return new Response<Category>("Given category already exist", StatusCodes.Status409Conflict);
+
+                    return new Response<Category>("failed Dependecy", StatusCodes.Status424FailedDependency);
+
+                }
+                _context.Category.Add(category);
+                return new Response<Category>(category, StatusCodes.Status200OK);
+            }
+            catch (Exception e)
             {
-                Category servizeCategory = await _context.Category.FindAsync(category.Id);
-                if (servizeCategory != null)
-                    return new Response<Category>("Given SerrvizeCategory Already Exist", StatusCodes.Status409Conflict);
-
-                return new Response<Category>("failed Dependecy ", StatusCodes.Status424FailedDependency);
+                Logger.LogError(e);
+                return new Response<Category>("Error While adding Data", StatusCodes.Status500InternalServerError);
 
             }
-            _context.Category.Add(category);
-            return new Response<Category>(category, StatusCodes.Status200OK);
         }
 
         public async Task<Response<Category>> UpdateServiceCategory(Category category)
         {
-            if (category == null)
-                return new Response<Category>("Request not parsable", StatusCodes.Status400BadRequest);
-
-            bool isProviderAvaliable = await ProviderIsValid(category.VendorId);
-            if (!isProviderAvaliable)
-                return new Response<Category>("Category couldnot be created due to provider is not exist", StatusCodes.Status424FailedDependency);
-
-            if (category.Products.Count > 0)
+            try
             {
-                foreach (Product subservice in category.Products)
+                if (category == null)
+                    return new Response<Category>("Request not parsable", StatusCodes.Status400BadRequest);
+
+                bool isProviderAvaliable = await ProviderIsValid(category.VendorId);
+                if (!isProviderAvaliable)
+                    return new Response<Category>("Category couldnot be created due to vendor is not exist", StatusCodes.Status424FailedDependency);
+
+                if (category.Products.Count > 0)
                 {
-                    Product servizeProduct = await _context.Product.FindAsync(subservice.Id);
-                    if (servizeProduct != null)
+                    foreach (Product subservice in category.Products)
                     {
-                        _context.Product.Update(subservice);
+                        Product servizeProduct = await _context.Product.FindAsync(subservice.Id);
+                        if (servizeProduct != null)
+                        {
+                            _context.Product.Update(subservice);
+                        }
                     }
                 }
-            }
 
-            if (category.Id > 0)
+                if (category.Id > 0)
+                {
+                    Category servizeCategory = await _context.Category.FindAsync(category.Id);
+                    if (servizeCategory != null)
+                        return new Response<Category>("Given category already Exist", StatusCodes.Status409Conflict);
+
+                    return new Response<Category>("failed Dependecy ", StatusCodes.Status424FailedDependency);
+
+                }
+                _context.Category.Update(category);
+                return new Response<Category>(category, StatusCodes.Status200OK);
+            }
+            catch (Exception e)
             {
-                Category servizeCategory = await _context.Category.FindAsync(category.Id);
-                if (servizeCategory != null)
-                    return new Response<Category>("Given SerrvizeCategory Already Exist", StatusCodes.Status409Conflict);
-
-                return new Response<Category>("failed Dependecy ", StatusCodes.Status424FailedDependency);
-
+                Logger.LogError(e);
+                return new Response<Category>("Error While updating Data", StatusCodes.Status500InternalServerError);
             }
-            _context.Category.Update(category);
-            return new Response<Category>(category, StatusCodes.Status200OK);
+
         }
 
 

@@ -35,7 +35,7 @@ namespace Servize.Domain.Services
             Logger.LogInformation(0,"GetAll Client service Started !");
             try
             {
-                Response<IList<Client>> response = await _respository.GetAllServizeUserList();
+                Response<IList<Client>> response = await _respository.GetAllClientList();
 
                 if (response.IsSuccessStatusCode())
                 {
@@ -43,7 +43,7 @@ namespace Servize.Domain.Services
                     return new Response<IList<ClientDTO>>(serviceDTO, StatusCodes.Status200OK);
                 }
 
-                return new Response<IList<ClientDTO>>("Failed to Load User List", response.StatusCode);
+                return new Response<IList<ClientDTO>>(response.Message, response.StatusCode);
             }
             catch (Exception e)
             {
@@ -68,7 +68,7 @@ namespace Servize.Domain.Services
                     ClientDTO serviceDTO = _mapper.Map<Client, ClientDTO>(response.Resource);
                     return new Response<ClientDTO>(serviceDTO, StatusCodes.Status200OK);
                 }
-                return new Response<ClientDTO>("Failed to Load User With Specific Id", response.StatusCode);
+                return new Response<ClientDTO>(response.Message, response.StatusCode);
             }
             catch (Exception e)
             {

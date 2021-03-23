@@ -39,7 +39,7 @@ namespace Servize.Domain.Services
                     return new Response<IList<CategoryDTO>>(serviceDTO, StatusCodes.Status200OK);
                 }
 
-                return new Response<IList<CategoryDTO>>("Failed to Load ServizeCategory List", response.StatusCode);
+                return new Response<IList<CategoryDTO>>(response.Message, response.StatusCode);
             }
             catch (Exception e)
             {
@@ -64,12 +64,12 @@ namespace Servize.Domain.Services
                     CategoryDTO serviceDTO = _mapper.Map<Category, CategoryDTO>(response.Resource);
                     return new Response<CategoryDTO>(serviceDTO, StatusCodes.Status200OK);
                 }
-                return new Response<CategoryDTO>("Failed to Load ServizeCategory With Specific Id", response.StatusCode);
+                return new Response<CategoryDTO>(response.Message, response.StatusCode);
             }
             catch (Exception e)
             {
                 Logger.LogError(e);
-                return new Response<CategoryDTO>($"Failed to Load ServizeCategory Error:{e.Message}", StatusCodes.Status500InternalServerError);
+                return new Response<CategoryDTO>($"Failed to Load ServizeCategory Error", StatusCodes.Status500InternalServerError);
             }
             finally {
                 Logger.LogInformation(0, " Category Get AllService Finished");
@@ -89,11 +89,12 @@ namespace Servize.Domain.Services
                     CategoryDTO serviceDTO = _mapper.Map<Category, CategoryDTO>(response.Resource);
                     return new Response<CategoryDTO>(serviceDTO, StatusCodes.Status200OK);
                 }
-                return new Response<CategoryDTO>("Failed to Add ServizeCategory With Specific Id", response.StatusCode);
+                return new Response<CategoryDTO>(response.Message, response.StatusCode);
             }
-            catch (Exception e){
+            catch (Exception e)
+            {
                 Logger.LogError(e);
-                return new Response<CategoryDTO>($"Failed to Add ategory Error", StatusCodes.Status500InternalServerError);
+                return new Response<CategoryDTO>($"Failed to Add category Error", StatusCodes.Status500InternalServerError);
             }
             finally
             {
@@ -115,12 +116,12 @@ namespace Servize.Domain.Services
                     CategoryDTO serviceDTO = _mapper.Map<Category, CategoryDTO>(response.Resource);
                     return new Response<CategoryDTO>(serviceDTO, StatusCodes.Status200OK);
                 }
-                return new Response<CategoryDTO>("Failed to Add ServizeCategory With Specific Id", response.StatusCode);
+                return new Response<CategoryDTO>(response.Message, response.StatusCode);
             }
             catch (Exception e)
             {
                 Logger.LogError(e);
-                return new Response<CategoryDTO>($"Failed to Add ServizeCategory Error:{e.Message}", StatusCodes.Status500InternalServerError);
+                return new Response<CategoryDTO>($"Failed to Add Category Error", StatusCodes.Status500InternalServerError);
             }
             finally
             {

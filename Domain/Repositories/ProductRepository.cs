@@ -23,12 +23,12 @@ namespace Servize.Domain.Repositories
         {
             try
             {
-                List<Product> servizeProviderList = await _context.Product.AsNoTracking().ToListAsync();
-                return new Response<IList<Product>>(servizeProviderList, StatusCodes.Status200OK);
+                List<Product> providerList = await _context.Product.AsNoTracking().ToListAsync();
+                return new Response<IList<Product>>(providerList, StatusCodes.Status200OK);
             }
             catch (Exception e)
             {
-                Log.Error(e.Message);
+                Logger.LogError(e);
                 return new Response<IList<Product>>($"Failed to get productList ", StatusCodes.Status500InternalServerError);
             }
         }

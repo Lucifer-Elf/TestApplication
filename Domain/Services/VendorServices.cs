@@ -41,7 +41,7 @@ namespace Servize.Domain.Services
                     return new Response<IList<VendorDTO>>(serviceDTO, StatusCodes.Status200OK);
                 }
 
-                return new Response<IList<VendorDTO>>("Failed to Load Vendor List", response.StatusCode);
+                return new Response<IList<VendorDTO>>(response.Message, response.StatusCode);
             }
             catch (Exception e)
             {
@@ -62,7 +62,7 @@ namespace Servize.Domain.Services
                     return new Response<IList<VendorDTO>>(serviceDTO, StatusCodes.Status200OK);
                 }
 
-                return new Response<IList<VendorDTO>>("Failed to Load Vendor List", response.StatusCode);
+                return new Response<IList<VendorDTO>>(response.Message, response.StatusCode);
             }
             catch (Exception e)
             {
@@ -154,7 +154,7 @@ namespace Servize.Domain.Services
                     return new Response<VendorDTO>(serviceDTO, StatusCodes.Status200OK);
                 }
 
-                return new Response<VendorDTO>("Error while adding data in provider ", StatusCodes.Status500InternalServerError);
+                return new Response<VendorDTO>(response.Message, StatusCodes.Status500InternalServerError);
             }
             catch (Exception e)
             {

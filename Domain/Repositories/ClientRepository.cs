@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Servize.Domain.Model;
 using Servize.Utility;
+using Servize.Utility.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,18 +18,18 @@ namespace Servize.Domain.Repositories
             _context = dBContext;
         }
 
-        public async Task<Response<IList<Client>>> GetAllServizeUserList()
+        public async Task<Response<IList<Client>>> GetAllClientList()
         {
             try
             {
-                List<Client> servizeProviderList = await _context.Client
-                                                                        .Include(i=>i.ApplicationUser)
+                List<Client> clientList = await _context.Client.Include(i=>i.ApplicationUser)
                                                                             .AsNoTracking().ToListAsync();
-                return new Response<IList<Client>>(servizeProviderList, StatusCodes.Status200OK);
+                return new Response<IList<Client>>(clientList, StatusCodes.Status200OK);
             }
             catch (Exception e)
             {
-                return new Response<IList<Client>>($"Failed to get ServiceProviderList Error:{e.Message}", StatusCodes.Status500InternalServerError);
+                Logger.LogError(e);
+                return new Response<IList<Client>>($"Failed to get clientList Error", StatusCodes.Status500InternalServerError);
             }
 
         }
@@ -45,6 +47,7 @@ namespace Servize.Domain.Repositories
             }
             catch (Exception e)
             {
+                Logger.LogError(e);
                 return new Response<Client>($"Failed to get ServiceProvide Error:{e.Message}", StatusCodes.Status500InternalServerError);
             }
         }

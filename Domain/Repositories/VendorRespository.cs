@@ -31,6 +31,7 @@ namespace Servize.Domain.Repositories
             }
             catch (Exception e)
             {
+                Logger.LogError(e);
                 return new Response<IList<Vendor>>($"Failed to get VendorList Error:{e.Message}", StatusCodes.Status500InternalServerError);
             }
 
@@ -51,7 +52,7 @@ namespace Servize.Domain.Repositories
             catch (Exception e)
             {
                 Logger.LogError(e);
-                return new Response<IList<Vendor>>($"Failed to get vendorList Error:{e.Message}", StatusCodes.Status500InternalServerError);
+                return new Response<IList<Vendor>>($"Failed to get vendorList Error", StatusCodes.Status500InternalServerError);
             }
 
         }
@@ -67,7 +68,8 @@ namespace Servize.Domain.Repositories
             }
             catch (Exception e)
             {
-                return new Response<Vendor>($"Failed to get ServiceProvide Error:{e.Message}", StatusCodes.Status500InternalServerError);
+                Logger.LogError(e);
+                return new Response<Vendor>($"Failed to get ServiceProvide Error", StatusCodes.Status500InternalServerError);
             }
         }
      
@@ -77,11 +79,11 @@ namespace Servize.Domain.Repositories
             {
                 if (vendor == null)
                     return new Response<Vendor>("Request Not Parsable", StatusCodes.Status400BadRequest);
-                Vendor serviceVendorEntity = await _context.Vendor.Include(i=>i.Categories)
+                Vendor vendorEntity = await _context.Vendor.Include(i=>i.Categories)
                                                                                          .ThenInclude(i=>i.Products)          
                                                                                          .AsNoTracking()
                                                                                         .SingleOrDefaultAsync(c => c.Id == vendor.Id);
-                if (serviceVendorEntity == null)
+                if (vendorEntity == null)
                 {
                     return new Response<Vendor>("Vendor not found", StatusCodes.Status404NotFound);
                 }
@@ -92,8 +94,8 @@ namespace Servize.Domain.Repositories
             }
             catch (Exception ex)
             {
-                Log.Logger.Information(ex.Message);
-                return new Response<Vendor>($"Failed to Add ServiceProvide Error:{ex.Message}", StatusCodes.Status500InternalServerError);
+                Logger.LogError(ex);
+                return new Response<Vendor>($"Failed to Add ServiceProvide Error", StatusCodes.Status500InternalServerError);
             }
         }
 

@@ -56,7 +56,7 @@ namespace Servize.Domain.Repositories
                 {
                     return new Response<AuthSuccessResponse>("User with this Email AlreadyExist", StatusCodes.Status409Conflict);
                 }
-                ApplicationUser user = new ApplicationUser()
+                ApplicationUser user = new()
                 {
                     UserName = model.Email,
                     Email = model.Email,
@@ -95,7 +95,7 @@ namespace Servize.Domain.Repositories
 
             if (Utility.Utilities.GetRoleForstring(role).ToUpper() == "VENDOR")
             {
-                Vendor vendor = new Vendor
+                Vendor vendor = new()
                 {
                     UserId = user.Id,
                     CompanyName = model.CompanyName,
@@ -106,7 +106,7 @@ namespace Servize.Domain.Repositories
             }
             else
             {
-                Client client = new Client
+                Client client = new()
                 {
                     UserId = user.Id,
                     FirstName = model.FirstName,
