@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Servize.Controllers
 {
-    //[Authorize(Roles = UserRoles.Vendor + "," + UserRoles.Admin)]
+    [Authorize(Roles = UserRoles.Vendor + "," + UserRoles.Admin)]
     [ApiController]
     [Route("[controller]")]
     public class VendorController : ControllerBase

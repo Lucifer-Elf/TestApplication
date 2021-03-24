@@ -12,6 +12,7 @@ using Servize.DTO;
 using Servize.DTO.ADMIN;
 using Servize.Utility;
 using Servize.Utility.Logging;
+using Servize.Utility.Sms;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -26,12 +27,12 @@ namespace Servize.Domain.Repositories
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ServizeDBContext _context;    
+        private readonly ServizeDBContext _context;
         private readonly ContextTransaction _transaction;
         private readonly TokenValidationParameters _tokenValidationParameter;
 
         public AccountRepository(UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager,         
+            RoleManager<IdentityRole> roleManager,
              SignInManager<ApplicationUser> signInManager,
              ServizeDBContext context,
             ContextTransaction transaction,
@@ -39,12 +40,13 @@ namespace Servize.Domain.Repositories
             )
         {
             _userManager = userManager;
-            _roleManager = roleManager;       
+            _roleManager = roleManager;
             _signInManager = signInManager;
-            _context = context;       
+            _context = context;
             _transaction = transaction;
             _tokenValidationParameter = tokenValidationParameter;
         }
+
 
 
         public async Task<Response<AuthSuccessResponse>> AddUserToIdentityWithSpecificRoles(RegistrationInputModel model, string role)
@@ -64,7 +66,13 @@ namespace Servize.Domain.Repositories
                     PhoneNumber = model.PhoneNumber,
 
                 };
-                return await CreateNewUserBasedOnRole(model, role, user);
+                Response<AuthSuccessResponse> response = await CreateNewUserBasedOnRole(model, role, user);
+                if (response.IsSuccessStatusCode())
+                {
+                    await _transaction.CompleteAsync();
+                    return new Response<AuthSuccessResponse>(response.Resource, response.StatusCode);
+                }
+                return new Response<AuthSuccessResponse>(response.Message, response.StatusCode);
 
             }
             catch (Exception ex)
@@ -76,52 +84,59 @@ namespace Servize.Domain.Repositories
 
         private async Task<Response<AuthSuccessResponse>> CreateNewUserBasedOnRole(RegistrationInputModel model, string role, ApplicationUser user)
         {
-
-            var createUser = await _userManager.CreateAsync(user, model.Password);
-
-            if (!createUser.Succeeded)
+            try
             {
+                var createUser = await _userManager.CreateAsync(user, model.Password);
 
-                return new Response<AuthSuccessResponse>(createUser.Errors.Select(x => x.Description).ToString(), StatusCodes.Status500InternalServerError);
-            }
-
-            await CreateRoleInDatabase();
-
-            if (await _roleManager.RoleExistsAsync(Utility.Utilities.GetRoleForstring(role)))
-            {
-                await _userManager.AddToRoleAsync(user, Utility.Utilities.GetRoleForstring(role));
-            }
-
-
-            if (Utility.Utilities.GetRoleForstring(role).ToUpper() == "VENDOR")
-            {
-                Vendor vendor = new()
+                if (!createUser.Succeeded)
                 {
-                    UserId = user.Id,
-                    CompanyName = model.CompanyName,
-                    CompanyRegistrationNumber = model.CompanyRegistrationNumber,
 
-                };
-                _context.Add(vendor);
-            }
-            else
-            {
-                Client client = new()
+                    return new Response<AuthSuccessResponse>(createUser.Errors.Select(x => x.Description).ToString(), StatusCodes.Status500InternalServerError);
+                }
+
+                await CreateRoleInDatabase();
+
+                if (await _roleManager.RoleExistsAsync(Utility.Utilities.GetRoleForstring(role)))
                 {
-                    UserId = user.Id,
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
+                    await _userManager.AddToRoleAsync(user, Utility.Utilities.GetRoleForstring(role));
+                }
 
-                };
-                _context.Add(client);
+
+                if (Utility.Utilities.GetRoleForstring(role).ToUpper() == "VENDOR")
+                {
+                    Vendor vendor = new()
+                    {
+                        UserId = user.Id,
+                        CompanyName = model.CompanyName,
+                        CompanyRegistrationNumber = model.CompanyRegistrationNumber,
+
+                    };
+                    _context.Add(vendor);
+                }
+                else
+                {
+                    Client client = new()
+                    {
+                        UserId = user.Id,
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+
+                    };
+                    _context.Add(client);
+                }
+
+
+                var response = await GenrateAuthenticationTokenForUser(user);
+                if (response.IsSuccessStatusCode())
+                    return new Response<AuthSuccessResponse>(response.Resource, response.StatusCode);
+
+                return new Response<AuthSuccessResponse>(response.Message, response.StatusCode);
             }
-            await _transaction.CompleteAsync();
-
-            var response = await GenrateAuthenticationTokenForUser(user);
-            if (response.IsSuccessStatusCode())
-                return new  Response<AuthSuccessResponse>(response.Resource,response.StatusCode);
-
-            return new Response<AuthSuccessResponse>(response.Message, response.StatusCode);
+            catch (Exception e)
+            {
+                Logger.LogError(e);
+                return new Response<AuthSuccessResponse>("error while creating new User", StatusCodes.Status500InternalServerError);
+            }
 
 
         }
@@ -137,13 +152,32 @@ namespace Servize.Domain.Repositories
             if (!await _roleManager.RoleExistsAsync(UserRoles.Vendor))
                 await _roleManager.CreateAsync(new IdentityRole(UserRoles.Vendor));
         }
+
+        public async Task<Response<int>> SendSMSTokenAsync(string phoneNumber)
+        {
+            try
+            {
+                string Phno = phoneNumber;
+                if (!Phno.StartsWith("+"))
+                    Phno = "+" + Phno;
+                phoneNumber = Phno;
+                var value = await SMSAuthService.SendTokenSMSAsync(phoneNumber);
+                return new Response<int>(value, StatusCodes.Status200OK);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e);
+                return new Response<int>("Error while Sending SMS", StatusCodes.Status500InternalServerError);
+            }
+        }
+
         private async Task<Response<AuthSuccessResponse>> GenrateAuthenticationTokenForUser(ApplicationUser user)
         {
             try
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
 
-                var authSignInKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("RandomKEyIsvalid1234"));
+                var authSignInKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("RandomKeyIsvalid1234"));
 
                 var tokendescriptor = new SecurityTokenDescriptor
                 {
@@ -172,7 +206,6 @@ namespace Servize.Domain.Repositories
                     ExpiryDate = DateTime.UtcNow.AddMonths(6)
                 };
                 await _context.RefreshToken.AddAsync(refreshToken);
-                await _transaction.CompleteAsync();
 
                 var succesResponse = new AuthSuccessResponse
                 {
@@ -194,49 +227,65 @@ namespace Servize.Domain.Repositories
 
         public async Task<Response<AuthSuccessResponse>> RefreshTokenAsync(string token, string refreshToken)
         {
-            var validatedToken = GetPrincipalFromToken(token);
-            if (validatedToken == null)
+            try
             {
-                return new Response<AuthSuccessResponse>(new AuthSuccessResponse { Errors = new[] { "Invalid token" } }, StatusCodes.Status500InternalServerError);
+
+                var validatedToken = GetPrincipalFromToken(token);
+                if (validatedToken == null)
+                {
+                    return new Response<AuthSuccessResponse>(new AuthSuccessResponse { Errors = new[] { "Invalid token" } }, StatusCodes.Status500InternalServerError);
+                }
+                var expiryDate = long.Parse(validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
+
+                var expirtDateTimeUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(expiryDate);
+
+                if (expirtDateTimeUtc > DateTime.UtcNow)
+                {
+                    return new Response<AuthSuccessResponse>(new AuthSuccessResponse { Errors = new[] { "Token Not expired" } }, StatusCodes.Status500InternalServerError);
+                }
+
+
+                var jti = validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
+                var storedRefreshToken = await _context.RefreshToken.SingleOrDefaultAsync(x => x.Token == refreshToken);
+
+                if (storedRefreshToken == null)
+                {
+                    return new Response<AuthSuccessResponse>(new AuthSuccessResponse { Errors = new[] { "This RefreshToken Doesnt Exist" } }, StatusCodes.Status500InternalServerError);
+                }
+                if (DateTime.UtcNow > storedRefreshToken.ExpiryDate)
+                {
+                    return new Response<AuthSuccessResponse>(new AuthSuccessResponse { Errors = new[] { "Refresh token is expired" } }, StatusCodes.Status500InternalServerError);
+
+                }
+
+                if (storedRefreshToken.Invalidated)
+                    return new Response<AuthSuccessResponse>(new AuthSuccessResponse { Errors = new[] { "RefreshToken has been invalidated" } }, StatusCodes.Status500InternalServerError);
+
+                if (storedRefreshToken.Used)
+                    return new Response<AuthSuccessResponse>(new AuthSuccessResponse { Errors = new[] { "RefreshToken has been used" } }, StatusCodes.Status500InternalServerError);
+
+                if (storedRefreshToken.JwtId != jti)
+                    return new Response<AuthSuccessResponse>(new AuthSuccessResponse { Errors = new[] { "Refresh token does not match JWT" } }, StatusCodes.Status500InternalServerError);
+
+                storedRefreshToken.Used = true;
+                _context.RefreshToken.Update(storedRefreshToken);
+                var user = await _userManager.FindByIdAsync(validatedToken.Claims.Single(x => x.Type == "id").Value);
+
+                Response<AuthSuccessResponse> response = await GenrateAuthenticationTokenForUser(user);
+                if (response.IsSuccessStatusCode())
+                {
+                    await _transaction.CompleteAsync();
+                    return new Response<AuthSuccessResponse>(response.Resource, response.StatusCode);
+                }
+                return new Response<AuthSuccessResponse>(response.Message, response.StatusCode);
+
+
             }
-            var expiryDate = long.Parse(validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
-
-            var expirtDateTimeUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(expiryDate);
-
-            if (expirtDateTimeUtc > DateTime.UtcNow)
+            catch (Exception e)
             {
-                return new Response<AuthSuccessResponse>(new AuthSuccessResponse { Errors = new[] { "Token Not expired" } }, StatusCodes.Status500InternalServerError);
+                Logger.LogError(e);
+                return new Response<AuthSuccessResponse>("Error while refresh token", StatusCodes.Status500InternalServerError);
             }
-
-
-            var jti = validatedToken.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
-            var storedRefreshToken = await _context.RefreshToken.SingleOrDefaultAsync(x => x.Token == refreshToken);
-
-            if (storedRefreshToken == null)
-            {
-                return new Response<AuthSuccessResponse>(new AuthSuccessResponse { Errors = new[] { "This RefreshToken Doesnt Exist" } }, StatusCodes.Status500InternalServerError);
-            }
-            if (DateTime.UtcNow > storedRefreshToken.ExpiryDate)
-            {
-                return new Response<AuthSuccessResponse>(new AuthSuccessResponse { Errors = new[] { "Refresh token is expired" } }, StatusCodes.Status500InternalServerError);
-
-            }
-
-            if (storedRefreshToken.Invalidated)
-                return new Response<AuthSuccessResponse>(new AuthSuccessResponse { Errors = new[] { "RefreshToken has been invalidated" } }, StatusCodes.Status500InternalServerError);
-
-            if (storedRefreshToken.Used)
-                return new Response<AuthSuccessResponse>(new AuthSuccessResponse { Errors = new[] { "RefreshToken has been used" } }, StatusCodes.Status500InternalServerError);
-
-            if (storedRefreshToken.JwtId != jti)
-                return new Response<AuthSuccessResponse>(new AuthSuccessResponse { Errors = new[] { "Refresh token does not match JWT" } }, StatusCodes.Status500InternalServerError);
-
-            storedRefreshToken.Used = true;
-            _context.RefreshToken.Update(storedRefreshToken);
-            await _transaction.CompleteAsync();
-
-            var user = await _userManager.FindByIdAsync(validatedToken.Claims.Single(x => x.Type == "id").Value);
-            return await GenrateAuthenticationTokenForUser(user);
         }
 
 

@@ -11,6 +11,7 @@ using Servize.Domain.Repositories;
 using Servize.DTO;
 using Servize.DTO.ADMIN;
 using Servize.Utility;
+using Servize.Utility.Logging;
 using Servize.Utility.QueryFilter;
 using Servize.Utility.Sms;
 using System;
@@ -28,7 +29,7 @@ namespace Servize.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ServizeDBContext _context;
-        private readonly IConfiguration _configuration; 
+        private readonly IConfiguration _configuration;
         private readonly ContextTransaction _transaction;
         private readonly TokenValidationParameters _tokenValidationParameter;
         private readonly AccountRepository _repository;
@@ -47,56 +48,56 @@ namespace Servize.Controllers
             _roleManager = roleManager;
             _configuration = configuration;
             _signInManager = signInManager;
-            _context = context;        
+            _context = context;
             _transaction = transaction;
             _tokenValidationParameter = tokenValidationParameter;
             _repository = repository;
         }
 
-     
+
         [HttpPost("RegisterClient")]
         [Produces("application/json")]
         [Consumes("application/json")]
         public async Task<ActionResult<Response<AuthSuccessResponse>>> RegisterUser([FromBody] RegistrationInputModel model)
         {
-           
-            Response<AuthSuccessResponse> Response = await _repository.AddUserToIdentityWithSpecificRoles(model, "CLIENT");
-            if (Response.IsSuccessStatusCode())
-            {
-                return Ok(Response.Resource);
+
+            Response<AuthSuccessResponse> response = await _repository.AddUserToIdentityWithSpecificRoles(model, "CLIENT");
+            if (response.IsSuccessStatusCode())
+            {              
+                return Ok(response.Resource);
             }
-            return Problem(statusCode: Response.StatusCode, detail: Response.Message);
+            return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
 
 
-    
+
         [HttpPost("RegisterAdmin")]
         [Produces("application/json")]
         [Consumes("application/json")]
-        public async Task<ActionResult<Response<AuthSuccessResponse> >> RegisterAdmin([FromBody] RegistrationInputModel model)
+        public async Task<ActionResult<Response<AuthSuccessResponse>>> RegisterAdmin([FromBody] RegistrationInputModel model)
         {
-            Response<AuthSuccessResponse> Response = await _repository.AddUserToIdentityWithSpecificRoles(model, "ADMIN");
-            if (Response.IsSuccessStatusCode())
+            Response<AuthSuccessResponse> response = await _repository.AddUserToIdentityWithSpecificRoles(model, "ADMIN");
+            if (response.IsSuccessStatusCode())
             {
-                return Ok(Response.Resource);
+                return Ok(response.Resource);
             }
-            return Problem(statusCode: Response.StatusCode, detail: Response.Message);
+            return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
 
 
- 
+
         [HttpPost]
         [Route("RegisterVendor")]
         [Produces("application/json")]
         [Consumes("application/json")]
-        public async Task<ActionResult<Response<AuthSuccessResponse> >> RegisterVendor([FromBody] RegistrationInputModel model)
+        public async Task<ActionResult<Response<AuthSuccessResponse>>> RegisterVendor([FromBody] RegistrationInputModel model)
         {
-            Response<AuthSuccessResponse> Response = await _repository.AddUserToIdentityWithSpecificRoles(model, "VENDOR");
-            if (Response.IsSuccessStatusCode())
+            Response<AuthSuccessResponse> response = await _repository.AddUserToIdentityWithSpecificRoles(model, "VENDOR");
+            if (response.IsSuccessStatusCode())
             {
-                return Ok(Response.Resource);
+                return Ok(response.Resource);
             }
-            return Problem(statusCode: Response.StatusCode, detail: Response.Message);
+            return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
 
         /* /// <summary>
@@ -126,56 +127,41 @@ namespace Servize.Controllers
              return Unauthorized();
          }*/
         [HttpPost("RefreshToken")]
+        [Produces("application/json")]
+        [Consumes("application/json")]
         public async Task<ActionResult<Response<AuthSuccessResponse>>> RefreshToken([FromBody] RefreshTokenRequest refreshRequest)
         {
 
             Response<AuthSuccessResponse> response = await _repository.RefreshTokenAsync(refreshRequest.Token, refreshRequest.RefreshToken);
             if (response.IsSuccessStatusCode())
+            {               
                 return Ok(response.Resource);
+            }
 
 
             return Problem(detail: response.Message, statusCode: response.StatusCode);
         }
 
-       
 
-        
+
+
 
         /// <summary>
         /// Getotp token for number
         /// </summary>
-        /// <param name="number"></param>
+        /// <param name="phoneNumber"></param>
         /// <returns></returns>
         [HttpPost("GetOtp/{number}")]
-        [Produces("application/json")]
-        [Consumes("application/json")]
-        public async Task<ActionResult> SMSToken(string number)
+        public async Task<ActionResult<Response<AuthSuccessResponse>>> SMSToken(string phoneNumber)
         {
-            if (User != null)
+
+           Response<int> response =await _repository.SendSMSTokenAsync(phoneNumber);
+            if (response.IsSuccessStatusCode())
             {
-                if (_signInManager.IsSignedIn(User))
-                {
-                    var user = _userManager.GetUserAsync(User);
-                    if (user.Result != null)
-                    {
-                        string Phno = user.Result.PhoneNumber;
-                        if (!Phno.StartsWith("+"))
-                            Phno = "+" + Phno;
-                        number = Phno;
-                    }
-                }
+                HttpContext.Session.SetInt32("otp", response.Resource);
+                return Ok("Otp send Sucessfully");
             }
-            try
-            {
-                var value = await SMSAuthService.SendTokenSMSAsync(number);
-                HttpContext.Session.SetInt32("otp", value);
-                return Ok($"Otp Send Sucessfully => {value}");
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex.Message);
-                return Problem(detail: "Error while Sending SMS", statusCode: StatusCodes.Status500InternalServerError);
-            }
+            return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
 
 
@@ -193,7 +179,8 @@ namespace Servize.Controllers
                 if (HttpContext.Session.GetInt32("otp") == model.Otp)
                 {
                     HttpContext.Session.SetInt32("otp", 0);
-                    return await Register(model);
+                    return Ok("Code verfied Sucessfully");
+                    //return await Register(model);
                 }
                 return Problem(detail: "TryAgain", statusCode: StatusCodes.Status503ServiceUnavailable);
             }
@@ -207,7 +194,7 @@ namespace Servize.Controllers
         private async Task<Response<AuthSuccessResponse>> Register(RegistrationInputModel model)
         {
             return await _repository.AddUserToIdentityWithSpecificRoles(model, model.Role.ToUpper());
-         
+
         }
 
         //Authentication/Login
@@ -245,29 +232,29 @@ namespace Servize.Controllers
         /// <param name="Id"></param>
         /// <returns></returns>
 
-       /* [HttpGet]
-        [Route("LoginData/{id}")]
-        public async Task<ActionResult<InputLoginModel>> GetUserDataById(string Id)
-        {
-            try
-            {
-                var userExist = await _userManager.FindByIdAsync(Id);
-                if (userExist == null)
-                    return Problem(detail: "No able to find User of specific Id", statusCode: StatusCodes.Status404NotFound);
+        /* [HttpGet]
+         [Route("LoginData/{id}")]
+         public async Task<ActionResult<InputLoginModel>> GetUserDataById(string Id)
+         {
+             try
+             {
+                 var userExist = await _userManager.FindByIdAsync(Id);
+                 if (userExist == null)
+                     return Problem(detail: "No able to find User of specific Id", statusCode: StatusCodes.Status404NotFound);
 
-                InputLoginModel model = new InputLoginModel
-                {
+                 InputLoginModel model = new InputLoginModel
+                 {
 
-                    Email = userExist.UserName,
+                     Email = userExist.UserName,
 
-                };
-                return Ok(model);
-            }
-            catch
-            {
-                return Problem(detail: "Error while getting UserDetaild From Identity", statusCode: StatusCodes.Status500InternalServerError);
-            }
-        }*/
+                 };
+                 return Ok(model);
+             }
+             catch
+             {
+                 return Problem(detail: "Error while getting UserDetaild From Identity", statusCode: StatusCodes.Status500InternalServerError);
+             }
+         }*/
 
         /// <summary>
         /// Change password
@@ -277,13 +264,13 @@ namespace Servize.Controllers
         [HttpPost("ChangePassword")]
         public async Task<ActionResult<Response<InputLoginModel>>> ChangePassword(ChangePasswordRequest changepassword)
         {
-             Response<InputLoginModel> response = await _repository.HandleChangedPassword(changepassword);
+            Response<InputLoginModel> response = await _repository.HandleChangedPassword(changepassword);
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
             return Problem(detail: response.Message, statusCode: response.StatusCode);
         }
 
-        
+
 
 
         /// <summary>
@@ -291,10 +278,10 @@ namespace Servize.Controllers
         /// </summary>
         /// <param name="externalInputModel"></param>
         /// <returns></returns>
-        [HttpPost("Googlelogin")]       
+        [HttpPost("Googlelogin")]
         public async Task<ActionResult<Response<AuthSuccessResponse>>> Google([FromBody] GoogleLoginRequest externalInputModel)
         {
-           
+
             Response<AuthSuccessResponse> response = await _repository.HandleGoogleLogin(externalInputModel);
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
@@ -302,18 +289,32 @@ namespace Servize.Controllers
 
         }
 
-        
 
-        [HttpGet]
-        [Route("AllAccoutHolder")]
-        public async Task<ActionResult<IList<IdentityUser>>> GetListofAllAccountHolder([FromQuery] Query query)
+
+        [HttpGet("AccountHolder/{roleName}")]
+        public async Task<ActionResult<IList<IdentityUser>>> GetListofAllAccountHolder(string roleName)
         {
-            IQueryable<IdentityRole> identityRole = _roleManager.Roles.ApplyQuery(query);
-            IList<IdentityRole> identityRoleList = await identityRole.ToListAsync();
-            IList<ApplicationUser> usersList = await _userManager.Users.ToListAsync();
 
-            return Ok((from r in identityRole join u in usersList on r.Id equals u.Id select u).Distinct());
+            try
+            {
+                //IQueryable<IdentityRole> identityRole = _roleManager.Roles.ApplyQuery(query);
+               // IList<IdentityRole> identityRoleList = await identityRole.ToListAsync();
+                IList<ApplicationUser> users = await _userManager.Users.ToListAsync();
+                List<ApplicationUser> userWithRoles = new List<ApplicationUser>();
+                foreach (var user in users)
+                {
+                    if (user != null && await _userManager.IsInRoleAsync(user, roleName))
+                        userWithRoles.Add(user);
+                }
+                return Ok(userWithRoles);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e);
+                return Problem(detail:e.Message);
 
+            }
+           
         }
 
 

@@ -14,7 +14,7 @@ namespace Servize.Utility.Sms
             try
             {
                 Random rand = new Random();
-                int otp = rand.Next(1000, 9999);
+                int otp = rand.Next(10000, 99999);
                 string message = $"Hello! OTP Verification Code is {otp} for Servize.com";
                 await SendSMS(phoneNumber, message);
                 return otp;

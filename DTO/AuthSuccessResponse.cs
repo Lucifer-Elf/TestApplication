@@ -9,7 +9,7 @@ namespace Servize.DTO
     {
         public string Token { get; set; }    
         public string RefreshToken { get; set; }
-        public IEnumerable<String> Errors { get; set; }
+        public IEnumerable<String> Errors { get; set; }       
 
     }
 }

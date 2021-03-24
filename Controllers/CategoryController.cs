@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Servize.Authentication;
+using Servize.Domain.Enums;
 using Servize.Domain.Services;
 using Servize.DTO.PROVIDER;
 using Servize.Utility;
@@ -11,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Servize.Controllers
 {
-    //[Authorize(Roles = UserRoles.Provider + "," + UserRoles.Admin)]
+    [Authorize(Roles = UserRoles.Vendor + "," + UserRoles.Admin)]
     [ApiController]
     [Route("[controller]")]
     public class CategoryController : ControllerBase

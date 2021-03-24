@@ -14,7 +14,8 @@ using System.Threading.Tasks;
 
 namespace Servize.Controllers
 {
-    [Route("api/[controller]")]
+    [Authorize(Roles = UserRoles.Vendor + "," + UserRoles.Admin)]
+    [Route("[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
     {
