@@ -5,6 +5,7 @@ using Serilog;
 using Servize.Domain.Model.VendorModel;
 using Servize.Domain.Repositories;
 using Servize.DTO;
+using Servize.DTO.PROVIDER;
 using Servize.Utility;
 using Servize.Utility.Logging;
 using System;

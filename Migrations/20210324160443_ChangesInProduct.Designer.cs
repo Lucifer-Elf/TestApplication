@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Servize;
 
 namespace Servize.Migrations
 {
     [DbContext(typeof(ServizeDBContext))]
-    partial class ServizeDBContextModelSnapshot : ModelSnapshot
+    [Migration("20210324160443_ChangesInProduct")]
+    partial class ChangesInProduct
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -734,13 +736,15 @@ namespace Servize.Migrations
 
             modelBuilder.Entity("Servize.Domain.Model.OrderDetail.CartItem", b =>
                 {
-                    b.HasOne("Servize.Domain.Model.OrderDetail.Cart", null)
+                    b.HasOne("Servize.Domain.Model.OrderDetail.Cart", "Cart")
                         .WithMany("CartItems")
                         .HasForeignKey("CartId");
 
                     b.HasOne("Servize.Domain.Model.VendorModel.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId");
+
+                    b.Navigation("Cart");
 
                     b.Navigation("Product");
                 });
