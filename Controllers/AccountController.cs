@@ -90,7 +90,7 @@ namespace Servize.Controllers
         [Route("RegisterVendor")]
         [Produces("application/json")]
         [Consumes("application/json")]
-        public async Task<ActionResult<Response<AuthSuccessResponse>>> RegisterVendor([FromBody] RegistrationInputModel model)
+        public async Task<ActionResult<Response<AuthSuccessResponse>>> RegisterVendor([FromBody] RegistrationInputModelVendor  model)
         {
             Response<AuthSuccessResponse> response = await _repository.AddUserToIdentityWithSpecificRoles(model, "VENDOR");
             if (response.IsSuccessStatusCode())

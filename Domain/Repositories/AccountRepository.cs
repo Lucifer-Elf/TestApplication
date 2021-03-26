@@ -66,7 +66,7 @@ namespace Servize.Domain.Repositories
                     PhoneNumber = model.PhoneNumber,
 
                 };
-                Response<AuthSuccessResponse> response = await CreateNewUserBasedOnRole(model, role, user);
+                Response<AuthSuccessResponse> response = await CreateNewUserBasedOnRole(role, user, password: model.Password, firstName: model.FirstName, lastName: model.LastName);
                 if (response.IsSuccessStatusCode())
                 {
                     await _transaction.CompleteAsync();
@@ -82,11 +82,47 @@ namespace Servize.Domain.Repositories
             }
         }
 
-        private async Task<Response<AuthSuccessResponse>> CreateNewUserBasedOnRole(RegistrationInputModel model, string role, ApplicationUser user)
+
+
+        public async Task<Response<AuthSuccessResponse>> AddUserToIdentityWithSpecificRoles(RegistrationInputModelVendor model, string role)
         {
             try
             {
-                var createUser = await _userManager.CreateAsync(user, model.Password);
+                var existingUser = await _userManager.FindByEmailAsync(model.Email);
+                if (existingUser != null)
+                {
+                    return new Response<AuthSuccessResponse>("User with this Email AlreadyExist", StatusCodes.Status409Conflict);
+                }
+                ApplicationUser user = new()
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    PhoneNumber = model.PhoneNumber,
+
+                };
+                Response<AuthSuccessResponse> response = await CreateNewUserBasedOnRole(role, user,password: model.Password, companyName: model.CompanyName, companyRegistrationNumber: model.CompanyRegistrationNumber);
+                if (response.IsSuccessStatusCode())
+                {
+                    await _transaction.CompleteAsync();
+                    return new Response<AuthSuccessResponse>(response.Resource, response.StatusCode);
+                }
+                return new Response<AuthSuccessResponse>(response.Message, response.StatusCode);
+
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return new Response<AuthSuccessResponse>("Error while creating User", StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        private async Task<Response<AuthSuccessResponse>> CreateNewUserBasedOnRole(string role, ApplicationUser user,string password, string firstName = "", string lastName = "",
+                                                                                    string companyName = "", string companyRegistrationNumber = "")
+        {
+            try
+            {
+                var createUser = await _userManager.CreateAsync(user, password);
 
                 if (!createUser.Succeeded)
                 {
@@ -107,8 +143,8 @@ namespace Servize.Domain.Repositories
                     Vendor vendor = new()
                     {
                         UserId = user.Id,
-                        CompanyName = model.CompanyName,
-                        CompanyRegistrationNumber = model.CompanyRegistrationNumber,
+                        CompanyName = companyName,
+                        CompanyRegistrationNumber = companyRegistrationNumber,
 
                     };
                     _context.Add(vendor);
@@ -118,8 +154,8 @@ namespace Servize.Domain.Repositories
                     Client client = new()
                     {
                         UserId = user.Id,
-                        FirstName = model.FirstName,
-                        LastName = model.LastName,
+                        FirstName = firstName,
+                        LastName = lastName,
 
                     };
                     _context.Add(client);
@@ -138,8 +174,8 @@ namespace Servize.Domain.Repositories
                 return new Response<AuthSuccessResponse>("error while creating new User", StatusCodes.Status500InternalServerError);
             }
 
-
         }
+
 
         // All Private function listed down
         private async Task CreateRoleInDatabase()
