@@ -27,7 +27,7 @@ namespace Servize.Controllers
             _services = new ClientServices(dbContext, mapper,transaction, utitlity);
         }
 
-       // [Authorize(Roles = UserRoles.Admin)]
+ 
         [HttpGet]     
         [Produces("application/json")]
         public async Task<ActionResult<IList<ClientDTO>>> GetAllUserList()

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Configuration;
 using Servize.Authentication;
 using Servize.Domain.Enums;
 using Servize.Domain.Model;
@@ -30,13 +31,15 @@ namespace Servize.Domain.Repositories
         private readonly ServizeDBContext _context;
         private readonly ContextTransaction _transaction;
         private readonly TokenValidationParameters _tokenValidationParameter;
+        private readonly Microsoft.Extensions.Configuration.IConfiguration _configuration;
 
         public AccountRepository(UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
              SignInManager<ApplicationUser> signInManager,
              ServizeDBContext context,
             ContextTransaction transaction,
-             TokenValidationParameters tokenValidationParameter
+             TokenValidationParameters tokenValidationParameter,
+             Microsoft.Extensions.Configuration.IConfiguration Configuration
             )
         {
             _userManager = userManager;
@@ -45,6 +48,7 @@ namespace Servize.Domain.Repositories
             _context = context;
             _transaction = transaction;
             _tokenValidationParameter = tokenValidationParameter;
+            _configuration = Configuration;
         }
 
 
@@ -212,8 +216,9 @@ namespace Servize.Domain.Repositories
             try
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
-
-                var authSignInKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("RandomKeyIsvalid1234"));
+                Console.WriteLine(userRoles.SingleOrDefault<string>());
+              
+                var authSignInKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration.GetValue<string>("JWT:Secret")));
 
                 var tokendescriptor = new SecurityTokenDescriptor
                 {
@@ -223,7 +228,7 @@ namespace Servize.Domain.Repositories
                 new Claim(JwtRegisteredClaimNames.Sub,user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email,user.Email),
-                new Claim(ClaimTypes.Role,userRoles.FirstOrDefault<string>()),
+                new Claim(ClaimTypes.Role,userRoles.SingleOrDefault<string>()),
                 new Claim("id",user.Id)
                 }),
                     Expires = DateTime.UtcNow.AddSeconds(45),
