@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Servize.Authentication;
 using Servize.Domain.Enums;
 using Servize.Domain.Services;
 using Servize.DTO.PROVIDER;
@@ -17,19 +15,11 @@ namespace Servize.Controllers
     [Route("[controller]")]
     public class VendorController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly VendorServices _services;
 
-        public VendorController(ServizeDBContext dbContext,
-                                         IMapper mapper,
-                                         UserManager<ApplicationUser> userManager,
-                                        SignInManager<ApplicationUser> signInManager, ContextTransaction transaction,
-                                        Utilities utitlity
-                                         )
+        public VendorController(ServizeDBContext dbContext, IMapper mapper, ContextTransaction transaction, Utilities utitlity)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+
             _services = new VendorServices(dbContext, mapper, transaction, utitlity);
         }
 

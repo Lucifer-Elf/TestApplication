@@ -34,7 +34,6 @@ namespace Servize.Controllers
             Response<IList<ClientDTO>> response = await _services.GetAllUserList();
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
-
             return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
 

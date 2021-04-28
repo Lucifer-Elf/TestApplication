@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static Servize.Domain.Enums.ServizeEnum;
 
 namespace Servize.Domain.Model.VendorModel
 {

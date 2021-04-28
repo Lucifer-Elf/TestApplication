@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using static Servize.Domain.Enums.ServizeEnum;
 
 namespace Servize.DTO.PROVIDER
 {
@@ -18,6 +19,5 @@ namespace Servize.DTO.PROVIDER
         public string BannerImage { get; set; }
         public DateTime Modified { get; set; }
         public ICollection<ProductDTO> Products { get; set; }
-
     }
 }

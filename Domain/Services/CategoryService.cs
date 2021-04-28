@@ -17,9 +17,7 @@ namespace Servize.Domain.Services
         private readonly ContextTransaction _transacation;
         private readonly IMapper _mapper;
 
-
-        public CategoryService(ServizeDBContext dbcontext,
-            IMapper mapper, ContextTransaction transaction)
+        public CategoryService(ServizeDBContext dbcontext, IMapper mapper, ContextTransaction transaction)
         {
             _respository = new CategoryRepository(dbcontext);
             _transacation = transaction;
@@ -53,7 +51,6 @@ namespace Servize.Domain.Services
             }
         }
 
-
         public async Task<Response<CategoryDTO>> GetAllCategoryById(int id)
         {
             Logger.LogInformation(0, " Category GetAll Service Started By id");
@@ -80,7 +77,7 @@ namespace Servize.Domain.Services
 
         public async Task<Response<CategoryDTO>> PostCategory(CategoryDTO servizeCategoryDTO)
         {
-            Logger.LogInformation(0, " Add Category Service Started");
+            Logger.LogInformation(0, "Add Category Service Started");
             try
             {
                 Category serviceCategory = _mapper.Map<CategoryDTO, Category>(servizeCategoryDTO);
@@ -100,13 +97,13 @@ namespace Servize.Domain.Services
             }
             finally
             {
-                Logger.LogInformation(0, " Category Get AllService Finished");
+                Logger.LogInformation(0, "Category Get AllService Finished");
             }
         }
 
         public async Task<Response<CategoryDTO>> UpdateServiceCategory(CategoryDTO servizeCategoryDTO)
         {
-            Logger.LogInformation(0, " Update Category Service Started");
+            Logger.LogInformation(0, "Update Category Service Started");
             try
             {
                 Category serviceCategory = _mapper.Map<CategoryDTO, Category>(servizeCategoryDTO);
@@ -127,9 +124,8 @@ namespace Servize.Domain.Services
             }
             finally
             {
-                Logger.LogInformation(0, " Category Get AllService Finished");
+                Logger.LogInformation(0, "Category Get AllService Finished");
             }
         }
-
     }
 }

@@ -26,7 +26,6 @@ namespace Servize.Controllers
 
 
         [HttpGet]
-        [Route("GetAll")]
         public ActionResult<Response<IList<CartItem>>> GetAllcart()
         {
             var value = _cart.GetCartItem();
@@ -37,7 +36,6 @@ namespace Servize.Controllers
 
 
         [HttpPost]
-        [Route("AddToCart")]
         public ActionResult<Response<CartItem>> AddtoCart([FromBody] CartDTO cartDTO)
         {
             var category = _context.Product.FirstOrDefault(p => p.Id == cartDTO.CategoryId);
@@ -52,7 +50,6 @@ namespace Servize.Controllers
         }
 
         [HttpDelete]
-        [Route("RemoveFromCart")]
         public ActionResult<Response<Product>> RemoveFromCart(int productId, int amount)
         {
             var product = _context.Product.FirstOrDefault(p => p.Id == productId);

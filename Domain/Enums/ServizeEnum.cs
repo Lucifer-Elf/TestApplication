@@ -3,7 +3,7 @@
     public class ServizeEnum
     {
         /* for free you can add only 2 cetogeries*/
-        /*public enum Categories
+        public enum Categories
          {
              CAR_CARE = 0,            
              HOUSING = 1,
@@ -11,7 +11,7 @@
              HANDYMAN = 3,
              TUTOR = 4,
              APPLIANCE_REPAIR
-         }*/
+         }
         public enum ContractType
         {
             MONTHLY = 0,

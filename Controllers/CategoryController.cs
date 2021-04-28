@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Servize.Authentication;
 using Servize.Domain.Enums;
 using Servize.Domain.Services;
 using Servize.DTO.PROVIDER;
@@ -17,27 +15,14 @@ namespace Servize.Controllers
     [Route("[controller]")]
     public class CategoryController : ControllerBase
     {
-
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly CategoryService _services;
 
-
-        public CategoryController(ServizeDBContext dbContext,
-                                         IMapper mapper,
-                                         UserManager<ApplicationUser> userManager,
-                                        SignInManager<ApplicationUser> signInManager,
-                                        ContextTransaction transaction
-                                         )
+        public CategoryController(ServizeDBContext dbContext, IMapper mapper, ContextTransaction transaction)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
             _services = new CategoryService(dbContext, mapper, transaction);
         }
 
-
         [HttpGet]
-        [Route("Get")]
         [Produces("application/json")]
         public async Task<ActionResult<IList<CategoryDTO>>> GetAllCategoryList()
         {
@@ -46,7 +31,6 @@ namespace Servize.Controllers
                 return Ok(response.Resource);
             return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
-
 
         [HttpGet("{id}")]
         [Produces("application/json")]
@@ -60,7 +44,7 @@ namespace Servize.Controllers
         }
 
         [HttpPost]
-        [Route("AddCategory")]
+        [Route("addcategory")]
         public async Task<ActionResult<CategoryDTO>> AddServiceCategory([FromBody] CategoryDTO categoryDTO)
         {
             Response<CategoryDTO> response = await _services.PostCategory(categoryDTO);
@@ -70,12 +54,10 @@ namespace Servize.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateCategory")]
+        [Route("updatecategory")]
         public async Task<ActionResult<CategoryDTO>> UpdateServiceCategory([FromBody] CategoryDTO categoryDTO)
         {
-
             Response<CategoryDTO> response = await _services.UpdateServiceCategory(categoryDTO);
-
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);
             return Problem(statusCode: response.StatusCode, detail: response.Message);

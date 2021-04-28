@@ -46,7 +46,6 @@ namespace Servize.Utility.ServiceCollection
             services.AddScoped<ContextTransaction>();
             services.AddScoped<ProductRepository>();
             services.AddScoped<AccountRepository>();
-
             return services;
 
         }
@@ -57,12 +56,10 @@ namespace Servize.Utility.ServiceCollection
             {
                 builder.AllowAnyOrigin()
                        .AllowAnyMethod()
-                       .AllowAnyHeader()
-                       .AllowCredentials();
+                       .AllowAnyHeader();
             }));
             return services;
         }
-
 
         public static IApplicationBuilder ApplicationBuilderPipeline(this IApplicationBuilder app, string corsPolicyName)
         {

@@ -21,17 +21,12 @@ namespace Servize.Controllers
     public class AccountController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly AccountRepository _repository;
 
-        public AccountController(UserManager<ApplicationUser> userManager,
-                                    RoleManager<IdentityRole> roleManager,
-                                    SignInManager<ApplicationUser> signInManager,
-                                    AccountRepository repository)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, AccountRepository repository)
         {
             _userManager = userManager;
-            _roleManager = roleManager;
             _signInManager = signInManager;
             _repository = repository;
         }
@@ -121,7 +116,7 @@ namespace Servize.Controllers
                 if (HttpContext.Session.GetInt32("otp") == model.Otp)
                 {
                     HttpContext.Session.SetInt32("otp", 0);
-                    return Ok("Code verfied Sucessfully");               
+                    return Ok("Code verfied Sucessfully");
                 }
                 return Problem(detail: "TryAgain", statusCode: StatusCodes.Status503ServiceUnavailable);
             }
@@ -137,6 +132,7 @@ namespace Servize.Controllers
             return await _repository.AddUserToIdentityWithSpecificRoles(model, model.Role.ToUpper());
 
         }
+
         //Authentication/Login
         [HttpPost("login")]
         [Produces("application/json")]
@@ -148,8 +144,9 @@ namespace Servize.Controllers
                 return Ok(response.Resource);
             return Problem(detail: response.Message, statusCode: response.StatusCode);
         }
+
         //Authentication/Logout
-        [HttpPost("LogOut")]
+        [HttpPost("logout")]
         public async Task<ActionResult> LogOut()
         {
             try

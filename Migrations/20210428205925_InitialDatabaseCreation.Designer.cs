@@ -10,8 +10,8 @@ using Servize;
 namespace Servize.Migrations
 {
     [DbContext(typeof(ServizeDBContext))]
-    [Migration("20210324180310_ChangesInCartFK")]
-    partial class ChangesInCartFK
+    [Migration("20210428205925_InitialDatabaseCreation")]
+    partial class InitialDatabaseCreation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -283,6 +283,9 @@ namespace Servize.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
+
                     b.Property<string>("CartId")
                         .HasColumnType("nvarchar(450)");
 
@@ -295,9 +298,6 @@ namespace Servize.Migrations
 
                     b.Property<int?>("ProductId")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("Total")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("VendorId")
                         .HasColumnType("int");
@@ -736,13 +736,15 @@ namespace Servize.Migrations
 
             modelBuilder.Entity("Servize.Domain.Model.OrderDetail.CartItem", b =>
                 {
-                    b.HasOne("Servize.Domain.Model.OrderDetail.Cart", null)
+                    b.HasOne("Servize.Domain.Model.OrderDetail.Cart", "Cart")
                         .WithMany("CartItems")
                         .HasForeignKey("CartId");
 
                     b.HasOne("Servize.Domain.Model.VendorModel.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId");
+
+                    b.Navigation("Cart");
 
                     b.Navigation("Product");
                 });

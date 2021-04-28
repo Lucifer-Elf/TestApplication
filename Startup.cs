@@ -34,18 +34,17 @@ namespace Servize
             // All Scoped file are added in this function
             services.AddScopedDependency();
 
-
-            string connectionString = "Server=servizetest.database.windows.net;" +
+          /*  string connectionString = "Server=servizetest.database.windows.net;" +
                                             "Database=serviceTestDb;" +
-                                           " User Id =servizeAdmin;" +
+                                            "User Id =servizeAdmin;" +
                                             "Password=@Lfred1205;" +
-                                            "MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+                                            "MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";*/
 
-            //EnitiyFrameWork
-            services.AddDbContext<ServizeDBContext>(options => options.UseSqlServer(connectionString));
+            //Database connection
+            services.AddDbContext<ServizeDBContext>(options => options.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=TestDatabase;Trusted_Connection=True;"));
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); // instance of http 
-            services.AddScoped(sp => Cart.GetCart(sp));  // diffenrt instance to differnt user
+            services.AddScoped(sp => Cart.GetCart(sp));  // diffrent instance to differnt user
 
             //Identity
             services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -64,7 +63,6 @@ namespace Servize
                 ValidateIssuerSigningKey = true,
                 RequireExpirationTime = false,
                 ValidateLifetime = true
-
             };
 
             //Add Authentication
