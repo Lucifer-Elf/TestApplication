@@ -34,7 +34,7 @@ namespace Servize.Controllers
         }
 
         [Authorize(Roles = UserRoles.Admin)]
-        [HttpGet]  
+        [HttpGet]
         [Produces("application/json")]
         public async Task<ActionResult<IList<VendorDTO>>> GetAllVendorList()
         {
@@ -58,7 +58,7 @@ namespace Servize.Controllers
             return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
 
-       // [Authorize(Roles = UserRoles.Admin)]
+        // [Authorize(Roles = UserRoles.Admin)]
         [HttpGet("modetype/{id}")]
         [Produces("application/json")]
         public async Task<ActionResult<IList<VendorDTO>>> GetAllVendorByModeType(int modeType)
@@ -70,7 +70,7 @@ namespace Servize.Controllers
             return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
 
-        [HttpPut]   
+        [HttpPut]
         [Produces("application/json")]
         [Consumes("application/json")]
         public async Task<ActionResult<VendorDTO>> UpdateVendor(VendorDTO vendorDTO)

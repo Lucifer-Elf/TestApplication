@@ -1,19 +1,17 @@
 ﻿using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Servize.Utility.Cors
 {
     public class CustomCorsPolicyProvider : ICorsPolicyProvider
     {
-      
-        public static Dictionary<string, ICorsPolicyProvider> Providers { get; set; } = new Dictionary<string, ICorsPolicyProvider>();
 
-  
-        public async Task<CorsPolicy> GetPolicyAsync(HttpContext context, string policyName)
+        public static Dictionary<string, ICorsPolicyProvider> Providers { get; set; } = new Dictionary<string, ICorsPolicyProvider>();
+
+
+        public async Task<CorsPolicy> GetPolicyAsync(HttpContext context, string policyName)
         {
             if (string.IsNullOrEmpty(policyName) || !Providers.ContainsKey(policyName))
             {
@@ -25,7 +23,7 @@ namespace Servize.Utility.Cors
             return await provider.GetPolicyAsync(context, policyName);
         }
 
-        private CorsPolicy GetDefaultPolicy()
+        private CorsPolicy GetDefaultPolicy()
         {
             return new CorsPolicyBuilder()
               .AllowAnyHeader()

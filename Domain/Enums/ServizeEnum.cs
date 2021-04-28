@@ -1,20 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Servize.Domain.Enums
+﻿namespace Servize.Domain.Enums
 {
     public class ServizeEnum
     {
-        // for free you can add only 2 cetogeries
-        public enum Categories
+        /* for free you can add only 2 cetogeries*/
+        /*public enum Categories
+         {
+             CAR_CARE = 0,            
+             HOUSING = 1,
+             PERSONAL = 2,
+             HANDYMAN = 3,
+             TUTOR = 4,
+             APPLIANCE_REPAIR
+         }*/
+        public enum ContractType
         {
-            AUTOMOTIVE = 0,
-            HOUSING = 1,
-            PERSONAL = 2,
-            HANDYMAN = 3,
-            TUTOR = 4,
+            MONTHLY = 0,
+            FLEXIBLE = 1,
         }
         public enum ServizeModeType
         {
@@ -37,34 +38,34 @@ namespace Servize.Domain.Enums
         public enum Housing
         {
             CLEANING = 0,
-            PAINTING = 1,
-            MOVERANDPACKER = 2,
+            PAINTING_RENOVATION = 1,
+            MOVER_PACKER = 2,
             MAIDSERVICE = 3,
             DISINFECTION = 4,
             ACSERVICEREPAIRE = 5,
         }
         public enum Automative
         {
-           WASHING = 0,
-           SERVICING = 1,
+            WASHING = 0,
+            SERVICING = 1,
         }
         public enum Personal
         {
-           GROMING = 0,
-           SPA = 1,
-           MANIANDPEDICURE = 2,
-           PHOTOGRAPHER = 3,
-           MAKEUP = 4,
-           LAUNDRY = 5,
+            GROMING = 0,
+            SPA = 1,
+            MANIANDPEDICURE = 2,
+            PHOTOGRAPHER = 3,
+            MAKEUP = 4,
+            LAUNDRY = 5,
         }
-             public enum HandyMan
+        public enum HandyMan
         {
 
-           HANYMAN = 30,
-           ELECTRICIAN = 31,
-           CARPENTER = 32,
-           PLUMBING = 33,
-           ELECTRICALREPAIR = 34,
+            HANDYMAN = 30,
+            ELECTRICIAN = 31,
+            CARPENTER = 32,
+            PLUMBING = 33,
+            ELECTRICALREPAIR = 34,
 
             T_ALLSUBJECT = 40,
         }
@@ -78,8 +79,8 @@ namespace Servize.Domain.Enums
 
         public enum BookingAssignment
         {
-            BA_AUTOMATIC =0,
-            BA_MANUAL =1
+            BA_AUTOMATIC = 0,
+            BA_MANUAL = 1
         }
     }
 }

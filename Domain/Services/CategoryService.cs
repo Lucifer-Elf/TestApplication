@@ -16,7 +16,7 @@ namespace Servize.Domain.Services
         private readonly CategoryRepository _respository;
         private readonly ContextTransaction _transacation;
         private readonly IMapper _mapper;
-      
+
 
         public CategoryService(ServizeDBContext dbcontext,
             IMapper mapper, ContextTransaction transaction)
@@ -46,7 +46,8 @@ namespace Servize.Domain.Services
                 Logger.LogError(e);
                 return new Response<IList<CategoryDTO>>($"Failed to Load ServizeCategory List Error", StatusCodes.Status500InternalServerError);
             }
-            finally {
+            finally
+            {
 
                 Logger.LogInformation(0, " Category Get AllService Finished");
             }
@@ -71,12 +72,13 @@ namespace Servize.Domain.Services
                 Logger.LogError(e);
                 return new Response<CategoryDTO>($"Failed to Load ServizeCategory Error", StatusCodes.Status500InternalServerError);
             }
-            finally {
+            finally
+            {
                 Logger.LogInformation(0, " Category Get AllService Finished");
             }
         }
 
-        public async Task<Response<CategoryDTO>> PostCategory(CategoryDTO servizeCategoryDTO )
+        public async Task<Response<CategoryDTO>> PostCategory(CategoryDTO servizeCategoryDTO)
         {
             Logger.LogInformation(0, " Add Category Service Started");
             try

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using static Servize.Domain.Enums.ServizeEnum;
 
 namespace Servize.DTO.PROVIDER
 {
@@ -10,7 +6,7 @@ namespace Servize.DTO.PROVIDER
     {
         public int Id { get; set; }
 
-        public int VendorId { get; set; }        
+        public int VendorId { get; set; }
 
         public int HappinessRating { get; set; }
         public string Product { get; set; }

@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace Servize.Controllers
 {
-    [Authorize(Roles = UserRoles.Client )]
+    [Authorize(Roles = UserRoles.Client)]
     [ApiController]
     [Route("[controller]")]
     public class CartController : ControllerBase
@@ -46,9 +46,7 @@ namespace Servize.Controllers
                 var item = _cart.AddToCart(category, cartDTO.Amount);
                 if (item == null)
                     return new Response<CartItem>("No data to add in Cart", StatusCodes.Status500InternalServerError);
-
                 return new Response<CartItem>(item, StatusCodes.Status200OK);
-
             }
             return new Response<CartItem>("Category Id is not avaliable", StatusCodes.Status404NotFound);
         }

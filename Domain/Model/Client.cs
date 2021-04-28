@@ -1,10 +1,9 @@
 ﻿using Servize.Authentication;
-using Servize.Domain.Model.OrderDetail;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Servize.Domain.Model
-{ 
+{
     public class Client
     {
 
@@ -20,7 +19,7 @@ namespace Servize.Domain.Model
         public string LastName { get; set; }
 
         public string Address { get; set; }
-        
+
         public string Area { get; set; }
 
         public double Latitude { get; set; }
@@ -33,6 +32,6 @@ namespace Servize.Domain.Model
 
         public string ProfilePicture { get; set; }
 
-    
+
     }
 }

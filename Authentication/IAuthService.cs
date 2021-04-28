@@ -1,9 +1,8 @@
 ﻿
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using Servize.DTO.ADMIN;
+using System.Threading.Tasks;
 
 namespace Servize.Authentication
 {
@@ -14,7 +13,7 @@ namespace Servize.Authentication
 
     public class AuthService : IAuthService
     {
-       
+
         private static IList<ApplicationUser> _users = new List<ApplicationUser>();
         public async Task<ApplicationUser> Authenticate(Google.Apis.Auth.GoogleJsonWebSignature.Payload payload)
         {
@@ -31,8 +30,8 @@ namespace Servize.Authentication
                 {
                     Id = Guid.NewGuid().ToString(),
                     UserName = payload.Email,
-                    Email = payload.Email,                    
-                  
+                    Email = payload.Email,
+
                 };
                 _users.Add(u);
             }
@@ -44,9 +43,9 @@ namespace Servize.Authentication
         {
             string s = String.Empty;
             foreach (var u in _users) s += "\n[" + u.Email + "]";
-           
+
         }
 
-       
+
     }
 }

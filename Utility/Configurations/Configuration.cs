@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Servize.Utility.Configurations
 {
@@ -43,7 +40,7 @@ namespace Servize.Utility.Configurations
             return defaultValue;
         }
         private static bool IsType<T>(string input)
-        {         
+        {
             try
             {
                 var objectType = (T)Convert.ChangeType(input, typeof(T));

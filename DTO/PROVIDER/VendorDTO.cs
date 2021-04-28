@@ -1,8 +1,5 @@
-﻿using Servize.Domain.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using static Servize.Domain.Enums.ServizeEnum;
 
 namespace Servize.DTO.PROVIDER
@@ -11,13 +8,13 @@ namespace Servize.DTO.PROVIDER
     {
         public VendorDTO()
         {
-           Categories = new HashSet<CategoryDTO>();     
+            Categories = new HashSet<CategoryDTO>();
         }
 
         public int Id { get; set; }
 
         public string CompanyName { get; set; }
-       
+
         public string EmiratesIdNumber { get; set; }
 
         public ServizeModeType ModeType { get; set; }
@@ -35,7 +32,7 @@ namespace Servize.DTO.PROVIDER
         public DateTime RegistrationDate { get; set; }
 
         public PackageType PackageType { get; set; }
-        
+
         public DateTime Modified { get; set; }
 
         public ICollection<CategoryDTO> Categories { get; set; }

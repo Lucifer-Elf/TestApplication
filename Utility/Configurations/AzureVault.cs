@@ -24,15 +24,15 @@ namespace Servize.Utility.Configurations
             {
                 try
                 {
-                    var kvUri             = Configuration.GetValue<string>("azurevaulturl").TrimEnd('/');
-                    string tenantId       = Configuration.GetValue<string>("azurevaulttenantid");
-                    string clientId       = Configuration.GetValue<string>("azurevaultclientid");
-                    string clientSecret   = Configuration.GetValue<string>("azurevaultclientsecret");
+                    var kvUri = Configuration.GetValue<string>("azurevaulturl").TrimEnd('/');
+                    string tenantId = Configuration.GetValue<string>("azurevaulttenantid");
+                    string clientId = Configuration.GetValue<string>("azurevaultclientid");
+                    string clientSecret = Configuration.GetValue<string>("azurevaultclientsecret");
 
 
                     ClientSecretCredential credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
-                    var secretClient                  = new SecretClient(new System.Uri(kvUri), credential);
-                    var secret                        = await secretClient.GetSecretAsync(secretName).ConfigureAwait(false);
+                    var secretClient = new SecretClient(new System.Uri(kvUri), credential);
+                    var secret = await secretClient.GetSecretAsync(secretName).ConfigureAwait(false);
 
                     cache.Add(secretName, secret.Value.Value, new CacheItemPolicy() { SlidingExpiration = TimeSpan.FromHours(1) });
                     return secret.Value.Value;

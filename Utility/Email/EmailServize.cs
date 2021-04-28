@@ -19,7 +19,7 @@ namespace Servize.Utility.Email
             FILE = 1
         }
 
-        private string HostName = Configuration.GetValue<string>("base.smtp.hostname");       
+        private string HostName = Configuration.GetValue<string>("base.smtp.hostname");
 
         private int PortNumber = Configuration.GetValue<int>("base.smtp.portnumber");
 
@@ -30,13 +30,13 @@ namespace Servize.Utility.Email
 
         bool IsEmailSent = false;
 
-     
-        public EmailServize()
+
+        public EmailServize()
         {
 
         }
-       
-        public void ConfigureSmtpClient(string hostName, int portNumber, string user = null, string password = null)
+
+        public void ConfigureSmtpClient(string hostName, int portNumber, string user = null, string password = null)
         {
             HostName = hostName;
             PortNumber = portNumber;
@@ -44,7 +44,7 @@ namespace Servize.Utility.Email
             Password = password;
         }
 
-        public bool SendMessage(string from, string to, string subject, BodyType bodyType, string bodyData, object parameters = null, string[] attachments = null)
+        public bool SendMessage(string from, string to, string subject, BodyType bodyType, string bodyData, object parameters = null, string[] attachments = null)
         {
             string bodyText;
             if (bodyType == BodyType.FILE)
@@ -80,7 +80,7 @@ namespace Servize.Utility.Email
             return null;
         }
 
-        public static string ResolvePlaceHolder(string bodyText, Dictionary<string, string> parameters)
+        public static string ResolvePlaceHolder(string bodyText, Dictionary<string, string> parameters)
         {
             if (parameters == null)
             {
@@ -140,14 +140,14 @@ namespace Servize.Utility.Email
             return message;
         }
 
-       
-        public bool GetEmailSentStatus()
+
+        public bool GetEmailSentStatus()
         {
             return IsEmailSent;
         }
 
-     
-        private bool SendMail(MimeMessage message)
+
+        private bool SendMail(MimeMessage message)
         {
             using (var client = new SMSClient())
             {
@@ -172,7 +172,7 @@ namespace Servize.Utility.Email
         }
 
 
-        private bool CanConnect(SMSClient client)
+        private bool CanConnect(SMSClient client)
         {
             try
             {
@@ -186,7 +186,7 @@ namespace Servize.Utility.Email
             return false;
         }
 
-        private bool Authenticate(SMSClient client)
+        private bool Authenticate(SMSClient client)
         {
             if (string.IsNullOrWhiteSpace(UserName))
             {

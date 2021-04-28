@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Servize.Domain.Model;
 using Servize.Utility;
 using Servize.Utility.Logging;
@@ -10,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace Servize.Domain.Repositories
 {
-    public class ClientRepository:BaseRepository<ServizeDBContext>
+    public class ClientRepository : BaseRepository<ServizeDBContext>
     {
         private readonly ServizeDBContext _context;
-        public ClientRepository(ServizeDBContext dBContext):base(dBContext)
+        public ClientRepository(ServizeDBContext dBContext) : base(dBContext)
         {
             _context = dBContext;
         }
@@ -22,7 +21,7 @@ namespace Servize.Domain.Repositories
         {
             try
             {
-                List<Client> clientList = await _context.Client.Include(i=>i.ApplicationUser)
+                List<Client> clientList = await _context.Client.Include(i => i.ApplicationUser)
                                                                             .AsNoTracking().ToListAsync();
                 return new Response<IList<Client>>(clientList, StatusCodes.Status200OK);
             }
@@ -33,7 +32,7 @@ namespace Servize.Domain.Repositories
             }
 
         }
-       
+
         public async Task<Response<Client>> GetAllServizeUserById(string Id)
         {
             try

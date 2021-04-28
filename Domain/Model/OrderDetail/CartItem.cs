@@ -16,7 +16,7 @@ namespace Servize.Domain.Model.OrderDetail
 
         public int Amount { get; set; }
 
-        
+
         public string CartId { get; set; }
         [ForeignKey(nameof(CartId))]
         public Cart Cart { get; set; }

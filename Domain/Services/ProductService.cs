@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Servize.Domain.Model.VendorModel;
 using Servize.Domain.Repositories;
-using Servize.DTO;
 using Servize.DTO.PROVIDER;
 using Servize.Utility;
 using Servize.Utility.Logging;
@@ -51,7 +50,8 @@ namespace Servize.Domain.Services
                 Logger.LogError(e);
                 return new Response<IList<ProductDTO>>($"Failed to Load Product List Error", StatusCodes.Status500InternalServerError);
             }
-            finally {
+            finally
+            {
                 Logger.LogInformation(0, "Get All Product service finished !");
             }
         }

@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Servize.DTO
+﻿namespace Servize.DTO
 {
-    public class RegistrationInputModelVendor:BaseInputModel
-    {   
+    public class RegistrationInputModelVendor : BaseInputModel
+    {
 
         public string CompanyName { get; set; }
 

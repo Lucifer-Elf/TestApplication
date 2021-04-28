@@ -32,7 +32,7 @@ namespace Servize.Domain.Services
 
         public async Task<Response<IList<ClientDTO>>> GetAllUserList()
         {
-            Logger.LogInformation(0,"GetAll Client service Started !");
+            Logger.LogInformation(0, "GetAll Client service Started !");
             try
             {
                 Response<IList<Client>> response = await _respository.GetAllClientList();
@@ -50,12 +50,13 @@ namespace Servize.Domain.Services
                 Logger.LogError(e);
                 return new Response<IList<ClientDTO>>($"Failed to Load user List Error", StatusCodes.Status500InternalServerError);
             }
-            finally {
-                Logger.LogInformation(0,"GetAll Client service finished !");
+            finally
+            {
+                Logger.LogInformation(0, "GetAll Client service finished !");
             }
         }
 
-      
+
 
         public async Task<Response<ClientDTO>> GetUserById(string id)
         {

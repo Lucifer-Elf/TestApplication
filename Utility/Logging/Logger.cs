@@ -1,13 +1,7 @@
-﻿using Elasticsearch.Net;
-using Nest;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Serilog;
-using Servize.Utility.Configurations;
+﻿using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace Servize.Utility.Logging
 
@@ -17,8 +11,8 @@ namespace Servize.Utility.Logging
     /// </summary>
     public class Logger
     {
-      
-       
+
+
 
         /// <summary>
         /// This function is to create Logger builder with all the option avaliable directly instead of using configuration.        /// 
@@ -180,7 +174,7 @@ namespace Servize.Utility.Logging
             LoggerBuildSingleton.Instance().LogEvent(logId, msg.Trim() == "" ? e.ToString() : msg, Level.WARNING, e, memberName, Path.GetFileName(fileName), lineNumber);
         }
 
-       
+
 
         /// <summary>
         /// Function return serilog Ilogger . which can be used for services logging .

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using Servize.Domain.Model.VendorModel;
 using Servize.Utility;
 using Servize.Utility.Logging;
@@ -14,7 +13,7 @@ namespace Servize.Domain.Repositories
     {
         private ServizeDBContext _context;
 
-        public ProductRepository(ServizeDBContext dbcontext):base(dbcontext)
+        public ProductRepository(ServizeDBContext dbcontext) : base(dbcontext)
         {
             this._context = dbcontext;
         }

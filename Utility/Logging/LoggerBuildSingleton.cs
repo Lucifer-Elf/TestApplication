@@ -72,14 +72,14 @@ namespace Servize.Utility.Logging
         private LoggerBuildSingleton(bool isDbConfigurationAvailable)
         {
             LogOptions options;
-           // if (isDbConfigurationAvailable)
+            // if (isDbConfigurationAvailable)
             //{
-                options = DefaultConfiguration();
+            options = DefaultConfiguration();
             //}
             ///else
-           // {
-//options = ConfigureDefaultLogHandler();
-           // }
+            // {
+            //options = ConfigureDefaultLogHandler();
+            // }
             Logger.CreateLogger(options);
         }
 

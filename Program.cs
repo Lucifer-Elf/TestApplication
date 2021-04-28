@@ -1,19 +1,14 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Serilog;
 using Servize.Utility.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 
 namespace Servize
 {
     public class Program
-    {   
+    {
         public static void Main(string[] args)
         {
             try
@@ -26,15 +21,16 @@ namespace Servize
                 Logger.LogFatal(e);
                 Console.WriteLine(e);
             }
-            finally {
+            finally
+            {
                 Logger.Flush();
             }
-            
+
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .UseSerilog(logger:Logger.GetLogger())
+                .UseSerilog(logger: Logger.GetLogger())
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

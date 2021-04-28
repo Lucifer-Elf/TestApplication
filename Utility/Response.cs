@@ -23,10 +23,10 @@ namespace Servize.Utility
 
     public class Response<T> : Response
     {
-       
+
         public T Resource { get; private set; }
 
-     
+
         public Response(T resource, int statusCode) : base("", statusCode)
         {
             Resource = resource;

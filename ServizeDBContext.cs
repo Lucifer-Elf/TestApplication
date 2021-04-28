@@ -12,29 +12,29 @@ namespace Servize
 {
     public class ServizeDBContext : IdentityDbContext<ApplicationUser>
     {
-     
-        public DbSet<Category>               Category { get; set; }
-        public DbSet<Vendor>                 Vendor { get; set; }
-        public DbSet<Review>                 Review { get; set; }
-        public DbSet<Product>                Product { get; set; }
-        public DbSet<BookingSetting>         BookingSetting { get; set; }
-        public DbSet<VendorBankDetail>       VendorBankDetail { get; set; }
 
-        public DbSet<OrderItem>             OrderItem { get; set; }
-        public DbSet<OrderSummary>          OrderSummary { get; set; }
-        public DbSet<Client>                Client { get; set; }
-        public DbSet<CartItem>              CartItem { get; set; }
+        public DbSet<Category> Category { get; set; }
+        public DbSet<Vendor> Vendor { get; set; }
+        public DbSet<Review> Review { get; set; }
+        public DbSet<Product> Product { get; set; }
+        public DbSet<BookingSetting> BookingSetting { get; set; }
+        public DbSet<VendorBankDetail> VendorBankDetail { get; set; }
 
-        public DbSet<Cart>                  Cart { get; set; }
+        public DbSet<OrderItem> OrderItem { get; set; }
+        public DbSet<OrderSummary> OrderSummary { get; set; }
+        public DbSet<Client> Client { get; set; }
+        public DbSet<CartItem> CartItem { get; set; }
 
-        public DbSet<RefreshToken>          RefreshToken { get; set; }
+        public DbSet<Cart> Cart { get; set; }
 
-        public ServizeDBContext(DbContextOptions<ServizeDBContext> options):
+        public DbSet<RefreshToken> RefreshToken { get; set; }
+
+        public ServizeDBContext(DbContextOptions<ServizeDBContext> options) :
             base(options)
         {
 
         }
-      
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<RefreshToken>(entity =>
@@ -71,7 +71,7 @@ namespace Servize
             {
                 UpdateModifiedProperty(entityEntry);
             }
-        
+
         }
 
     }

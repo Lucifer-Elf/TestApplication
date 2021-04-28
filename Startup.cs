@@ -31,9 +31,9 @@ namespace Servize
         {
             services.CustomCors(_policyName);
 
-             // All Scoped file are added in this function
+            // All Scoped file are added in this function
             services.AddScopedDependency();
-            
+
 
             string connectionString = "Server=servizetest.database.windows.net;" +
                                             "Database=serviceTestDb;" +
@@ -54,7 +54,7 @@ namespace Servize
                 .AddSignInManager()
                 .AddDefaultTokenProviders()
                 .AddTokenProvider("ServizeApp", typeof(DataProtectorTokenProvider<ApplicationUser>));
-           
+
 
             var tokenParameter = new TokenValidationParameters()
             {
@@ -68,7 +68,8 @@ namespace Servize
             };
 
             //Add Authentication
-            services.AddAuthentication(options => {
+            services.AddAuthentication(options =>
+            {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -101,7 +102,7 @@ namespace Servize
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            
+
             using (var scope = app.ApplicationServices.CreateScope())
             {
                 scope.ServiceProvider.GetService<ServizeDBContext>().Database.Migrate();

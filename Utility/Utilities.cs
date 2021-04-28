@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.AspNetCore.Http;
-using Servize.Domain.Enums;
-using System;
+﻿using Servize.Domain.Enums;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Servize.Utility
 {

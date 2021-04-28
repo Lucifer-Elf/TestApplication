@@ -1,10 +1,9 @@
-﻿using AutoMapper.Configuration;
-using Google.Apis.Auth;
+﻿using Google.Apis.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Servize.Authentication;
 using Servize.Domain.Enums;
 using Servize.Domain.Model;
@@ -105,7 +104,7 @@ namespace Servize.Domain.Repositories
                     PhoneNumber = model.PhoneNumber,
 
                 };
-                Response<AuthSuccessResponse> response = await CreateNewUserBasedOnRole(role, user,password: model.Password, companyName: model.CompanyName, companyRegistrationNumber: model.CompanyRegistrationNumber);
+                Response<AuthSuccessResponse> response = await CreateNewUserBasedOnRole(role, user, password: model.Password, companyName: model.CompanyName, companyRegistrationNumber: model.CompanyRegistrationNumber);
                 if (response.IsSuccessStatusCode())
                 {
                     await _transaction.CompleteAsync();
@@ -121,7 +120,7 @@ namespace Servize.Domain.Repositories
             }
         }
 
-        private async Task<Response<AuthSuccessResponse>> CreateNewUserBasedOnRole(string role, ApplicationUser user,string password, string firstName = "", string lastName = "",
+        private async Task<Response<AuthSuccessResponse>> CreateNewUserBasedOnRole(string role, ApplicationUser user, string password, string firstName = "", string lastName = "",
                                                                                     string companyName = "", string companyRegistrationNumber = "")
         {
             try
@@ -217,7 +216,7 @@ namespace Servize.Domain.Repositories
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
                 Console.WriteLine(userRoles.SingleOrDefault<string>());
-              
+
                 var authSignInKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration.GetValue<string>("JWT:Secret")));
 
                 var tokendescriptor = new SecurityTokenDescriptor

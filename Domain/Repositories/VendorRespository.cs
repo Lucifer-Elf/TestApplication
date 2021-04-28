@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using Servize.Domain.Model.VendorModel;
 using Servize.Utility;
 using Servize.Utility.Logging;
@@ -11,10 +10,10 @@ using System.Threading.Tasks;
 
 namespace Servize.Domain.Repositories
 {
-    public class VendorRespository :BaseRepository<ServizeDBContext>
+    public class VendorRespository : BaseRepository<ServizeDBContext>
     {
         private readonly ServizeDBContext _context;
-        public VendorRespository(ServizeDBContext dBContext):base(dBContext)
+        public VendorRespository(ServizeDBContext dBContext) : base(dBContext)
         {
             _context = dBContext;
         }
@@ -23,8 +22,8 @@ namespace Servize.Domain.Repositories
         {
             try
             {
-                List<Vendor> vendorList = await _context.Vendor.Include(i=>i.Categories)
-                                                                                          .ThenInclude(i=>i.Products)
+                List<Vendor> vendorList = await _context.Vendor.Include(i => i.Categories)
+                                                                                          .ThenInclude(i => i.Products)
                                                                                           .AsNoTracking()
                                                                                         .ToListAsync();
                 return new Response<IList<Vendor>>(vendorList, StatusCodes.Status200OK);
@@ -72,15 +71,15 @@ namespace Servize.Domain.Repositories
                 return new Response<Vendor>($"Failed to get ServiceProvide Error", StatusCodes.Status500InternalServerError);
             }
         }
-     
+
         public async Task<Response<Vendor>> UpdateVendor(Vendor vendor)
         {
             try
             {
                 if (vendor == null)
                     return new Response<Vendor>("Request Not Parsable", StatusCodes.Status400BadRequest);
-                Vendor vendorEntity = await _context.Vendor.Include(i=>i.Categories)
-                                                                                         .ThenInclude(i=>i.Products)          
+                Vendor vendorEntity = await _context.Vendor.Include(i => i.Categories)
+                                                                                         .ThenInclude(i => i.Products)
                                                                                          .AsNoTracking()
                                                                                         .SingleOrDefaultAsync(c => c.Id == vendor.Id);
                 if (vendorEntity == null)
@@ -99,6 +98,6 @@ namespace Servize.Domain.Repositories
             }
         }
 
-      
+
     }
 }

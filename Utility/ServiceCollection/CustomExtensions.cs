@@ -51,7 +51,7 @@ namespace Servize.Utility.ServiceCollection
 
         }
 
-        public static IServiceCollection CustomCors(this IServiceCollection services ,string policyName)
+        public static IServiceCollection CustomCors(this IServiceCollection services, string policyName)
         {
             services.AddCors(o => o.AddPolicy(name: policyName, builder =>
             {

@@ -4,7 +4,7 @@ using static Servize.Domain.Enums.ServizeEnum;
 
 namespace Servize.Domain.Model.VendorModel
 {
-    public class Product :BaseEntity
+    public class Product : BaseEntity
     {
         public int Id { get; set; }
 
@@ -27,7 +27,7 @@ namespace Servize.Domain.Model.VendorModel
         public double VariablePrice { get; set; }
         public Area Areas { get; set; }
 
-       
+
 
 
     }

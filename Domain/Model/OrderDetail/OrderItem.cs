@@ -9,12 +9,12 @@ namespace Servize.Domain.Model.OrderDetail
     {
         public int Id { get; set; }
 
-      
+
         public int OrderId { get; set; }
         [ForeignKey(nameof(OrderId))]
         public OrderSummary Order { get; set; }
 
-      
+
         public int VendorId { get; set; }
         [ForeignKey(nameof(VendorId))]
         public Vendor Vendor { get; set; }
@@ -28,7 +28,7 @@ namespace Servize.Domain.Model.OrderDetail
         public double Amount { get; set; }
 
 
-       
+
 
     }
 }

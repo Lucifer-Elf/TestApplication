@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Servize.Authentication;
@@ -33,7 +32,7 @@ namespace Servize.Controllers
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _services = new CategoryService(dbContext, mapper,transaction);
+            _services = new CategoryService(dbContext, mapper, transaction);
         }
 
 
@@ -64,9 +63,9 @@ namespace Servize.Controllers
         [Route("AddCategory")]
         public async Task<ActionResult<CategoryDTO>> AddServiceCategory([FromBody] CategoryDTO categoryDTO)
         {
-            Response<CategoryDTO> response    = await _services.PostCategory(categoryDTO);                
+            Response<CategoryDTO> response = await _services.PostCategory(categoryDTO);
             if (response.IsSuccessStatusCode())
-                    return Ok(response.Resource);
+                return Ok(response.Resource);
             return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
 
@@ -82,6 +81,6 @@ namespace Servize.Controllers
             return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
 
-        
+
     }
 }

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Servize.DTO.ADMIN
+﻿namespace Servize.DTO.ADMIN
 {
-   
+
     public class GoogleLoginRequest
     {
         public string TokenId { get; set; }

@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Servize.Authentication;
 using Servize.Domain.Enums;
 using Servize.Domain.Services;
 using Servize.DTO.USER;
@@ -17,18 +15,18 @@ namespace Servize.Controllers
     [Route("[controller]")]
     public class ClientController : ControllerBase
     {
-      
+
         private readonly ClientServices _services;
 
         public ClientController(ServizeDBContext dbContext,
                                          IMapper mapper, ContextTransaction transaction,
-                                        Utilities utitlity )
-        {        
-            _services = new ClientServices(dbContext, mapper,transaction, utitlity);
+                                        Utilities utitlity)
+        {
+            _services = new ClientServices(dbContext, mapper, transaction, utitlity);
         }
 
- 
-        [HttpGet]     
+
+        [HttpGet]
         [Produces("application/json")]
         public async Task<ActionResult<IList<ClientDTO>>> GetAllUserList()
         {
@@ -40,7 +38,7 @@ namespace Servize.Controllers
             return Problem(statusCode: response.StatusCode, detail: response.Message);
         }
 
-       
+
 
         [HttpGet("{id}")]
         [Produces("application/json")]

@@ -1,12 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Servize.Authentication;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -22,26 +17,26 @@ namespace Servize.Controllers
 
         public ExternalLoginController(UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            ServizeDBContext context         
+            ServizeDBContext context
            )
         {
-            _userManager = userManager;         
+            _userManager = userManager;
             _signInManager = signInManager;
             _context = context;
-        
+
         }
 
         [HttpGet]
         [Route("googlelogin")]
         public ActionResult Googlelogin(string returnUrl)
         {
-            string redirectUrl = Url.Action("GoogleResponse", "Authentication",null,Request.Scheme);
+            string redirectUrl = Url.Action("GoogleResponse", "Authentication", null, Request.Scheme);
             var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
-   
+
             return new ChallengeResult("Google", properties);
         }
 
-       
+
         [HttpGet]
         [Route("googleResponse")]
         public async Task<ActionResult> GoogleResponse()
