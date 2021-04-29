@@ -16,7 +16,7 @@ namespace Servize.Utility
             return UserRoles.Client;
         }
 
-        public static string getCountryCode(string PhoneCode)
+        public static string GetCountryCode(string PhoneCode)
         {
             var dictionary = new Dictionary<string, string>();
 

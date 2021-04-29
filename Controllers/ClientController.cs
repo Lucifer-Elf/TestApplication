@@ -30,7 +30,6 @@ namespace Servize.Controllers
         [Produces("application/json")]
         public async Task<ActionResult<IList<ClientDTO>>> GetAllUserList()
         {
-
             Response<IList<ClientDTO>> response = await _services.GetAllUserList();
             if (response.IsSuccessStatusCode())
                 return Ok(response.Resource);

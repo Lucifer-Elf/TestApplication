@@ -34,11 +34,11 @@ namespace Servize
             // All Scoped file are added in this function
             services.AddScopedDependency();
 
-          /*  string connectionString = "Server=servizetest.database.windows.net;" +
-                                            "Database=serviceTestDb;" +
-                                            "User Id =servizeAdmin;" +
-                                            "Password=@Lfred1205;" +
-                                            "MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";*/
+            /*  string connectionString = "Server=servizetest.database.windows.net;" +
+                                              "Database=serviceTestDb;" +
+                                              "User Id =servizeAdmin;" +
+                                              "Password=@Lfred1205;" +
+                                              "MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";*/
 
             //Database connection
             services.AddDbContext<ServizeDBContext>(options => options.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=TestDatabase;Trusted_Connection=True;"));

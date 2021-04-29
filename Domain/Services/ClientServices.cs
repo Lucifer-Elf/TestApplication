@@ -15,15 +15,14 @@ namespace Servize.Domain.Services
 {
     public class ClientServices
     {
-        private readonly ClientRepository _respository;
+        private readonly ClientRepository _repository;
         private readonly ContextTransaction _transaction;
         private readonly IMapper _mapper;
         private readonly Utilities _utility;
 
-        public ClientServices(ServizeDBContext dbcontext,
-            IMapper mapper, ContextTransaction transaction, Utilities utility)
+        public ClientServices(ServizeDBContext dbcontext, IMapper mapper, ContextTransaction transaction, Utilities utility)
         {
-            _respository = new ClientRepository(dbcontext);
+            _repository = new ClientRepository(dbcontext);
             _transaction = transaction;
             _mapper = mapper;
             _utility = utility;
@@ -35,7 +34,7 @@ namespace Servize.Domain.Services
             Logger.LogInformation(0, "GetAll Client service Started !");
             try
             {
-                Response<IList<Client>> response = await _respository.GetAllClientList();
+                Response<IList<Client>> response = await _repository.GetAllClientList();
 
                 if (response.IsSuccessStatusCode())
                 {
@@ -63,7 +62,7 @@ namespace Servize.Domain.Services
             Logger.LogInformation(0, "Get Client By id service started !");
             try
             {
-                Response<Client> response = await _respository.GetAllServizeUserById(id);
+                Response<Client> response = await _repository.GetAllServizeUserById(id);
                 if (response.IsSuccessStatusCode())
                 {
                     ClientDTO serviceDTO = _mapper.Map<Client, ClientDTO>(response.Resource);
@@ -89,11 +88,11 @@ namespace Servize.Domain.Services
             {
                 if (clientDTO == null) return new Response<ClientDTO>("Failed to Load Client With Specific Id", StatusCodes.Status400BadRequest);
 
-                Client clientEntity = await _respository.GetContext().Client.SingleOrDefaultAsync(p => p.Id == clientDTO.Id);
+                Client clientEntity = await _repository.GetContext().Client.SingleOrDefaultAsync(p => p.Id == clientDTO.Id);
                 if (clientEntity == null)
                     return new Response<ClientDTO>("failed to find Client", StatusCodes.Status404NotFound);
 
-                PatchEntities.PatchEntity<ClientDTO, Client>(_respository.GetContext(), _mapper, clientEntity, clientDTO);
+                PatchEntities.PatchEntity<ClientDTO, Client>(_repository.GetContext(), _mapper, clientEntity, clientDTO);
 
                 await _transaction.CompleteAsync();
                 ClientDTO mappedResponse = _mapper.Map<Client, ClientDTO>(clientEntity);

@@ -69,10 +69,8 @@ namespace Servize.Utility.ServiceCollection
             app.UseCors(corsPolicyName);
             app.UseAuthentication();   // add to pipline 
             app.UseAuthorization();
-
             app.UseOpenApi();
             app.UseSwaggerUi3();
-
             app.UseSession();
             return app;
         }

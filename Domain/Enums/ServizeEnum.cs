@@ -4,14 +4,14 @@
     {
         /* for free you can add only 2 cetogeries*/
         public enum Categories
-         {
-             CAR_CARE = 0,            
-             HOUSING = 1,
-             PERSONAL = 2,
-             HANDYMAN = 3,
-             TUTOR = 4,
-             APPLIANCE_REPAIR
-         }
+        {
+            CAR_CARE = 0,
+            HOUSING = 1,
+            PERSONAL = 2,
+            HANDYMAN = 3,
+            TUTOR = 4,
+            APPLIANCE_REPAIR
+        }
         public enum ContractType
         {
             MONTHLY = 0,
