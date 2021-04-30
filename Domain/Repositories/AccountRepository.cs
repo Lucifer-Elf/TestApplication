@@ -30,16 +30,10 @@ namespace Servize.Domain.Repositories
         private readonly ServizeDBContext _context;
         private readonly ContextTransaction _transaction;
         private readonly TokenValidationParameters _tokenValidationParameter;
-        private readonly Microsoft.Extensions.Configuration.IConfiguration _configuration;
 
-        public AccountRepository(UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager,
-             SignInManager<ApplicationUser> signInManager,
-             ServizeDBContext context,
-            ContextTransaction transaction,
-             TokenValidationParameters tokenValidationParameter,
-             Microsoft.Extensions.Configuration.IConfiguration Configuration
-            )
+
+        public AccountRepository(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, SignInManager<ApplicationUser> signInManager,
+             ServizeDBContext context, ContextTransaction transaction, TokenValidationParameters tokenValidationParameter)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -47,10 +41,7 @@ namespace Servize.Domain.Repositories
             _context = context;
             _transaction = transaction;
             _tokenValidationParameter = tokenValidationParameter;
-            _configuration = Configuration;
         }
-
-
 
         public async Task<Response<AuthSuccessResponse>> AddUserToIdentityWithSpecificRoles(RegistrationInputModel model, string role)
         {
@@ -127,6 +118,11 @@ namespace Servize.Domain.Repositories
             {
                 var createUser = await _userManager.CreateAsync(user, password);
 
+                if (createUser == null)
+                {
+                    return new Response<AuthSuccessResponse>("Unable to create User", StatusCodes.Status500InternalServerError);
+                }
+
                 if (!createUser.Succeeded)
                 {
 
@@ -137,7 +133,9 @@ namespace Servize.Domain.Repositories
 
                 if (await _roleManager.RoleExistsAsync(Utility.Utilities.GetRoleForstring(role)))
                 {
-                    await _userManager.AddToRoleAsync(user, Utility.Utilities.GetRoleForstring(role));
+                   var result =  await _userManager.AddToRoleAsync(user, Utility.Utilities.GetRoleForstring(role));
+                    if(!result.Succeeded)
+                        return new Response<AuthSuccessResponse>("error while creating Roles for User", StatusCodes.Status500InternalServerError);
                 }
 
 
@@ -159,7 +157,6 @@ namespace Servize.Domain.Repositories
                         UserId = user.Id,
                         FirstName = firstName,
                         LastName = lastName,
-
                     };
                     _context.Add(client);
                 }
@@ -215,10 +212,12 @@ namespace Servize.Domain.Repositories
             try
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
-                Console.WriteLine(userRoles.SingleOrDefault<string>());
+                if (userRoles.Count <= 0)
+                {
+                    return new Response<AuthSuccessResponse>("Error while Finding Roles for User", StatusCodes.Status500InternalServerError);
+                }
 
-                var authSignInKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration.GetValue<string>("JWT:Secret")));
-
+                var authSignInKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("RandomKeyIsvalid1234"));
                 var tokendescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(new[]
@@ -258,11 +257,9 @@ namespace Servize.Domain.Repositories
             catch (Exception ex)
             {
                 Logger.LogError(ex);
-                return new Response<AuthSuccessResponse>("Error while genrating Token", StatusCodes.Status200OK);
+                return new Response<AuthSuccessResponse>("Error while genrating Token", StatusCodes.Status500InternalServerError);
 
             }
-
-
         }
 
         public async Task<Response<AuthSuccessResponse>> RefreshTokenAsync(string token, string refreshToken)
@@ -460,7 +457,5 @@ namespace Servize.Domain.Repositories
                 Logger.LogInformation(0, "Google login service finished");
             }
         }
-
-
     }
 }

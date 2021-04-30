@@ -46,6 +46,7 @@ namespace Servize.Utility.ServiceCollection
             services.AddScoped<ContextTransaction>();
             services.AddScoped<ProductRepository>();
             services.AddScoped<AccountRepository>();
+            services.AddScoped<OrderSummaryRepository>();
             return services;
 
         }

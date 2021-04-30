@@ -34,7 +34,7 @@ namespace Servize.Controllers
         [HttpPost("registerclient")]
         [Produces("application/json")]
         [Consumes("application/json")]
-        public async Task<ActionResult<Response<AuthSuccessResponse>>> RegisterUser([FromBody] RegistrationInputModel model)
+        public async Task<ActionResult<Response<AuthSuccessResponse>>> RegisterClient([FromBody] RegistrationInputModel model)
         {
             Response<AuthSuccessResponse> response = await _repository.AddUserToIdentityWithSpecificRoles(model, "CLIENT");
             if (response.IsSuccessStatusCode())

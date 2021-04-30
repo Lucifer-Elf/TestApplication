@@ -12,22 +12,21 @@ namespace Servize
 {
     public class ServizeDBContext : IdentityDbContext<ApplicationUser>
     {
-
-        public DbSet<Category> Category { get; set; }
-        public DbSet<Vendor> Vendor { get; set; }
-        public DbSet<Review> Review { get; set; }
-        public DbSet<Product> Product { get; set; }
-        public DbSet<BookingSetting> BookingSetting { get; set; }
-        public DbSet<VendorBankDetail> VendorBankDetail { get; set; }
-
-        public DbSet<OrderItem> OrderItem { get; set; }
-        public DbSet<OrderSummary> OrderSummary { get; set; }
-        public DbSet<Client> Client { get; set; }
-        public DbSet<CartItem> CartItem { get; set; }
-
-        public DbSet<Cart> Cart { get; set; }
-
-        public DbSet<RefreshToken> RefreshToken { get; set; }
+        public virtual DbSet<Category> Category { get; set; }
+        public virtual DbSet<Vendor> Vendor { get; set; }
+        public virtual DbSet<Review> Review { get; set; }
+        public virtual DbSet<Product> Product { get; set; }
+        public virtual DbSet<BookingSetting> BookingSetting { get; set; }
+        public virtual DbSet<VendorBankDetail> VendorBankDetail { get; set; }
+              
+        public virtual DbSet<OrderItem> OrderItem { get; set; }
+        public virtual DbSet<OrderSummary> OrderSummary { get; set; }
+        public virtual DbSet<Client> Client { get; set; }
+        public virtual DbSet<CartItem> CartItem { get; set; }
+             
+        public virtual DbSet<Cart> Cart { get; set; }
+         
+        public virtual DbSet<RefreshToken> RefreshToken { get; set; }
 
         public ServizeDBContext(DbContextOptions<ServizeDBContext> options) :
             base(options)
@@ -62,7 +61,6 @@ namespace Servize
 
         public void UpdateModifiedField()
         {
-
             if (ChangeTracker == null || ChangeTracker.Entries() == null || !ChangeTracker.Entries().Any()) return;
 
             var entries = ChangeTracker.Entries().Where(e => e.Entity is BaseEntity && (e.State == EntityState.Added || e.State == EntityState.Modified));
@@ -71,8 +69,6 @@ namespace Servize
             {
                 UpdateModifiedProperty(entityEntry);
             }
-
         }
-
     }
 }
