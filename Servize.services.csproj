@@ -4,6 +4,7 @@
     <UserSecretsId>29528ea6-9881-4835-813d-c08ebe4f5414</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>.</DockerfileContext>
+    <RootNamespace>Servize.Test</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Utility\Logging\Logger\**" />
