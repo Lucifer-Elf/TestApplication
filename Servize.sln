@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.30711.63
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Servize", "Servize.csproj", "{9648BFB6-24E3-4771-BAD2-E4C6F756C80F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServizeTest", "..\ServizeTest\ServizeTest.csproj", "{4572375A-92A6-4D50-80F7-393BF916DA33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServizeTest", "..\ServizeTest\ServizeTest.csproj", "{4572375A-92A6-4D50-80F7-393BF916DA33}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Servize.Services", "Servize.Services", "{EED82341-EF65-454D-81B4-5AEBA890C82D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +26,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9648BFB6-24E3-4771-BAD2-E4C6F756C80F} = {EED82341-EF65-454D-81B4-5AEBA890C82D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9C457C49-9E04-49C2-A921-1320954097BD}
